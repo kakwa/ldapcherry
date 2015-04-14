@@ -2,6 +2,7 @@ before_install:
   - curl https://ftp-master.debian.org/keys/archive-key-7.0.asc | sudo apt-key add -
   - echo "deb http://http.debian.net/debian wheezy-backports main" | sudo tee -a /etc/apt/sources.list
   - echo "deb http://http.debian.net/debian wheezy main" | sudo tee -a /etc/apt/sources.list
+  - sudo /sbin/ifconfig
   - sudo apt-get update -qq
   - sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -f -q -y ; true
   - sudo ./tests/cfg/deploy.sh
