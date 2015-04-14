@@ -1,7 +1,8 @@
 #!/bin/sh
 
 DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
-DEBIAN_FRONTEND=noninteractive apt-get install samba python-samba -t wheezy-backports -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+DEBIAN_FRONTEND=noninteractive apt-get install lsb-base libattr1 -t wheezy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+DEBIAN_FRONTEND=noninteractive apt-get install samba python-samba samba-vfs-modules -t wheezy-backports -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 
 rsync -a `dirname $0`/ /
 cd `dirname $0`/../../
