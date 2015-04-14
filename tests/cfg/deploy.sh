@@ -47,12 +47,18 @@ mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
 mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
-sleep 5
 
-sh -x /etc/init.d/samba start
-sh -x /etc/init.d/samba-ad-dc start
-sh -x /etc/init.d/smbd start
-sh -x /etc/init.d/nmbd start
+sleep 5
+if ! [ -z "$TRAVIS" ]
+then
+  /usr/sbin/samba -D -s /etc/samba/smb.conf
+  /usr/sbin/smbd -D --option=server role check:inhibit=yes --foreground
+else
+  sh -x /etc/init.d/samba start
+  sh -x /etc/init.d/samba-ad-dc start
+  sh -x /etc/init.d/smbd start
+  sh -x /etc/init.d/nmbd start
+fi
 
 sleep 5
 
