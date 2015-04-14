@@ -37,4 +37,4 @@ printf '' > "${smbconffile}" && \
     --configfile="${smbconffile}" --server-role="${role}" -d 1 --adminpass="${adpass}" && \
     mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
-/etc/init.d/samba-ad-dc restart
+/etc/init.d/samba restart
