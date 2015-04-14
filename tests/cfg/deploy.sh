@@ -41,6 +41,8 @@ printf '' > "${smbconffile}" && \
     --configfile="${smbconffile}" --server-role="${role}" -d 1 --adminpass="${adpass}" && \
     mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
-/etc/init.d/samba restart
+sh -x /etc/init.d/samba restart
+
+sleep 5
 
 netstat -apn
