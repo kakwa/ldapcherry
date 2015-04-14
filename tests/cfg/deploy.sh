@@ -34,14 +34,25 @@ role=dc
 sambacmd=samba-tool
 adpass=qwertyP455
 
+echo "deploy AD"
 printf '' > "${smbconffile}" && \
     ${sambacmd} domain provision ${hostip} \
     --domain="${domain}" --realm="${realm}" --dns-backend="${sambadns}" \
     --targetdir="${targetdir}" --workgroup="${domain}" --use-rfc2307 \
-    --configfile="${smbconffile}" --server-role="${role}" -d 1 --adminpass="${adpass}" && \
-    mv "${targetdir}/etc/smb.conf" "${smbconffile}"
+    --configfile="${smbconffile}" --server-role="${role}" -d 1 --adminpass="${adpass}"
+    
 
-sh -x /etc/init.d/samba restart
+echo "Move configuration"
+mv "${targetdir}/etc/smb.conf" "${smbconffile}"
+
+mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
+
+sleep 5
+
+sh -x /etc/init.d/samba start
+sh -x /etc/init.d/samba-ad-dc start
+sh -x /etc/init.d/smbd start
+sh -x /etc/init.d/nmbd start
 
 sleep 5
 
