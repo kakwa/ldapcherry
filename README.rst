@@ -1,4 +1,4 @@
-ldapcherry
+LdapCherry
 ==========
 
-small cherrypy application to manage ldap users/groups
+Small cherrypy application to manage ldap users/groups
