@@ -21,6 +21,10 @@ ldapadd -H ldap://localhost:390  -x -D "cn=admin,dc=example,dc=org" -f /etc/ldap
 sed -i "s/\(127.0.0.1.*\)/\1 ldap.ldapcherry.org ad.ldapcherry.org/" /etc/hosts
 
 
+mount -o remount,acl /
+
+df -h
+
 smbconffile=/etc/samba/smb.conf
 domain=dc
 realm=dc.ldapcherry.org
