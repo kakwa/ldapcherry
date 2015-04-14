@@ -1,0 +1,18 @@
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install ldap-utils
+  - sudo apt-get install python-ldap
+  - sudo DEBIAN_FRONTEND=noninteractive apt-get install slapd -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+  - sudo ./tests/cfg/deploy.sh
+
+language: python
+python:
+  - "2.7"
+  - "3.2"
+  - "3.3"
+# command to install dependencies
+install: 
+  - pip install -e . --use-mirrors
+  - pip install passlib
+# command to run tests
+script: "./run_test.sh"
