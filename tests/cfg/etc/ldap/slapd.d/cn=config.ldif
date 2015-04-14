@@ -1,0 +1,18 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/run/slapd/slapd.args
+olcLogLevel: none
+olcPidFile: /var/run/slapd/slapd.pid
+olcToolThreads: 1
+structuralObjectClass: olcGlobal
+entryUUID: 2964261c-6754-1033-8d48-1703270f04bd
+creatorsName: cn=config
+createTimestamp: 20140503211805Z
+entryCSN: 20140503211805.658522Z#000000#000#000000
+modifiersName: cn=config
+modifyTimestamp: 20140503211805Z
+olcTLSCACertificateFile: /etc/ldap/ssl/TEST-cacert.pem
+olcTLSCertificateFile: /etc/ldap/ssl/ldap@dnscherry.org-cert.pem
+olcTLSCertificateKeyFile: /etc/ldap/ssl/ldap@dnscherry.org-key.pem

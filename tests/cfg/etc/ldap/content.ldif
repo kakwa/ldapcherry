@@ -1,0 +1,55 @@
+dn: dc=example,dc=org
+dc: example
+objectClass: top
+objectClass: domain
+
+dn: cn=dnscherry,dc=example,dc=org
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: dnscherry
+description: [applicative account]
+userPassword: password
+
+dn: ou=People,dc=example,dc=org
+ou: People
+objectClass: top
+objectclass: organizationalunit
+
+dn: ou=Groups,dc=example,dc=org
+ou: Groups
+objectClass: top
+objectclass: organizationalunit
+
+dn: cn=Sheri Smith,ou=people,dc=example,dc=org
+objectclass: inetOrgPerson
+cn: Sheri Smith
+sn: smith
+uid: ssmith
+userpassword: passwordsmith
+carlicense: HERCAR 125
+homephone: 555-111-2225
+mail: s.smith@example.com
+mail: ssmith@example.com
+mail: sheri.smith@example.com
+
+dn: cn=John Watson,ou=people,dc=example,dc=org
+objectclass: inetOrgPerson
+cn: John Watson
+sn: watson
+uid: jwatson
+userpassword: passwordwatson
+carlicense: HERCAR 125
+homephone: 555-111-2225
+mail: j.watson@example.com
+
+dn: cn=itpeople,ou=groups,dc=example,dc=org
+objectclass: groupofnames
+cn: itpeople
+description: IT security group
+member: cn=John Watson,ou=people,dc=example,dc=org
+
+dn: cn=hrpeople,ou=groups,dc=example,dc=org
+objectclass: groupofnames
+cn: hrpeople
+description: Human Resources group
+member: cn=Sheri Smith,ou=people,dc=example,dc=org

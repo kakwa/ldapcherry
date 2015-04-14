@@ -1,0 +1,12 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 94d41de9
+dn: olcBackend={0}hdb
+objectClass: olcBackendConfig
+olcBackend: {0}hdb
+structuralObjectClass: olcBackendConfig
+entryUUID: 2965a6f4-6754-1033-8d51-1703270f04bd
+creatorsName: cn=admin,cn=config
+createTimestamp: 20140503211805Z
+entryCSN: 20140503211805.668489Z#000000#000#000000
+modifiersName: cn=admin,cn=config
+modifyTimestamp: 20140503211805Z
