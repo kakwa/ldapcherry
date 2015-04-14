@@ -42,3 +42,5 @@ printf '' > "${smbconffile}" && \
     mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
 /etc/init.d/samba restart
+
+netstat -apn
