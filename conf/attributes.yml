@@ -1,0 +1,90 @@
+last-name:
+    description: "Last Name of the user"
+    display_name: "Last Name"
+    backend-attributes:
+        ldap: cn
+        ad: CN
+
+first-name:
+    description: "First name of the user"
+    display_name: "Name"
+    backend-attributes:
+        ldap: sn
+        ad: sn
+email:
+    description: "Email of the user"
+    display_name: "Name"
+    autofill: 
+        function: email
+            args:
+                - $first-name
+                - $last-name
+                - @example.com
+    backend-attributes:
+        ldap: cn
+        ad: CN
+uid:
+    description: "UID of the user"
+    display_name: "UID"
+    autofill: 
+        function: uid
+            args:
+                - $first-name
+                - $last-name
+    backend-attributes:
+        ldap: uid
+        ad: UID
+
+uidNumber:
+    description: "User ID Number of the user"
+    display_name: "UID Number"
+    autofill: 
+        function: uidNumber
+            args:
+                - $first-name
+                - $last-name
+    backend-attributes:
+        ldap: uidNumber
+        ad: UIDNumber
+
+gidNumber:
+    description: "Group ID Number of the user"
+    display_name: "GID Number"
+    autofill: 
+        function: uidNumber
+            args:
+                - $first-name
+                - $last-name
+    backend-attributes:
+        ldap: gidNumber
+        ad: GIDNumber
+
+shell:
+    description: "Shell of the user"
+    display_name: "Shell"
+    self: true
+    default: /bin/bash
+    backend-attributes:
+        ldap: shell
+        ad: SHELL
+
+home:
+    description: "Shell of the user"
+    display_name: "Shell"
+    autofill: 
+        function: home
+            args:
+                - $first-name
+                - $last-name
+                - /home/
+
+    backend-attributes:
+        ldap: home
+        ad: Home
+
+password:
+    decription: "Password of the user"
+    display_name: "Password"
+    self: true
+    type: pwd
+
