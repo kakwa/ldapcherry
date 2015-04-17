@@ -34,7 +34,6 @@ uid:
     backend-attributes:
         ldap: uid
         ad: UID
-
 uidNumber:
     description: "User ID Number of the user"
     display_name: "UID Number"
@@ -46,45 +45,47 @@ uidNumber:
     backend-attributes:
         ldap: uidNumber
         ad: UIDNumber
-
 gidNumber:
     description: "Group ID Number of the user"
     display_name: "GID Number"
-    autofill: 
-        function: uidNumber
-            args:
-                - $first-name
-                - $last-name
+    default: 10000
     backend-attributes:
         ldap: gidNumber
         ad: GIDNumber
-
 shell:
     description: "Shell of the user"
     display_name: "Shell"
     self: true
-    default: /bin/bash
+    type: list
+    values:
+        - /bin/bash
+        - /bin/zsh
+        - /bin/sh
     backend-attributes:
         ldap: shell
         ad: SHELL
-
 home:
-    description: "Shell of the user"
-    display_name: "Shell"
+    description: "Home user path"
+    display_name: "Home"
     autofill: 
         function: home
             args:
                 - $first-name
                 - $last-name
                 - /home/
-
     backend-attributes:
         ldap: home
         ad: Home
-
 password:
     decription: "Password of the user"
     display_name: "Password"
     self: true
     type: pwd
-
+    backend-attributes:
+        ldap: userPassword
+        ad: userPassword
+logscript:
+    type: fix
+    value: login1.bat
+    backend-attributes:
+        ad: logonScript
