@@ -76,11 +76,12 @@ home:
     backend-attributes:
         ldap: home
         ad: Home
+
 password:
     decription: "Password of the user"
     display_name: "Password"
     self: true
-    type: pwd
+    type: password
     backend-attributes:
         ldap: userPassword
         ad: userPassword

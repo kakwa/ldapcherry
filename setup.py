@@ -77,7 +77,7 @@ resources_files = get_list_files('resources',
 
 resources_files.append((
         os.path.join(sysconfdir, 'ldapcherry'),
-        [ 'conf/ldapcherry.ini']
+        [ 'conf/ldapcherry.ini', 'conf/attributes.yml', 'conf/roles.yml']
     ))
 
 setup(
