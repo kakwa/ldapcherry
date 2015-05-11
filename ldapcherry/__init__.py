@@ -168,7 +168,7 @@ class ldapCherry(object):
         else:
             return logging.INFO
 
-     def _reraise(self, exception):
+    def _reraise(self, exception):
         """ reraise a given exception"""
         raise exception
     

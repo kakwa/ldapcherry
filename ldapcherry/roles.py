@@ -8,19 +8,20 @@
 import os
 import sys
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
+from ldapcherry.pyyamlwrapper import loadNoDump
+
 
 class Roles:
 
     def __init__(self, role_file):
-        pass
+        stream = open(role_file, 'r')
+        self.roles_raw = loadNoDump(stream)
+        stream.close()
+        self._nest()
 
-    def _nest(self, role_file):
+    def _nest(self):
         """nests the roles (creates roles hierarchy)"""
-        pass
+        self.roles = self.roles_raw
 
     def write(self, out_file):
         """write the nested role hierarchy to a file"""
