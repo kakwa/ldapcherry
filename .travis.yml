@@ -8,7 +8,7 @@ before_install:
   - sudo /sbin/ifconfig
   - sudo apt-get update -qq
   - sudo rm /etc/dpkg/dpkg.cfg.d/multiarch
-  - sudo ./tests/cfg/deploy.sh
+  - sudo ./tests/test_env/deploy.sh
 
 language: python
 python:

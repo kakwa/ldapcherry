@@ -1,0 +1,26 @@
+admin-lv2:
+    display_name: Administrators Level 3
+    LC_admins: True
+    backends:
+        - backend_name: ldap
+          groups:
+              - cn=dns admins,ou=group,dc=example,dc=com
+              - cn=nagios admins,ou=group,dc=example,dc=com
+              - cn=puppet admins,ou=group,dc=example,dc=com
+              - cn=users,ou=group,dc=example,dc=com
+        - backend_name: ad
+          groups:
+              - Domain Users
+              - Administrators
+              - Domain Controllers 
+
+admin-lv2:
+    display_name: Administrators Level 2
+    backends:
+        - backend_name: ldap
+          groups:
+              - cn=nagios admins,ou=group,dc=example,dc=com
+              - cn=users,ou=group,dc=example,dc=com
+        - backend_name: ad
+          groups:
+              - Domain Users
