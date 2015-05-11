@@ -8,12 +8,11 @@ admin-lv3:
             - cn=nagios admins,ou=group,dc=example,dc=com
             - cn=puppet admins,ou=group,dc=example,dc=com
             - cn=users,ou=group,dc=example,dc=com
-     - backend_name: ad
-       groups:
-            - Domain Users
-            - Administrators
-            - Domain Controllers 
-
+      - backend_name: ad
+        groups:
+             - Domain Users
+             - Administrators
+             - Domain Controllers 
 admin-lv2:
     display_name: Administrators Level 2
     backends:
@@ -21,10 +20,9 @@ admin-lv2:
         groups:
             - cn=nagios admins,ou=group,dc=example,dc=com
             - cn=users,ou=group,dc=example,dc=com
-     - backend_name: ad
-       groups:
+      - backend_name: ad
+        groups:
             - Domain Users
-
 developpers:
     backends:
       - backend_name: ldap
@@ -32,16 +30,15 @@ developpers:
             - cn=nagios user,ou=group,dc=example,dc=com
             - cn=developpers,ou=group,dc=example,dc=com
             - cn=users,ou=group,dc=example,dc=com
-     - backend_name: ad
-       groups:
+      - backend_name: ad
+        groups:
             - Domain Users
-
 users:
     diplay_name: Simple Users
     backends:
       - backend_name: ldap
         groups:
             - cn=users,ou=group,dc=example,dc=com
-     - backend_name: ad
-       groups:
+      - backend_name: ad
+        groups:
             - Domain Users

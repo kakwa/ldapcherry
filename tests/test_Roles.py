@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from ldapcherry.roles import Roles
+from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 
@@ -19,7 +20,7 @@ class TestError(object):
 
     def testMissingDisplayName(self):
         try:
-            inv = Roles('./cfg/roles_missing_diplay_name.yml')
+            inv = Roles('./tests/cfg/roles_missing_diplay_name.yml')
         except MissingKey:
             return
         else:
