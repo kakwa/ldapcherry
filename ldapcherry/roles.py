@@ -9,13 +9,18 @@ import os
 import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
+from ldapcherry.pyyamlwrapper import DumplicatedKey
+from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent
 
 
 class Roles:
 
     def __init__(self, role_file):
         stream = open(role_file, 'r')
-        self.roles_raw = loadNoDump(stream)
+        try:
+            self.roles_raw = loadNoDump(stream)
+        except DumplicatedKey as e:
+            raise DumplicateRoleKey(e.key)
         stream.close()
         self._nest()
 
