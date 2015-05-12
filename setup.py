@@ -19,6 +19,7 @@ if sys.version_info[0] == 2:
     install_requires = [
         'CherryPy >= 3.0.0',
         'python-ldap',
+        'PyYAML',
         'Mako'
         ],
 elif sys.version_info[0] == 3:
