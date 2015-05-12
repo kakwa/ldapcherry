@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from ldapcherry.roles import Roles
-from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent
+from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 
@@ -30,6 +30,15 @@ class TestError(object):
         try:
             inv = Roles('./tests/cfg/roles_key_dup.yml')
         except DumplicateRoleKey:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+
+    def testNoFile(self):
+        try:
+            inv = Roles('./tests/cfg/dontexist')
+        except MissingRolesFile:
             return
         else:
             raise AssertionError("expected an exception")
