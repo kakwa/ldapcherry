@@ -8,6 +8,7 @@
 import os
 import sys
 
+from sets import Set
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
 from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
@@ -16,6 +17,8 @@ from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleC
 class Roles:
 
     def __init__(self, role_file):
+        self.role_file = role_file
+        self.backends = Set([])
         try:
             stream = open(role_file, 'r')
         except:
@@ -29,6 +32,24 @@ class Roles:
 
     def _nest(self):
         """nests the roles (creates roles hierarchy)"""
+        for roleid in self.roles_raw:
+            role = self.roles_raw[roleid]
+
+            # Display name is mandatory
+            if not 'display_name' in role:
+                raise MissingKey('display_name', role, self.role_file)
+
+            # Backend is mandatory
+            if not 'backends' in role:
+                raise MissingKey('backends', role, self.role_file)
+
+            # Create the list of backends
+            for backend in role['backends']:
+                self.backends.add(backend['name'])
+
+            # Create the nested groups
+            for roleid2 in self.roles_raw:
+                role2 = self.roles_raw[roleid2]
         self.roles = self.roles_raw
 
     def write(self, out_file):

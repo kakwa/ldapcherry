@@ -12,8 +12,11 @@ class MissingParameter(Exception):
         self.log = "missing parameter <%(key)s> in section <%(section)s>" % { 'key' : key, 'section' : section }
 
 class MissingKey(Exception):
-    def __init__(self, key):
+    def __init__(self, key, section, ymlfile):
         self.key = key
+        self.section = section
+        self.ymlfile = ymlfile
+        self.log = "missing key <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile } 
 
 class DumplicateRoleKey(Exception):
     def __init__(self, role):
