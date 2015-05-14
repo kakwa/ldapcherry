@@ -15,14 +15,7 @@ admin-lv3:
                 - Domain Controllers 
 
 admin-lv2:
-    backends:
-        ldap:
-            groups:
-                - cn=nagios admins,ou=group,dc=example,dc=com
-                - cn=users,ou=group,dc=example,dc=com
-        ad:
-            groups:
-                - Domain Users
+    display_name: Administrators Level 2
 
 developpers:
     display_name: Developpers

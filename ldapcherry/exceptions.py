@@ -33,5 +33,3 @@ class MissingRolesFile(Exception):
     def __init__(self, rolefile):
         self.rolefile = rolefile
         self.log = "fail to open role file <%(rolefile)s>" % { 'rolefile' : rolefile}
-
-

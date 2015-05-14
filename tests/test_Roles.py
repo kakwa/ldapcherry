@@ -10,7 +10,6 @@ from ldapcherry.roles import Roles
 from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
-
 class TestError(object):
 
     def testNominal(self):
@@ -21,6 +20,14 @@ class TestError(object):
     def testMissingDisplayName(self):
         try:
             inv = Roles('./tests/cfg/roles_missing_diplay_name.yml')
+        except MissingKey:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+    def testMissingBackends(self):
+        try:
+            inv = Roles('./tests/cfg/roles_missing_backends.yml')
         except MissingKey:
             return
         else:
@@ -45,7 +52,7 @@ class TestError(object):
 
     def testRoleContentDuplication(self):
         try:
-            inv = Roles('./tests/cfg/roles_content_dump.yml')
+            inv = Roles('./tests/cfg/roles_content_dup.yml')
         except DumplicateRoleContent:
             return
         else:

@@ -15,6 +15,7 @@ admin-lv3:
                 - Domain Controllers 
 
 admin-lv2:
+    display_name: Administrators Level 2
     backends:
         ldap:
             groups:
@@ -37,6 +38,16 @@ developpers:
 
 users:
     display_name: Simple Users
+    backends:
+        ldap:
+            groups:
+                - cn=users,ou=group,dc=example,dc=com
+        ad:
+            groups:
+                - Domain Users
+
+users2:
+    display_name: Simple Users 2
     backends:
         ldap:
             groups:
