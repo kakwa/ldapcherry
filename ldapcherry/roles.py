@@ -35,6 +35,7 @@ class Roles:
             raise DumplicateRoleKey(e.key)
         stream.close()
         self.roles = {}
+        self.admin_roles = []
         self._nest()
 
     def _is_parent(self, roleid1, roleid2):
@@ -81,6 +82,9 @@ class Roles:
             for backend in role['backends']:
                 self.backends.add(backend)
 
+            #if 'LC_admins' in role and role['LC_admins']:
+            #    self.admin_roles.append(roleid)
+
             # Create the nested groups
         for roleid in self.roles_raw:
             role = self.roles_raw[roleid]
@@ -117,9 +121,16 @@ class Roles:
         return yaml.dump(self.roles, Dumper=CustomDumper)
 
     def _check_member(self, role, groups, notroles, roles, parentroles, usedgroups):
+
+        # if we have already calculate user is not member of role
+        # return False
         if role in notroles:
             return False
 
+        # if we have already calculate that user is already member, skip
+        # role membership calculation
+        # (parentroles is a list of roles that the user is member of by
+        # being member of one of their subroles)
         if not (role in parentroles or role in roles):
             for b in self.roles[role]['backends']:
                 for g in self.roles[role]['backends'][b]['groups']:
@@ -130,22 +141,26 @@ class Roles:
                         notroles.add(role)
                         return False
 
+        # add groups of the role to usedgroups
         for b in self.roles[role]['backends']:
             if not b in usedgroups:
                 usedgroups[b] = Set([])
-
             for g in self.roles[role]['backends'][b]['groups']:
                 usedgroups[b].add(g)
 
         flag = True
+        # recursively determine if user is member of any subrole
         for subrole in self.roles[role]['subroles']:
             flag = flag and not self._check_member(subrole, groups, notroles, roles, parentroles, usedgroups)
+        # if not, add role to the list of roles
         if flag:
             roles.add(role)
+        # else remove it from the list of roles and add 
+        # it to the list of parentroles
         else:
             if role in roles:
                 roles.remove(role)
-                parentroles.add(role)
+            parentroles.add(role)
         return True
 
     def get_roles(self, groups):
@@ -156,8 +171,10 @@ class Roles:
         usedgroups = {}
         unusedgroups = {}
         ret = {}
+        # determine roles membership
         for role in self.roles:
             self._check_member(role, groups, notroles, roles, parentroles, usedgroups)
+        # determine standalone groups not matching any roles
         for b in groups:
             for g in groups[b]:
                 if not b in usedgroups or not g in usedgroups[b]:
