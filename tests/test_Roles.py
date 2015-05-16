@@ -62,9 +62,12 @@ class TestError(object):
     def testGetRole(self):
         inv = Roles('./tests/cfg/roles.yml')
         groups = {
-                'ad' : ['Domain Users', 'Domain Users 2'],
-                'ldap': ['cn=users,ou=group,dc=example,dc=com']
-                }
-
-        expected = {'unusedgroups': {'ad': Set(['Domain Users 2'])}, 'roles': Set(['users'])}
+        'ad' : ['Domain Users', 'Domain Users 2'],
+        'ldap': ['cn=users,ou=group,dc=example,dc=com',
+            'cn=nagios admins,ou=group,dc=example,dc=com',
+            'cn=developpers,ou=group,dc=example,dc=com',
+            ],
+        'toto': ['not a group'],
+        }
+        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2'])} 
         assert inv.get_roles(groups) == expected

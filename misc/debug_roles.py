@@ -26,3 +26,14 @@ groups = {
 
 print inv.get_roles(groups)
 
+groups = {
+'ad' : ['Domain Users', 'Domain Users 2'],
+'ldap': ['cn=users,ou=group,dc=example,dc=com',
+    'cn=nagios admins,ou=group,dc=example,dc=com',
+    'cn=developpers,ou=group,dc=example,dc=com',
+    ],
+'toto': ['not a group'],
+}
+
+
+print inv.get_roles(groups)
