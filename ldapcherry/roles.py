@@ -38,11 +38,14 @@ class Roles:
         self._nest()
 
     def _is_parent(self, roleid1, roleid2):
+        """Test if roleid1 is contained inside roleid2"""
+
         role2 = self.roles_raw[roleid2]
         role1 = self.roles_raw[roleid1]
 
         if role1 == role2:
             return False
+
         # Check if role1 is contained by role2
         for b1 in role1['backends']:
             if not b1 in role2['backends']:
@@ -50,6 +53,8 @@ class Roles:
             for group in role1['backends'][b1]['groups']:
                 if not group in role2['backends'][b1]['groups']:
                     return False
+
+        # If role2 is inside role1, roles are equal, throw exception
         for b2 in role2['backends']:
             if not b2 in role1['backends']:
                 return True
@@ -108,12 +113,60 @@ class Roles:
                 self.roles[p] = nest(p)
 
     def dump_nest(self):
-        """write the nested role hierarchy to a file"""
+        """dump the nested role hierarchy"""
         return yaml.dump(self.roles, Dumper=CustomDumper)
+
+    def _check_member(role, groups, notroles, roles, parentroles, usedgroups):
+        if role in notroles:
+            return False
+
+        if not (role in parentroles or role in roles):
+            for b in self.roles[role]['backends']:
+                for g in self.roles[role]['backends'][b]['groups']:
+                    if b not in groups:
+                        notroles.add(role)
+                        return False
+                    if not g in groups[b]:
+                        notroles.add(role)
+                        return False
+
+        for b in self.roles[role]['backends']:
+            if not b in usedgroups:
+                usedgroups[b] = Set([])
+
+            for g in self.roles[role]['backends'][b]['groups']:
+                usedgroups[b].add(g)
+
+        flag = True
+        for subrole in self.roles[role]['subroles']:
+            flag = flag and not self._check_member(subrole, groups, notroles, roles, parentroles, usedgroups)
+        if flag:
+            roles.add(role)
+        else:
+            if role in roles:
+                roles.remove(role)
+                parentroles.add(role)
+        return True
 
     def get_roles(self, groups):
         """get list of roles and list of standalone groups"""
-        pass
+        roles = Set([])
+        parentroles = Set([])
+        notroles = Set([])
+        usedgroups = {}
+        unusedgroups = {}
+        ret = {}
+        for r in self.roles:
+            self._check_member(role, groups, notroles, roles, parentroles, usedgroups)
+        for b in groups:
+            for g in groups[b]:
+                if not b in usedgroups or not g in usedgroups[b]:
+                    if b not in unusedgroups:
+                        unusedgroups[b] = Set([])
+                    unusedgroups[b].add(g)
+        ret['roles'] = roles
+        ret['unusedgroups'] = unusedgroups
+        return ret
 
     def get_groups(self, roles):
         """get the list of groups from roles"""
