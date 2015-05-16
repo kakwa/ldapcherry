@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
+from sets import Set
 from ldapcherry.roles import Roles
 from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
@@ -58,3 +59,12 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testGetRole(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        groups = {
+                'ad' : ['Domain Users', 'Domain Users 2'],
+                'ldap': ['cn=users,ou=group,dc=example,dc=com']
+                }
+
+        expected = {'unusedgroups': {'ad': Set(['Domain Users 2'])}, 'roles': Set(['users'])}
+        assert inv.get_roles(groups) == expected
