@@ -19,5 +19,9 @@ python:
 install: 
   - pip install -e . --use-mirrors
   - pip install passlib
+  - pip install coveralls
 # command to run tests
-script: "./run_test.sh"
+script: 
+  - coverage run --source=ldapcherry setup.py test
+after_success:
+  - coveralls
