@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.roles import Roles
-from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
+from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 class TestError(object):
@@ -42,7 +42,6 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
-
     def testNoFile(self):
         try:
             inv = Roles('./tests/cfg/dontexist')
@@ -58,6 +57,40 @@ class TestError(object):
             return
         else:
             raise AssertionError("expected an exception")
+
+    def testGetGroup(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.get_groups('users')
+        expected = {
+            'ad': {'groups': ['Domain Users']},
+            'ldap': {'groups': ['cn=users,ou=group,dc=example,dc=com']}
+        }
+        assert res == expected
+
+    def testGetGroupMissingRole(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        try:
+            res = inv.get_groups('notarole')
+        except MissingRole:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+    def testAdminRoles(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.get_admin_roles()
+        expected = ['admin-lv2', 'admin-lv3']
+        assert res == expected
+
+    def testIsAdmin(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.is_admin(['admin-lv3', 'users'])
+        assert res == True
+
+    def testIsNotAdmin(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.is_admin(['users'])
+        assert res == False
 
     def testGetRole(self):
         inv = Roles('./tests/cfg/roles.yml')

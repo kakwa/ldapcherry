@@ -23,6 +23,11 @@ class DumplicateRoleKey(Exception):
         self.role = role
         self.log = "duplicate role key <%(role)s> in role file" % { 'role' : role}
 
+class MissingRole(Exception):
+    def __init__(self, role):
+        self.role = role
+        self.log = "role <%(role)s> does not exist in role file" % { 'role' : role}
+
 class DumplicateRoleContent(Exception):
     def __init__(self, role1, role2):
         self.role1 = role1

@@ -1,6 +1,5 @@
 admin-lv3:
     display_name: Administrators Level 3
-    LC_admins: True
     backends:
         ldap:
             groups:
@@ -16,6 +15,7 @@ admin-lv3:
 
 admin-lv2:
     display_name: Administrators Level 2
+    LC_admins: True
     backends:
         ldap:
             groups:

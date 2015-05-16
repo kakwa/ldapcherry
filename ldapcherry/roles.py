@@ -11,7 +11,7 @@ import sys
 from sets import Set
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile
+from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
 import yaml
 
 class CustomDumper(yaml.SafeDumper):
@@ -37,6 +37,12 @@ class Roles:
         self.roles = {}
         self.admin_roles = []
         self._nest()
+
+    def _set_admin(self, role):
+        for r in role['subroles']:
+            self.admin_roles.append(r)
+            self._set_admin(role['subroles'][r])
+
 
     def _is_parent(self, roleid1, roleid2):
         """Test if roleid1 is contained inside roleid2"""
@@ -82,10 +88,6 @@ class Roles:
             for backend in role['backends']:
                 self.backends.add(backend)
 
-            # Create the list of roles which are ldapcherry admins
-            if 'LC_admins' in role and role['LC_admins']:
-                self.admin_roles.append(roleid)
-
         # Create the nested groups
         for roleid in self.roles_raw:
             role = self.roles_raw[roleid]
@@ -116,6 +118,16 @@ class Roles:
         for p in parents.keys():
             if p in parents:
                 self.roles[p] = nest(p)
+
+        for roleid in self.roles:
+            role = self.roles[roleid]
+            # Create the list of roles which are ldapcherry admins
+            if 'LC_admins' in role and role['LC_admins']:
+                self.admin_roles.append(roleid)
+                self._set_admin(role)
+
+    def get_admin_roles(self):
+        return self.admin_roles
 
     def dump_nest(self):
         """dump the nested role hierarchy"""
@@ -188,6 +200,8 @@ class Roles:
 
     def get_groups(self, role):
         """get the list of groups from role"""
+        if not role in self.roles_raw:
+            raise MissingRole(role)
         return self.roles_raw[role]['backends']
 
     def is_admin(self, roles):
