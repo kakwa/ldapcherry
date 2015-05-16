@@ -82,10 +82,11 @@ class Roles:
             for backend in role['backends']:
                 self.backends.add(backend)
 
-            #if 'LC_admins' in role and role['LC_admins']:
-            #    self.admin_roles.append(roleid)
+            # Create the list of roles which are ldapcherry admins
+            if 'LC_admins' in role and role['LC_admins']:
+                self.admin_roles.append(roleid)
 
-            # Create the nested groups
+        # Create the nested groups
         for roleid in self.roles_raw:
             role = self.roles_raw[roleid]
 
@@ -185,6 +186,17 @@ class Roles:
         ret['unusedgroups'] = unusedgroups
         return ret
 
-    def get_groups(self, roles):
-        """get the list of groups from roles"""
-        pass
+    def get_groups(self, role):
+        """get the list of groups from role"""
+        return self.roles_raw[role]['backends']
+
+    def is_admin(self, roles):
+        """determine from a list of roles if is ldapcherry administrator"""
+        for r in roles:
+            if r in self.admin_roles:
+                return True
+        return False
+
+    def get_backends(self):
+        """return the list of backends in roles file"""
+        return self.backends
