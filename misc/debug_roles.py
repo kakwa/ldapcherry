@@ -37,3 +37,7 @@ groups = {
 
 
 print inv.get_roles(groups)
+
+print inv.get_allroles()
+
+print inv.get_backends()

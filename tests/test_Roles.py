@@ -76,6 +76,37 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testGetDisplayNameMissingRole(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        try:
+            res = inv.get_display_name('notarole')
+        except MissingRole:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+    def testGetDisplayName(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.get_display_name('users')
+        expected = 'Simple Users'
+        assert res == expected
+
+    def testGetAllRoles(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.get_allroles()
+        expected = ['developpers', 'admin-lv3', 'admin-lv2', 'users']
+        assert res == expected
+
+    def testGetAllRoles(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        res = inv.get_backends()
+        expected = Set(['ad', 'ldap'])
+        assert res == expected
+
+    def testDumpNested(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        inv.dump_nest()
+
     def testAdminRoles(self):
         inv = Roles('./tests/cfg/roles.yml')
         res = inv.get_admin_roles()

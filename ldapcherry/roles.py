@@ -198,6 +198,16 @@ class Roles:
         ret['unusedgroups'] = unusedgroups
         return ret
 
+    def get_allroles(self):
+        """get the list of roles"""
+        return self.roles_raw.keys()
+
+    def get_display_name(self, role):
+        """get the display name of a role"""
+        if not role in self.roles_raw:
+            raise MissingRole(role)
+        return self.roles_raw[role]['display_name']
+
     def get_groups(self, role):
         """get the list of groups from role"""
         if not role in self.roles_raw:
