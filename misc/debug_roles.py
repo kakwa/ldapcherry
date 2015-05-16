@@ -18,3 +18,11 @@ class CustomDumper(yaml.SafeDumper):
 inv = Roles('./conf/roles.yml')
 print 
 print inv.dump_nest()
+
+groups = {
+'ad' : ['Domain Users', 'Domain Users 2'],
+'ldap': ['cn=users,ou=group,dc=example,dc=com']
+}
+
+print inv.get_roles(groups)
+
