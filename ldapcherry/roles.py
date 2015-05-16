@@ -116,7 +116,7 @@ class Roles:
         """dump the nested role hierarchy"""
         return yaml.dump(self.roles, Dumper=CustomDumper)
 
-    def _check_member(role, groups, notroles, roles, parentroles, usedgroups):
+    def _check_member(self, role, groups, notroles, roles, parentroles, usedgroups):
         if role in notroles:
             return False
 
@@ -156,7 +156,7 @@ class Roles:
         usedgroups = {}
         unusedgroups = {}
         ret = {}
-        for r in self.roles:
+        for role in self.roles:
             self._check_member(role, groups, notroles, roles, parentroles, usedgroups)
         for b in groups:
             for g in groups[b]:
