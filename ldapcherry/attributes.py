@@ -8,15 +8,27 @@
 import os
 import sys
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
+from ldapcherry.pyyamlwrapper import loadNoDump
+from ldapcherry.pyyamlwrapper import DumplicatedKey
+from ldapcherry.exceptions import MissingAttributesFile
+from sets import Set
+import yaml
+
+types = ['string', 'email', 'int', 'stringlist', 'fix', 'password']
 
 class Attributes:
 
     def __init__(self, attributes_file):
-        pass
+        self.attributes_file = attributes_file
+        self.backends = Set([])
+        try:
+            stream = open(attributes_file, 'r')
+        except:
+            raise MissingAttributesFile(attributes_file)
+        try:
+            self.attributes = loadNoDump(stream)
+        except DumplicatedKey as e:
+            raise DumplicateAttributesKey(e.key)
 
     def get_selfattributes(self):
         """get the list of groups from roles"""

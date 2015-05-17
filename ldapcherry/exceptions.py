@@ -38,3 +38,8 @@ class MissingRolesFile(Exception):
     def __init__(self, rolefile):
         self.rolefile = rolefile
         self.log = "fail to open role file <%(rolefile)s>" % { 'rolefile' : rolefile}
+
+class MissingAttributesFile(Exception):
+    def __init__(self, attributesfile):
+        self.attributesfile = attributesfile
+        self.log = "fail to open attributes file <%(attributesfile)s>" % { 'attributesfile' : attributesfile}

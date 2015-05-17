@@ -1,53 +1,70 @@
-last-name:
-    description: "Last Name of the user"
-    display_name: "Last Name"
+cn:
+    description: "Firt Name and Display Name"
+    display_name: "Display Name"
+    type: string
+    autofill: 
+        function: cn
+        args:
+            - $first-name
+            - $name
     backend-attributes:
         ldap: cn
         ad: CN
-
 first-name:
     description: "First name of the user"
+    display_name: "First Name"
+    type: string
+    backend-attributes:
+        ldap: givenName
+        ad: givenName
+name:
+    description: "Family name of the user"
     display_name: "Name"
+    type: string
     backend-attributes:
         ldap: sn
         ad: sn
 email:
     description: "Email of the user"
     display_name: "Name"
+    type: email
     autofill: 
         function: email
-            args:
-                - $first-name
-                - $last-name
-                - @example.com
+        args:
+            - $first-name
+            - $last-name
+            - '@example.com'
     backend-attributes:
-        ldap: cn
-        ad: CN
+        ldap: email
+        ad: EMAIL
 uid:
     description: "UID of the user"
     display_name: "UID"
+    type: string
     autofill: 
         function: uid
-            args:
-                - $first-name
-                - $last-name
+        args:
+            - $first-name
+            - $last-name
     backend-attributes:
         ldap: uid
         ad: UID
 uidNumber:
     description: "User ID Number of the user"
     display_name: "UID Number"
+    type: int
     autofill: 
         function: uidNumber
-            args:
-                - $first-name
-                - $last-name
+        args:
+            - $first-name
+            - $last-name
     backend-attributes:
         ldap: uidNumber
         ad: UIDNumber
 gidNumber:
     description: "Group ID Number of the user"
     display_name: "GID Number"
+    type: int
     default: 10000
     backend-attributes:
         ldap: gidNumber
@@ -55,8 +72,8 @@ gidNumber:
 shell:
     description: "Shell of the user"
     display_name: "Shell"
-    self: true
-    type: list
+    self: True
+    type: stringlist
     values:
         - /bin/bash
         - /bin/zsh
@@ -67,12 +84,13 @@ shell:
 home:
     description: "Home user path"
     display_name: "Home"
+    type: string
     autofill: 
         function: home
-            args:
-                - $first-name
-                - $last-name
-                - /home/
+        args:
+            - $first-name
+            - $last-name
+            - /home/
     backend-attributes:
         ldap: home
         ad: Home
@@ -80,7 +98,7 @@ home:
 password:
     decription: "Password of the user"
     display_name: "Password"
-    self: true
+    self: True
     type: password
     backend-attributes:
         ldap: userPassword
