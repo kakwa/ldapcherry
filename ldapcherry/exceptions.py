@@ -43,3 +43,12 @@ class MissingAttributesFile(Exception):
     def __init__(self, attributesfile):
         self.attributesfile = attributesfile
         self.log = "fail to open attributes file <%(attributesfile)s>" % { 'attributesfile' : attributesfile}
+
+class WrongAttributeType(Exception):
+    def __init__(self, key, section, ymlfile):
+        self.key = key
+        self.section = section
+        self.ymlfile = ymlfile
+        self.log = "wrong attribute type <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile } 
+
+

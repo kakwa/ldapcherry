@@ -10,7 +10,7 @@ import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType
 from sets import Set
 import yaml
 
@@ -32,6 +32,9 @@ class Attributes:
 
         for attrid in self.attributes:
             self._mandatory_check(attrid)
+            attr = self.attributes[attrid]
+            if not attr['type'] in types:
+                raise WrongAttributeType(attr['type'], attrid, attributes_file)
 
     def _mandatory_check(self, attr):
         for m in ['description', 'display_name', 'type', 'backend-attributes']:

@@ -1,0 +1,20 @@
+cn:
+    description: "Firt Name and Display Name"
+    display_name: "Display Name"
+    type: notatype
+    autofill: 
+        function: cn
+        args:
+            - $first-name
+            - $name
+    backend-attributes:
+        ldap: cn
+        ad: CN
+
+first-name:
+    description: "First name of the user"
+    display_name: "First Name"
+    type: string
+    backend-attributes:
+        ldap: givenName
+        ad: givenName
