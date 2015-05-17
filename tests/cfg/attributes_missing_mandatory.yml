@@ -38,7 +38,6 @@ email:
         ldap: email
         ad: EMAIL
 uid:
-    description: "UID of the user"
     display_name: "UID"
     type: string
     autofill: 

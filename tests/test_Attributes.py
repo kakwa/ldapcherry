@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.attributes import Attributes
-from ldapcherry.exceptions import MissingAttributesFile
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 class TestError(object):
@@ -25,14 +25,14 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
-#    def testMissingDisplayName(self):
-#        try:
-#            inv = Attributes('./tests/cfg/attributes_missing_diplay_name.yml')
-#        except MissingKey:
-#            return
-#        else:
-#            raise AssertionError("expected an exception")
-#
+    def testMissingMandatory(self):
+        try:
+            inv = Attributes('./tests/cfg/attributes_missing_mandatory.yml')
+        except MissingKey:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
 #    def testAttrKeyDuplication(self):
 #        try:
 #            inv = Attributes('./tests/cfg/attributes_key_dup.yml')

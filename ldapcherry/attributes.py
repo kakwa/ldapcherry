@@ -10,7 +10,7 @@ import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import MissingAttributesFile
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey
 from sets import Set
 import yaml
 
@@ -29,6 +29,14 @@ class Attributes:
             self.attributes = loadNoDump(stream)
         except DumplicatedKey as e:
             raise DumplicateAttributesKey(e.key)
+
+        for attrid in self.attributes:
+            self._mandatory_check(attrid)
+
+    def _mandatory_check(self, attr):
+        for m in ['description', 'display_name', 'type', 'backend-attributes']:
+            if m not in self.attributes[attr]:
+                raise MissingKey(m, attr, self.attributes_file)
 
     def get_selfattributes(self):
         """get the list of groups from roles"""
