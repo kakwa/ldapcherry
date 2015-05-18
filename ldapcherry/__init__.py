@@ -185,7 +185,7 @@ class LdapCherry(object):
         if level == 'debug':
             return logging.DEBUG
         elif level == 'notice':
-            return logging.NOTICE
+            return logging.INFO
         elif level == 'info':
             return logging.INFO
         elif level == 'warning' or level == 'warn':
@@ -195,9 +195,9 @@ class LdapCherry(object):
         elif level == 'critical' or level == 'crit':
             return logging.CRITICAL
         elif level == 'alert':
-            return logging.ALERT
+            return logging.CRITICAL
         elif level == 'emergency' or level == 'emerg':
-            return logging.EMERGENCY
+            return logging.CRITICAL
         else:
             return logging.INFO
 

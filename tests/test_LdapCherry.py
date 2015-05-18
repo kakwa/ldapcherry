@@ -13,6 +13,7 @@ from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 import cherrypy
 from cherrypy.process import plugins, servers
 from cherrypy import Application
+import logging
 
 # monkey patching cherrypy to disable config interpolation
 def new_as_dict(self, raw=True, vars=None):
@@ -48,4 +49,17 @@ class TestError(object):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
         return True
+
+    def testLogger(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        assert app._get_loglevel('debug') is logging.DEBUG and \
+        app._get_loglevel('notice') is logging.INFO and \
+        app._get_loglevel('info') is logging.INFO and \
+        app._get_loglevel('warning') is logging.WARNING and \
+        app._get_loglevel('err') is logging.ERROR and \
+        app._get_loglevel('critical') is logging.CRITICAL and \
+        app._get_loglevel('alert') is logging.CRITICAL and \
+        app._get_loglevel('emergency') is logging.CRITICAL and \
+        app._get_loglevel('notalevel') is logging.INFO
 
