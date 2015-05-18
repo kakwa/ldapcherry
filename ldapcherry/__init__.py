@@ -16,6 +16,8 @@ from operator import itemgetter
 from socket import error as socket_error
 
 from exceptions import *
+from ldapcherry.roles import Roles
+from ldapcherry.attributes import Attributes
 
 #cherrypy http framework imports
 import cherrypy
@@ -164,6 +166,12 @@ class LdapCherry(object):
             #auth_module = self._get_param('auth', 'auth.module', config)
             #auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
             #self.auth = auth.Auth(config['auth'], cherrypy.log)
+
+            self.roles_file = self._get_param('roles', 'roles.file', config)
+            self.roles = Roles(self.roles_file)
+
+            self.attributes_file = self._get_param('attributes', 'attributes.file', config)
+            self.roles = Attributes(self.attributes_file)
 
         except Exception as e:
             self._handle_exception(e)
