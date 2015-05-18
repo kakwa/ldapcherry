@@ -1,1 +1,112 @@
-../../conf/attributes.yml
+cn:
+    description: "Firt Name and Display Name"
+    display_name: "Display Name"
+    type: string
+    autofill: 
+        function: cn
+        args:
+            - $first-name
+            - $name
+    backends:
+        ldap: cn
+        ad: CN
+first-name:
+    description: "First name of the user"
+    display_name: "First Name"
+    type: string
+    backends:
+        ldap: givenName
+        ad: givenName
+name:
+    description: "Family name of the user"
+    display_name: "Name"
+    type: string
+    backends:
+        ldap: sn
+        ad: sn
+email:
+    description: "Email of the user"
+    display_name: "Name"
+    type: email
+    autofill: 
+        function: email
+        args:
+            - $first-name
+            - $last-name
+            - '@example.com'
+    backends:
+        ldap: email
+        ad: EMAIL
+uid:
+    description: "UID of the user"
+    display_name: "UID"
+    type: string
+    autofill: 
+        function: uid
+        args:
+            - $first-name
+            - $last-name
+    backends:
+        ldap: uid
+        ad: UID
+uidNumber:
+    description: "User ID Number of the user"
+    display_name: "UID Number"
+    type: int
+    autofill: 
+        function: uidNumber
+        args:
+            - $first-name
+            - $last-name
+    backends:
+        ldap: uidNumber
+        ad: UIDNumber
+gidNumber:
+    description: "Group ID Number of the user"
+    display_name: "GID Number"
+    type: int
+    default: 10000
+    backends:
+        ldap: gidNumber
+        ad: GIDNumber
+shell:
+    description: "Shell of the user"
+    display_name: "Shell"
+    self: True
+    type: stringlist
+    values:
+        - /bin/bash
+        - /bin/zsh
+        - /bin/sh
+    backends:
+        ldap: shell
+        ad: SHELL
+home:
+    description: "Home user path"
+    display_name: "Home"
+    type: string
+    autofill: 
+        function: home
+        args:
+            - $first-name
+            - $last-name
+            - /home/
+    backends:
+        ldap: home
+        ad: Home
+
+password:
+    description: "Password of the user"
+    display_name: "Password"
+    self: True
+    type: password
+    backends:
+        ldap: userPassword
+        ad: userPassword
+logscript:
+    description: "Windows login script"
+    display_name: "Login script"
+    type: fix
+    value: login1.bat
+    backends:
+        ad: logonScript

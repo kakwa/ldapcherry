@@ -21,6 +21,7 @@ class Attributes:
     def __init__(self, attributes_file):
         self.attributes_file = attributes_file
         self.backends = Set([])
+        self.self_attributes = Set([])
         try:
             stream = open(attributes_file, 'r')
         except:
@@ -35,15 +36,23 @@ class Attributes:
             attr = self.attributes[attrid]
             if not attr['type'] in types:
                 raise WrongAttributeType(attr['type'], attrid, attributes_file)
+            if 'self' in attr and attr['self']:
+                self.self_attributes.add(attrid)
+            for b in attr['backends']:
+                self.backends.add(b)
 
     def _mandatory_check(self, attr):
-        for m in ['description', 'display_name', 'type', 'backend-attributes']:
+        for m in ['description', 'display_name', 'type', 'backends']:
             if m not in self.attributes[attr]:
                 raise MissingKey(m, attr, self.attributes_file)
 
     def get_selfattributes(self):
         """get the list of groups from roles"""
-        pass
+        return self.self_attributes
+
+    def get_backends(self):
+        """return the list of backends in roles file"""
+        return self.backends
 
     def get_addattributes(self):
         """get the list of groups from roles"""

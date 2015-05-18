@@ -15,4 +15,8 @@ class CustomDumper(yaml.SafeDumper):
     def ignore_aliases(self, _data):
         return True
 
-inv = Attributes('./conf/attributes.yml')
+try:
+    #inv = Attributes('./conf/attributes.yml')
+    inv = Attributes('./tests/cfg/attributes_wrong_type.yml')
+except Exception as e:
+    print e.log

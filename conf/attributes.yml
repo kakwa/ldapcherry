@@ -7,21 +7,21 @@ cn:
         args:
             - $first-name
             - $name
-    backend-attributes:
+    bakends:
         ldap: cn
         ad: CN
 first-name:
     description: "First name of the user"
     display_name: "First Name"
     type: string
-    backend-attributes:
+    bakends:
         ldap: givenName
         ad: givenName
 name:
     description: "Family name of the user"
     display_name: "Name"
     type: string
-    backend-attributes:
+    bakends:
         ldap: sn
         ad: sn
 email:
@@ -34,7 +34,7 @@ email:
             - $first-name
             - $last-name
             - '@example.com'
-    backend-attributes:
+    bakends:
         ldap: email
         ad: EMAIL
 uid:
@@ -46,7 +46,7 @@ uid:
         args:
             - $first-name
             - $last-name
-    backend-attributes:
+    bakends:
         ldap: uid
         ad: UID
 uidNumber:
@@ -58,7 +58,7 @@ uidNumber:
         args:
             - $first-name
             - $last-name
-    backend-attributes:
+    bakends:
         ldap: uidNumber
         ad: UIDNumber
 gidNumber:
@@ -66,7 +66,7 @@ gidNumber:
     display_name: "GID Number"
     type: int
     default: 10000
-    backend-attributes:
+    bakends:
         ldap: gidNumber
         ad: GIDNumber
 shell:
@@ -78,7 +78,7 @@ shell:
         - /bin/bash
         - /bin/zsh
         - /bin/sh
-    backend-attributes:
+    bakends:
         ldap: shell
         ad: SHELL
 home:
@@ -91,7 +91,7 @@ home:
             - $first-name
             - $last-name
             - /home/
-    backend-attributes:
+    bakends:
         ldap: home
         ad: Home
 
@@ -100,7 +100,7 @@ password:
     display_name: "Password"
     self: True
     type: password
-    backend-attributes:
+    bakends:
         ldap: userPassword
         ad: userPassword
 logscript:
@@ -108,5 +108,5 @@ logscript:
     display_name: "Login script"
     type: fix
     value: login1.bat
-    backend-attributes:
+    bakends:
         ad: logonScript

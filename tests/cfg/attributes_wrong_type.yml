@@ -7,7 +7,7 @@ cn:
         args:
             - $first-name
             - $name
-    backend-attributes:
+    backends:
         ldap: cn
         ad: CN
 
@@ -15,6 +15,6 @@ first-name:
     description: "First name of the user"
     display_name: "First Name"
     type: string
-    backend-attributes:
+    backends:
         ldap: givenName
         ad: givenName

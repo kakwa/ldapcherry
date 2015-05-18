@@ -17,6 +17,18 @@ class TestError(object):
         inv = Attributes('./tests/cfg/attributes.yml')
         return True
 
+    def testGetSelfAttributes(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        ret = inv.get_selfattributes()
+        expected = Set(['password', 'shell'])
+        assert ret == expected
+
+    def testGetSelfAttributes(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        ret = inv.get_backends()
+        expected = Set(['ldap', 'ad'])
+        assert ret == expected
+
     def testNoFile(self):
         try:
             inv = Attributes('./tests/cfg/dontexist')
