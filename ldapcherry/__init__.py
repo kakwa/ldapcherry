@@ -76,6 +76,9 @@ class LdapCherry(object):
         else:
             raise MissingParameter(section, key)
 
+    def _init_backends(self, config):
+        pass
+
     def _set_access_log(self, config, level):
         access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
 
@@ -196,6 +199,7 @@ class LdapCherry(object):
 
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
             self.roles = Attributes(self.attributes_file)
+            self._init_backends(config)
 
         except Exception as e:
             self._handle_exception(e)
