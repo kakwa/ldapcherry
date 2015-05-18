@@ -15,6 +15,7 @@ class TestError(object):
 
     def testNominal(self):
         inv = Attributes('./tests/cfg/attributes.yml')
+        inv.get_attributes
         return True
 
     def testGetSelfAttributes(self):
