@@ -54,6 +54,6 @@ class Attributes:
         """return the list of backends in roles file"""
         return self.backends
 
-    def get_addattributes(self):
+    def get_attributes(self):
         """get the list of groups from roles"""
-        pass
+        return self.self_attributes
