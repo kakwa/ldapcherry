@@ -139,6 +139,30 @@ class LdapCherry(object):
         # set log level
         cherrypy.log.error_log.setLevel(level)
 
+    def _get_loglevel(self, level):
+        """ return logging level object
+        corresponding to a given level passed as
+        a string
+        """
+        if level == 'debug':
+            return logging.DEBUG
+        elif level == 'notice':
+            return logging.INFO
+        elif level == 'info':
+            return logging.INFO
+        elif level == 'warning' or level == 'warn':
+            return logging.WARNING
+        elif level == 'error' or level == 'err':
+            return logging.ERROR
+        elif level == 'critical' or level == 'crit':
+            return logging.CRITICAL
+        elif level == 'alert':
+            return logging.CRITICAL
+        elif level == 'emergency' or level == 'emerg':
+            return logging.CRITICAL
+        else:
+            return logging.INFO
+
     def reload(self, config = None):
         """ load/reload the configuration
         """
@@ -177,30 +201,6 @@ class LdapCherry(object):
             self._handle_exception(e)
             exit(1)
             
-    def _get_loglevel(self, level):
-        """ return logging level object
-        corresponding to a given level passed as
-        a string
-        """
-        if level == 'debug':
-            return logging.DEBUG
-        elif level == 'notice':
-            return logging.INFO
-        elif level == 'info':
-            return logging.INFO
-        elif level == 'warning' or level == 'warn':
-            return logging.WARNING
-        elif level == 'error' or level == 'err':
-            return logging.ERROR
-        elif level == 'critical' or level == 'crit':
-            return logging.CRITICAL
-        elif level == 'alert':
-            return logging.CRITICAL
-        elif level == 'emergency' or level == 'emerg':
-            return logging.CRITICAL
-        else:
-            return logging.INFO
-
     def _reraise(self, exception):
         """ reraise a given exception"""
         raise exception
