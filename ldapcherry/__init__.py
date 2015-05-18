@@ -25,7 +25,7 @@ from mako import lookup
 
 SESSION_KEY = '_cp_username'
 
-class ldapCherry(object):
+class LdapCherry(object):
 
     def _get_param(self, section, key, config, default=None):
         """ Get configuration parameter "key" from config
