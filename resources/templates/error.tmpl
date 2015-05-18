@@ -1,0 +1,15 @@
+<%inherit file="navbar.tmpl"/>
+<%block name="core">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="alert alert-dismissable alert-${alert}">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4>
+                    ${message} 
+                </h4>
+            </div>
+            <a class="btn btn-default blue" href='/?zone=${current_zone}'><span class="glyphicon glyphicon-home"> Return</a>
+        </div>
+   </div>
+</%block>
+

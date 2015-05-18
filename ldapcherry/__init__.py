@@ -15,6 +15,8 @@ import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
 
+from exceptions import *
+
 #cherrypy http framework imports
 import cherrypy
 from cherrypy.lib.httputil import parse_query_string
@@ -25,7 +27,37 @@ from mako import lookup
 
 SESSION_KEY = '_cp_username'
 
+# Custom log function to overrige weird error.log function
+# of cherrypy
+def syslog_error(msg='', context='', 
+        severity=logging.INFO, traceback=False):
+    if traceback:
+        msg += cherrypy._cperror.format_exc()
+    if context == '':
+        cherrypy.log.error_log.log(severity, msg)
+    else:
+        cherrypy.log.error_log.log(severity, 
+                ' '.join((context, msg)))
+
 class LdapCherry(object):
+
+    def _handle_exception(self, e):
+        if hasattr(e, 'log'):
+            cherrypy.log.error(
+                msg = e.log,
+                severity = logging.ERROR
+            )
+        else:
+            cherrypy.log.error(
+                msg = "Unkwon exception <%(e)s>" % { 'e' : str(e) },
+                severity = logging.ERROR
+            )
+        # log the traceback as 'debug'
+        cherrypy.log.error(
+                msg = '',
+                severity = logging.DEBUG,
+                traceback= True
+                )
 
     def _get_param(self, section, key, config, default=None):
         """ Get configuration parameter "key" from config
@@ -42,106 +74,99 @@ class LdapCherry(object):
         else:
             raise MissingParameter(section, key)
 
+    def _set_access_log(self, config, level):
+        access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
+
+        # log format for syslog
+        syslog_formatter = logging.Formatter(
+                "ldapcherry[%(process)d]: %(message)s")
+
+        # replace access log handler by a syslog handler
+        if access_handler == 'syslog':
+            cherrypy.log.access_log.handlers = []
+            handler = logging.handlers.SysLogHandler(address = '/dev/log',
+                    facility='user')
+            handler.setFormatter(syslog_formatter)
+            cherrypy.log.access_log.addHandler(handler)
+
+        # if file, we keep the default
+        elif access_handler == 'file':
+            pass
+
+        # replace access log handler by a null handler
+        elif access_handler == 'none':
+            cherrypy.log.access_log.handlers = []
+            handler = logging.NullHandler()
+            cherrypy.log.access_log.addHandler(handler)
+
+        # set log level
+        cherrypy.log.access_log.setLevel(level)
+
+    def _set_error_log(self, config, level):
+        error_handler = self._get_param('global', 'log.error_handler', config, 'syslog')
+
+        # log format for syslog
+        syslog_formatter = logging.Formatter(
+                "ldapcherry[%(process)d]: %(message)s")
+
+        # replacing the error handler by a syslog handler
+        if error_handler == 'syslog':
+            cherrypy.log.error_log.handlers = []
+
+            # redefining log.error method because cherrypy does weird
+            # things like adding the date inside the message 
+            # or adding space even if context is empty 
+            # (by the way, what's the use of "context"?)
+            cherrypy.log.error = syslog_error
+
+            handler = logging.handlers.SysLogHandler(address = '/dev/log',
+                    facility='user')
+            handler.setFormatter(syslog_formatter)
+            cherrypy.log.error_log.addHandler(handler)
+
+        # if file, we keep the default
+        elif error_handler == 'file':
+            pass
+
+        # replacing the error handler by a null handler
+        elif error_handler == 'none':
+            cherrypy.log.error_log.handlers = []
+            handler = logging.NullHandler()
+            cherrypy.log.error_log.addHandler(handler)
+
+        # set log level
+        cherrypy.log.error_log.setLevel(level)
+
     def reload(self, config = None):
         """ load/reload the configuration
         """
-
         try:
-            # definition of the template directory
-            self.template_dir = self._get_param('resources', 'template_dir', config)
             # log configuration handling
             # get log level 
             # (if not in configuration file, log level is set to debug)
             level = self._get_loglevel(self._get_param('global', 'log.level', config, 'debug'))
+            # configure access log
+            self._set_access_log(config, level)
+            # configure error log
+            self._set_error_log(config, level)
 
-            # log format for syslog
-            syslog_formatter = logging.Formatter(
-                    "ldapcherry[%(process)d]: %(message)s")
-
-            access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
-
-            # replace access log handler by a syslog handler
-            if access_handler == 'syslog':
-                cherrypy.log.access_log.handlers = []
-                handler = logging.handlers.SysLogHandler(address = '/dev/log',
-                        facility='user')
-                handler.setFormatter(syslog_formatter)
-                cherrypy.log.access_log.addHandler(handler)
-
-            # if file, we keep the default
-            elif access_handler == 'file':
-                pass
-
-            # replace access log handler by a null handler
-            elif access_handler == 'none':
-                cherrypy.log.access_log.handlers = []
-                handler = logging.NullHandler()
-                cherrypy.log.access_log.addHandler(handler)
-
-            error_handler = self._get_param('global', 'log.error_handler', config, 'syslog')
-
-            # replacing the error handler by a syslog handler
-            if error_handler == 'syslog':
-                cherrypy.log.error_log.handlers = []
-
-                # redefining log.error method because cherrypy does weird
-                # things like adding the date inside the message 
-                # or adding space even if context is empty 
-                # (by the way, what's the use of "context"?)
-                def syslog_error(msg='', context='', 
-                        severity=logging.INFO, traceback=False):
-                    if traceback:
-                        msg += cherrypy._cperror.format_exc()
-                    if context == '':
-                        cherrypy.log.error_log.log(severity, msg)
-                    else:
-                        cherrypy.log.error_log.log(severity, 
-                                ' '.join((context, msg)))
-                cherrypy.log.error = syslog_error
-
-                handler = logging.handlers.SysLogHandler(address = '/dev/log',
-                        facility='user')
-                handler.setFormatter(syslog_formatter)
-                cherrypy.log.error_log.addHandler(handler)
-
-            # if file, we keep the default
-            elif error_handler == 'file':
-                pass
-
-            # replacing the error handler by a null handler
-            elif error_handler == 'none':
-                cherrypy.log.error_log.handlers = []
-                handler = logging.NullHandler()
-                cherrypy.log.error_log.addHandler(handler)
-
-            # set log level
-            cherrypy.log.error_log.setLevel(level)
-            cherrypy.log.access_log.setLevel(level)
-
+            # definition of the template directory
+            self.template_dir = self._get_param('resources', 'templates.dir', config)
             # preload templates
             self.temp_lookup = lookup.TemplateLookup(
                     directories=self.template_dir, input_encoding='utf-8'
                     )
             self.temp_index = self.temp_lookup.get_template('index.tmpl')
-            self.temp_result = self.temp_lookup.get_template('result.tmpl')
             self.temp_error = self.temp_lookup.get_template('error.tmpl')
             self.temp_login = self.temp_lookup.get_template('login.tmpl')
 
             # loading the authentification module
-            auth_module = self._get_param('auth', 'auth.module', config)
-            auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
-            self.auth = auth.Auth(config['auth'], cherrypy.log)
+            #auth_module = self._get_param('auth', 'auth.module', config)
+            #auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
+            #self.auth = auth.Auth(config['auth'], cherrypy.log)
 
-        except MissingParameter as e:
-            cherrypy.log.error(
-                msg = "ldapcherry failure, "\
-                    "missing parameter '%(param)s' "\
-                    "in section '%(section)s'" % {
-                        'param': e.key,
-                        'section': e.section
-                    },
-                severity = logging.ERROR
-                )
+        except Exception as e:
+            self._handle_exception(e)
             exit(1)
             
     def _get_loglevel(self, level):
@@ -176,13 +201,6 @@ class LdapCherry(object):
         """ exception handling function, takes an exception
         and returns the right error page and emits a log
         """
-
-        # log the traceback as 'debug'
-        cherrypy.log.error(
-                msg = '',
-                severity = logging.DEBUG,
-                traceback= True
-                )
 
         # log and error page handling
         def render_error(alert, message):

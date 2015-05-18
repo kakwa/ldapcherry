@@ -1,0 +1,29 @@
+<%inherit file="base.tmpl"/>
+<%block name="core">
+    <div class="row clearfix" style="margin-top:30px">
+        <div class="col-md-4 column"></div>
+        <div class="col-md-4 column well">
+            <form method='POST' action='/login' role="form" class="form-signin">
+              <div class="form-group">
+              <h2 class="form-signin-heading">Please sign in</h2>
+                <div class="input-group">
+                    <span class="input-group-addon glyphicon glyphicon-user"></span>
+                    <input type="text" class="form-control" name="login" placeholder="Login" required autofocus>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon glyphicon glyphicon-lock"></span>
+                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <button class="btn btn-default blue" type="submit"><span class="glyphicon glyphicon-off"> Sign in</button>
+                </div>
+              </div>
+            </form>
+        </div>
+        <div class="col-md-4 column"></div>
+    </div>
+</%block>
