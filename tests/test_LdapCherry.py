@@ -37,6 +37,7 @@ def new_as_dict(self, raw=True, vars=None):
     return result
 cherrypy.lib.reprconf.Parser.as_dict = new_as_dict
 
+conf = {'/static': {'tools.staticdir.dir': './resources/static/', 'tools.staticdir.on': True}, 'roles': {'roles.file': './tests/cfg/roles.yml'}, 'global': {'tools.sessions.on': True, 'log.access_handler': 'syslog', 'log.level': 'debug', 'server.thread_pool': 8, 'log.error_handler': 'syslog', 'server.socket_port': 8080, 'server.socket_host': '127.0.0.1', 'tools.sessions.timeout': 10, 'request.show_tracebacks': False}, 'auth': {'auth.mode': 'or'}, 'backends': {'ldap.checkcert': 'off', 'ldap.module': 'ldapcherry.backends.ldap', 'ldap.uri': 'ldaps://ldap.ldapcherry.org', 'ldap.starttls': 'on', 'ldap.groupdn': 'ou=group,dc=example,dc=com', 'ldap.people': 'ou=group,dc=example,dc=com', 'ldap.authdn': 'cn=ldapcherry,dc=example,dc=com', 'ldap.password': 'password', 'ldap.ca': '/etc/dnscherry/TEST-cacert.pem', 'ad.module': 'ldapcherry.backends.ad', 'ad.auth': 'Administrator', 'ad.password': 'password'}, 'attributes': {'attributes.file': './tests/cfg/attributes.yml'}, 'resources': {'templates.dir': './resources/templates/'}}
 
 def loadconf(configfile, instance):
     app = cherrypy.tree.mount(instance, '/', configfile)
@@ -49,6 +50,16 @@ class TestError(object):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
         return True
+
+    def testLog(self):
+        app = LdapCherry()
+        cfg = { 'global' : {}}
+        for t in ['none', 'file', 'syslog']:
+            cfg['global']['log.access_handler']=t
+            cfg['global']['log.error_handler']=t
+            app._set_access_log(cfg, logging.DEBUG)
+            app._set_access_log(cfg, logging.DEBUG)
+        
 
     def testLogger(self):
         app = LdapCherry()
