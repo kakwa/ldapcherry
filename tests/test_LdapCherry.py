@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry import LdapCherry
-from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
+from ldapcherry.exceptions import *
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 import cherrypy
 from cherrypy.process import plugins, servers
@@ -60,6 +60,18 @@ class TestError(object):
             app._set_access_log(cfg, logging.DEBUG)
             app._set_access_log(cfg, logging.DEBUG)
         
+    def testMissingBackend(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        del app.backends_params['ad']
+        try:
+            app._check_backends()
+        except MissingBackend:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+
     def testMissingParameters(self):
         app = LdapCherry()
         try:
