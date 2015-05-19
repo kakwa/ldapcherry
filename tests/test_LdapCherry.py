@@ -60,6 +60,14 @@ class TestError(object):
             app._set_access_log(cfg, logging.DEBUG)
             app._set_access_log(cfg, logging.DEBUG)
         
+    def testMissingParameters(self):
+        app = LdapCherry()
+        try:
+            app.reload({})
+        except SystemExit:
+            return
+        else:
+            raise AssertionError("expected an exception")
 
     def testLogger(self):
         app = LdapCherry()
