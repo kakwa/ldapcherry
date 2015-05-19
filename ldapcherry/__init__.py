@@ -76,8 +76,24 @@ class LdapCherry(object):
         else:
             raise MissingParameter(section, key)
 
+    def _check_backends(self):
+        backends = self.backends_params.keys()
+        for b in self.roles.get_backends():
+            if not b in backends:
+                raise MissingBackend(b)
+        for b in self.roles.get_backends():
+            if not b in backends:
+                raise MissingBackend(b)
+
     def _init_backends(self, config):
-        pass
+        self.backends_params = {}
+        for entry in config['backends']:
+            # split at the first dot
+            backend, sep, param = entry.partition('.')
+            value = config['backends'][entry]
+            if not backend in self.backends_params:
+                self.backends_params[backend] = {}
+            self.backends_params[backend][param] = value
 
     def _set_access_log(self, config, level):
         access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
@@ -200,6 +216,7 @@ class LdapCherry(object):
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
             self.roles = Attributes(self.attributes_file)
             self._init_backends(config)
+            self._check_backends()
 
         except Exception as e:
             self._handle_exception(e)

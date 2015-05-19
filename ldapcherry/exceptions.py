@@ -28,6 +28,11 @@ class MissingRole(Exception):
         self.role = role
         self.log = "role <%(role)s> does not exist in role file" % { 'role' : role}
 
+class MissingBackend(Exception):
+    def __init__(self, backend):
+        self.backend = backend
+        self.log = "backend <%(backend)s> does not exist in main config file" % { 'backend' : backend}
+
 class DumplicateRoleContent(Exception):
     def __init__(self, role1, role2):
         self.role1 = role1
@@ -43,8 +48,6 @@ class MissingMainFile(Exception):
     def __init__(self, config):
         self.rolefile = rolefile
         self.log = "fail to open main file <%(config)s>" % { 'rolefile' : rolefile}
-
-
 
 class MissingAttributesFile(Exception):
     def __init__(self, attributesfile):
