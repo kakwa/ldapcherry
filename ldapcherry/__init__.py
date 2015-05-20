@@ -197,6 +197,10 @@ class LdapCherry(object):
 
             # definition of the template directory
             self.template_dir = self._get_param('resources', 'templates.dir', config)
+            cherrypy.log.error(
+                msg = "Loading templates from dir <%(dir)s>" % { 'dir': self.template_dir },
+                severity = logging.DEBUG
+            )
             # preload templates
             self.temp_lookup = lookup.TemplateLookup(
                     directories=self.template_dir, input_encoding='utf-8'
@@ -210,16 +214,38 @@ class LdapCherry(object):
             #auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
             #self.auth = auth.Auth(config['auth'], cherrypy.log)
 
+
             self.roles_file = self._get_param('roles', 'roles.file', config)
+            cherrypy.log.error(
+                msg = "Loading roles file <%(file)s>" % { 'file': self.roles_file },
+                severity = logging.DEBUG
+            )
             self.roles = Roles(self.roles_file)
 
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
-            self.roles = Attributes(self.attributes_file)
+            cherrypy.log.error(
+                msg = "Loading attributes file <%(file)s>" % { 'file': self.attributes_file },
+                severity = logging.DEBUG
+            )
+            self.attributes = Attributes(self.attributes_file)
+
+            cherrypy.log.error(
+                msg = "Init directories backends",
+                severity = logging.DEBUG
+            )
             self._init_backends(config)
             self._check_backends()
+            cherrypy.log.error(
+                msg = "Application started",
+                severity = logging.INFO
+            )
 
         except Exception as e:
             self._handle_exception(e)
+            cherrypy.log.error(
+                msg = "Application failed to start",
+                severity = logging.ERROR
+            )
             exit(1)
             
     def _reraise(self, exception):

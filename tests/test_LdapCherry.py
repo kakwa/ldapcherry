@@ -58,7 +58,7 @@ class TestError(object):
             cfg['global']['log.access_handler']=t
             cfg['global']['log.error_handler']=t
             app._set_access_log(cfg, logging.DEBUG)
-            app._set_access_log(cfg, logging.DEBUG)
+            app._set_error_log(cfg, logging.DEBUG)
         
     def testMissingBackend(self):
         app = LdapCherry()
@@ -71,7 +71,6 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
-
     def testMissingParameters(self):
         app = LdapCherry()
         try:
@@ -80,6 +79,12 @@ class TestError(object):
             return
         else:
             raise AssertionError("expected an exception")
+
+    def testRandomException(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        e = Exception()
+        app._handle_exception(e)
 
     def testLogger(self):
         app = LdapCherry()
