@@ -54,6 +54,16 @@ class MissingAttributesFile(Exception):
         self.attributesfile = attributesfile
         self.log = "fail to open attributes file <%(attributesfile)s>" % { 'attributesfile' : attributesfile}
 
+class BackendModuleLoadingFail(Exception):
+    def __init__(self, module):
+        self.module = module
+        self.log = "fail to load module <%(module)s>" % {'module': module}
+
+class BackendModuleInitFail(Exception):
+    def __init__(self, module):
+        self.module = module
+        self.log = "fail to init module <%(module)s>" % {'module': module}
+
 class WrongAttributeType(Exception):
     def __init__(self, key, section, ymlfile):
         self.key = key

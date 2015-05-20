@@ -5,6 +5,8 @@
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
+import ldapcherry.backend
+
 class Backend(ldapcherry.backend.Backend):
 
     def __init__(self, config, logger):

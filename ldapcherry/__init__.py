@@ -87,6 +87,7 @@ class LdapCherry(object):
 
     def _init_backends(self, config):
         self.backends_params = {}
+        self.backends = {}
         for entry in config['backends']:
             # split at the first dot
             backend, sep, param = entry.partition('.')
@@ -94,6 +95,21 @@ class LdapCherry(object):
             if not backend in self.backends_params:
                 self.backends_params[backend] = {}
             self.backends_params[backend][param] = value
+        for backend in self.backends_params:
+            params = self.backends_params[backend]
+            # Loading the backend module
+            try:
+                module = params['module']
+            except:
+                raise MissingParameter('backends', backend + '.module')
+            try:
+                bc = __import__(module, globals(), locals(), ['Backend'], -1)
+            except:
+                raise BackendModuleLoadingFail(module) 
+            try:
+                self.backends[backend] = bc.Backend(params, cherrypy.log)
+            except:
+                raise BackendModuleInitFail(module)
 
     def _set_access_log(self, config, level):
         access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
@@ -208,11 +224,6 @@ class LdapCherry(object):
             self.temp_index = self.temp_lookup.get_template('index.tmpl')
             self.temp_error = self.temp_lookup.get_template('error.tmpl')
             self.temp_login = self.temp_lookup.get_template('login.tmpl')
-
-            # loading the authentification module
-            #auth_module = self._get_param('auth', 'auth.module', config)
-            #auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
-            #self.auth = auth.Auth(config['auth'], cherrypy.log)
 
 
             self.roles_file = self._get_param('roles', 'roles.file', config)
