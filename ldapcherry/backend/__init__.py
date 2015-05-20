@@ -10,11 +10,14 @@ class Backend:
     def __init__(self):
         pass
 
-    def add_group(self):
+    def auth(self):
+        pass
+
+    def add_to_group(self):
         pass
 
     def set_attr(self):
         pass
 
-    def rm_group(self):
+    def rm_from_group(self):
         pass
