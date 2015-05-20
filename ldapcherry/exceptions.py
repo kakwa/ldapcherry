@@ -57,7 +57,7 @@ class MissingAttributesFile(Exception):
 class BackendModuleLoadingFail(Exception):
     def __init__(self, module):
         self.module = module
-        self.log = "fail to load module <%(module)s>" % {'module': module}
+        self.log = "module <%(module)s> not in python path" % {'module': module}
 
 class BackendModuleInitFail(Exception):
     def __init__(self, module):
@@ -70,5 +70,3 @@ class WrongAttributeType(Exception):
         self.section = section
         self.ymlfile = ymlfile
         self.log = "wrong attribute type <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile } 
-
-

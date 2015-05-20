@@ -214,7 +214,7 @@ class LdapCherry(object):
             # definition of the template directory
             self.template_dir = self._get_param('resources', 'templates.dir', config)
             cherrypy.log.error(
-                msg = "Loading templates from dir <%(dir)s>" % { 'dir': self.template_dir },
+                msg = "loading templates from dir <%(dir)s>" % { 'dir': self.template_dir },
                 severity = logging.DEBUG
             )
             # preload templates
@@ -228,33 +228,33 @@ class LdapCherry(object):
 
             self.roles_file = self._get_param('roles', 'roles.file', config)
             cherrypy.log.error(
-                msg = "Loading roles file <%(file)s>" % { 'file': self.roles_file },
+                msg = "loading roles file <%(file)s>" % { 'file': self.roles_file },
                 severity = logging.DEBUG
             )
             self.roles = Roles(self.roles_file)
 
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
             cherrypy.log.error(
-                msg = "Loading attributes file <%(file)s>" % { 'file': self.attributes_file },
+                msg = "loading attributes file <%(file)s>" % { 'file': self.attributes_file },
                 severity = logging.DEBUG
             )
             self.attributes = Attributes(self.attributes_file)
 
             cherrypy.log.error(
-                msg = "Init directories backends",
+                msg = "init directories backends",
                 severity = logging.DEBUG
             )
             self._init_backends(config)
             self._check_backends()
             cherrypy.log.error(
-                msg = "Application started",
+                msg = "application started",
                 severity = logging.INFO
             )
 
         except Exception as e:
             self._handle_exception(e)
             cherrypy.log.error(
-                msg = "Application failed to start",
+                msg = "application failed to start",
                 severity = logging.ERROR
             )
             exit(1)
