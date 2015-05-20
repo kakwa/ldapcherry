@@ -44,12 +44,39 @@ def loadconf(configfile, instance):
     cherrypy.config.update(configfile)
     instance.reload(app.config)
 
+class BadModule():
+    pass
+
 class TestError(object):
 
     def testNominal(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
         return True
+
+    def testMissingBackendModule(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        cfg = {'backends': {'ldap.module': 'dontexists'}}
+        try:
+            app._init_backends(cfg)
+        except BackendModuleLoadingFail:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+    def testInitgBackendModuleFail(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        cfg = {'backends': {'ldap.module': 'ldapcherry.backend'}}
+        try:
+            app._init_backends(cfg)
+        except BackendModuleInitFail:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+
 
     def testLog(self):
         app = LdapCherry()
