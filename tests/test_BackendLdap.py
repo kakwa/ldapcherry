@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from sets import Set
-from ldapcherry.backend.ldap import Backend
+from ldapcherry.backend.backendLdap import Backend
 from ldapcherry.exceptions import * 
 import cherrypy
 
@@ -33,6 +33,7 @@ class TestError(object):
 
     def testConnect(self):
         inv = Backend(cfg, cherrypy.log)
+        inv._connect()
         return True
 
     def testConnectSSL(self):
