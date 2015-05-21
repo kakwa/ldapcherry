@@ -75,11 +75,13 @@ class TestError(object):
 
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap')
-        return True
+        ret = inv.auth('jwatson', 'passwordwatson')
+        assert ret == True
 
     def testAuthFailure(self):
         inv = Backend(cfg, cherrypy.log, 'ldap')
-        return True
+        res = inv.auth('notauser', 'password') or inv.auth('jwatson', 'notapassword')
+        assert res == False
 
     def testMissingParam(self):
         cfg2 = {}
