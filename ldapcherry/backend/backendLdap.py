@@ -16,12 +16,12 @@ class Backend(ldapcherry.backend.Backend):
         self.config = config
         self._logger = logger
         self.backend_name = name
-        self.binddn = self.get_param(binddn)     
-        self.ca = self.get_param(ca)
-        self.checkcert = self.get_param(checkcert)
-        self.starttls = self.get_param(starttls)
-        self.uri = self.get_param(uri)
-        self.user_filter_tmpl = self.get_param(user_filter_tmpl)
+        self.binddn = self.get_param('binddn')
+        self.ca = self.get_param('ca', False)
+        self.checkcert = self.get_param('checkcert', 'on')
+        self.starttls = self.get_param('starttls', 'off')
+        self.uri = self.get_param('uri')
+        self.user_filter_tmpl = self.get_param('user_filter_tmpl')
 
     def auth(self, username, password):
 
@@ -97,7 +97,7 @@ class Backend(ldapcherry.backend.Backend):
         else:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
 
-       if self.starttls == 'on': 
+        if self.starttls == 'on': 
             try:
                 ldap_client.start_tls_s()
             except ldap.OPERATIONS_ERROR:

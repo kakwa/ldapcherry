@@ -24,11 +24,11 @@ class Backend:
     def rm_from_group(self):
         pass
 
-    def get_param(self, param, default=False):
+    def get_param(self, param, default=None):
         if param in self.config:
             return self.config[param]
-        elif default:
+        elif not default is None:
             return default
         else: 
-            raise MissingParameter(self.backend_name+'.'+param, 'backends')
+            raise MissingParameter('backends', self.backend_name+'.'+param)
 

@@ -108,6 +108,8 @@ class LdapCherry(object):
                 raise BackendModuleLoadingFail(module) 
             try:
                 self.backends[backend] = bc.Backend(params, cherrypy.log, backend)
+            except MissingParameter as e:
+                raise e
             except:
                 raise BackendModuleInitFail(module)
 
