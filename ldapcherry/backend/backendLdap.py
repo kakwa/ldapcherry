@@ -12,9 +12,16 @@ import ldapcherry.backend
 
 class Backend(ldapcherry.backend.Backend):
 
-    def __init__(self, config, logger):
+    def __init__(self, config, logger, name):
         self.config = config
         self._logger = logger
+        self.backend_name = name
+        self.binddn = self.get_param(binddn)     
+        self.ca = self.get_param(ca)
+        self.checkcert = self.get_param(checkcert)
+        self.starttls = self.get_param(starttls)
+        self.uri = self.get_param(uri)
+        self.user_filter_tmpl = self.get_param(user_filter_tmpl)
 
     def auth(self, username, password):
 
@@ -53,18 +60,18 @@ class Backend(ldapcherry.backend.Backend):
         except ldap.INVALID_CREDENTIALS:
             self._logger(
                     logging.ERROR,
-                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.config['binddn'] + "'"
+                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
                 )
             raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
         except ldap.SERVER_DOWN:
             self._logger(
                     logging.ERROR,
-                    "Unable to contact ldap server '" + self.config['uri'] + "', check 'auth.ldap.uri' and ssl/tls configuration"
+                    "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
                 )
             return False
 
-        user_filter = self.config['user_filter_tmpl'] % {
-            'login': username
+            user_filter = self.user_filter_tmpl % {
+                'login': username
             }
 
         r = ldap_client.search_s(self.userdn,
@@ -79,26 +86,24 @@ class Backend(ldapcherry.backend.Backend):
         return dn_entry
 
     def _connect(self):
-        ldap_client = ldap.initialize(self.config['uri'])
+        ldap_client = ldap.initialize(self.uri)
         ldap_client.set_option(ldap.OPT_REFERRALS, 0)
-        if self.config['starttls'] == 'on':
-           ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
-        if self.config['starttls'] == 'on':
+        if self.starttls == 'on':
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
-        if self.config['ca']:
-            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config['ca'])
-        if self.config['checkcert'] == 'off':
+        if self.ca:
+            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+        if self.checkcert == 'off':
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
 
-        if self.config['starttls'] == 'on':
+       if self.starttls == 'on': 
             try:
                 ldap_client.start_tls_s()
             except ldap.OPERATIONS_ERROR:
                 self._logger(
                     logging.ERROR,
-                    "cannot use starttls with ldaps:// uri (uri: " + self.config['uri'] + ")"
+                    "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
                 )
                 raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
         return ldap_client
