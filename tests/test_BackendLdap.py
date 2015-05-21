@@ -11,15 +11,16 @@ from ldapcherry.backend.backendLdap import Backend
 from ldapcherry import syslog_error
 from ldapcherry.exceptions import * 
 import cherrypy
+from ldap import SERVER_DOWN
 
 cfg = {
 'module'            : 'ldapcherry.backend.ldap',
-'groupdn'           : 'ou=group,dc=example,dc=com',
-'people'            : 'ou=group,dc=example,dc=com',
-'binddn'            : 'cn=ldapcherry,dc=example,dc=com',
+'groupdn'           : 'ou=group,dc=example,dc=org',
+'userdn'            : 'ou=People,dc=example,dc=org',
+'binddn'            : 'cn=dnscherry,dc=example,dc=org',
 'password'          : 'password',
-'uri'               : 'ldaps://ldap.ldapcherry.org',
-'ca'                : '/etc/dnscherry/TEST-cacert.pem',
+'uri'               : 'ldap://ldap.ldapcherry.org:390',
+'ca'                : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
 'starttls'          : 'off',
 'checkcert'         : 'off',
 'user_filter_tmpl'  : '(uid=%(username)s)',
@@ -36,16 +37,37 @@ class TestError(object):
 
     def testConnect(self):
         inv = Backend(cfg, cherrypy.log, 'ldap')
-        inv._connect()
+        ldap = inv._connect()
+        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
         return True
 
     def testConnectSSL(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
-        return True
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
+        cfg2['checkcert'] = 'on'
+        inv = Backend(cfg2, cherrypy.log, 'ldap')
+        ldap = inv._connect()
+        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
-    def testConnectSSLNoCheck(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
-        return True
+    def testConnectSSLWrongCA(self):
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
+        cfg2['checkcert'] = 'on'
+        cfg2['ca'] = './cfg/wrong_ca.crt'
+        inv = Backend(cfg2, cherrypy.log, 'ldap')
+        ldapc = inv._connect()
+        try:
+            ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
+        except SERVER_DOWN as e:
+            assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
+
+#    def testConnectSSLNoCheck(self):
+#        cfg2 = cfg.copy()
+#        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
+#        cfg2['checkcert'] = 'off'
+#        inv = Backend(cfg2, cherrypy.log, 'ldap')
+#        ldap = inv._connect()
+#        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap')

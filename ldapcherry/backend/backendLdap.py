@@ -17,10 +17,13 @@ class Backend(ldapcherry.backend.Backend):
         self._logger = logger
         self.backend_name = name
         self.binddn = self.get_param('binddn')
+        self.bindpassword = self.get_param('password')
         self.ca = self.get_param('ca', False)
         self.checkcert = self.get_param('checkcert', 'on')
         self.starttls = self.get_param('starttls', 'off')
         self.uri = self.get_param('uri')
+        self.userdn = self.get_param('userdn')
+        self.groupdn = self.get_param('groupdn')
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
 
     def auth(self, username, password):
@@ -57,22 +60,23 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
-        except ldap.INVALID_CREDENTIALS:
+        except ldap.INVALID_CREDENTIALS as e:
             self._logger(
                     logging.ERROR,
                     "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
                 )
-            raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
-        except ldap.SERVER_DOWN:
+            #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+            raise e
+        except ldap.SERVER_DOWN as e:
             self._logger(
                     logging.ERROR,
                     "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
                 )
-            return False
+            raise e 
 
-            user_filter = self.user_filter_tmpl % {
-                'login': username
-            }
+        user_filter = self.user_filter_tmpl % {
+            'username': username
+        }
 
         r = ldap_client.search_s(self.userdn,
                 ldap.SCOPE_SUBTREE,
@@ -90,13 +94,16 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.set_option(ldap.OPT_REFERRALS, 0)
         if self.starttls == 'on':
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
-        if self.ca:
+        else:
+            ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
+        if self.ca and self.checkcert == 'on':
             ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+        #else:
+        #    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
         if self.checkcert == 'off':
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
-
         if self.starttls == 'on': 
             try:
                 ldap_client.start_tls_s()
