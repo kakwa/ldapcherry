@@ -5,6 +5,8 @@
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
+from ldapcherry.exceptions import MissingParameter
+
 class Backend:
 
     def __init__(self):
@@ -21,3 +23,12 @@ class Backend:
 
     def rm_from_group(self):
         pass
+
+    def get_param(self, param, default=False):
+        if param in self.config:
+            return self.config[param]
+        elif default:
+            return default
+        else: 
+            raise MissingParameter(self.backend_name+'.'+param, 'backends')
+
