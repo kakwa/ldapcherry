@@ -86,6 +86,7 @@ class Backend(ldapcherry.backend.Backend):
             ldap_client.unbind_s()
             return False
 
+        ldap_client.unbind_s()
         dn_entry = r[0][0]
         return dn_entry
 
@@ -107,10 +108,11 @@ class Backend(ldapcherry.backend.Backend):
         if self.starttls == 'on': 
             try:
                 ldap_client.start_tls_s()
-            except ldap.OPERATIONS_ERROR:
+            except ldap.OPERATIONS_ERROR as e:
                 self._logger(
                     logging.ERROR,
                     "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
                 )
-                raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+                raise e
+                #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
         return ldap_client
