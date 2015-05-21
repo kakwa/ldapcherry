@@ -28,7 +28,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def auth(self, username, password):
 
-        binddn = get_user(username)
+        binddn = self.get_user(username)
         if binddn:
             ldap_client = self._connect()
             try:
