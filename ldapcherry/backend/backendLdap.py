@@ -14,6 +14,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def __init__(self, config, logger):
         self.config = config
+        self._logger = logger
 
     def auth(self, username, password):
 
@@ -52,13 +53,13 @@ class Backend(ldapcherry.backend.Backend):
         except ldap.INVALID_CREDENTIALS:
             self._logger(
                     logging.ERROR,
-                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'"
+                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.config['binddn'] + "'"
                 )
             raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
         except ldap.SERVER_DOWN:
             self._logger(
                     logging.ERROR,
-                    "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration"
+                    "Unable to contact ldap server '" + self.config['uri'] + "', check 'auth.ldap.uri' and ssl/tls configuration"
                 )
             return False
 
@@ -84,9 +85,9 @@ class Backend(ldapcherry.backend.Backend):
            ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
         if self.config['starttls'] == 'on':
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
-        if self.ca:
+        if self.config['ca']:
             ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config['ca'])
-        if self.checkcert == 'off':
+        if self.config['checkcert'] == 'off':
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
@@ -97,7 +98,7 @@ class Backend(ldapcherry.backend.Backend):
             except ldap.OPERATIONS_ERROR:
                 self._logger(
                     logging.ERROR,
-                    "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")"
+                    "cannot use starttls with ldaps:// uri (uri: " + self.config['uri'] + ")"
                 )
                 raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
         return ldap_client
