@@ -22,14 +22,21 @@ class Backend(ldapcherry.backend.Backend):
         self.checkcert = self.get_param('checkcert', 'on')
         self.starttls = self.get_param('starttls', 'off')
         self.uri = self.get_param('uri')
+        self.timeout = self.get_param('timeout', 1)
         self.userdn = self.get_param('userdn')
         self.groupdn = self.get_param('groupdn')
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
-        self.attrlist = attrslist
+        self.attrlist = []
+        for a in attrslist:
+            try:
+                self.attrlist.append(str(a))
+            except UnicodeEncodeError:
+                tmp = unicode(a).encode('unicode_escape')
+                self.attrlist.append(tmp)
 
     def auth(self, username, password):
 
-        binddn = self.get_user(username)
+        binddn = self.get_user(username, False)
         if binddn:
             ldap_client = self._connect()
             try:
@@ -57,7 +64,11 @@ class Backend(ldapcherry.backend.Backend):
     def del_user(self, username):
         pass
 
-    def get_user(self, username, attrs=None):
+    def get_user(self, username, attrs=True):
+        if attrs:
+            a = self.attrlist
+        else:
+            a = None
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
@@ -82,19 +93,23 @@ class Backend(ldapcherry.backend.Backend):
         r = ldap_client.search_s(self.userdn,
                 ldap.SCOPE_SUBTREE,
                 user_filter,
-                attrlist=attrs
+                attrlist=a
             )
         if len(r) == 0:
             ldap_client.unbind_s()
             return False
 
         ldap_client.unbind_s()
-        dn_entry = r[0][0]
+        if attrs:
+            dn_entry = r[0]
+        else:
+            dn_entry = r[0][0]
         return dn_entry
 
     def _connect(self):
         ldap_client = ldap.initialize(self.uri)
         ldap_client.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_client.set_option(ldap.OPT_TIMEOUT, self.timeout)
         if self.starttls == 'on':
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
         else:

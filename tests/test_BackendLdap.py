@@ -28,7 +28,7 @@ cfg = {
 }
 
 cherrypy.log.error = syslog_error
-attr = ['shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
+attr = ['shéll', 'shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
 
 class TestError(object):
 
@@ -110,4 +110,6 @@ class TestError(object):
 
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
-        return True
+        ret = inv.get_user('jwatson')
+        expected = ('cn=John Watson,ou=People,dc=example,dc=org', {'uid': ['jwatson'], 'cn': ['John Watson'], 'sn': ['watson']})
+        assert ret == expected
