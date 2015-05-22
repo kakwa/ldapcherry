@@ -28,15 +28,16 @@ cfg = {
 }
 
 cherrypy.log.error = syslog_error
+attr = ['shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
 
 class TestError(object):
 
     def testNominal(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         return True
 
     def testConnect(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ldap = inv._connect()
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
         return True
@@ -45,7 +46,7 @@ class TestError(object):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
-        inv = Backend(cfg2, cherrypy.log, 'ldap')
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
         ldap = inv._connect()
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
@@ -54,7 +55,7 @@ class TestError(object):
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
         cfg2['ca'] = './cfg/wrong_ca.crt'
-        inv = Backend(cfg2, cherrypy.log, 'ldap')
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
@@ -65,21 +66,21 @@ class TestError(object):
 #        cfg2 = cfg.copy()
 #        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
 #        cfg2['checkcert'] = 'off'
-#        inv = Backend(cfg2, cherrypy.log, 'ldap')
+#        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
 #        ldap = inv._connect()
 #        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
     def testAuthSuccess(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         return True
 
     def testAuthSuccess(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ret = inv.auth('jwatson', 'passwordwatson')
         assert ret == True
 
     def testAuthFailure(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         res = inv.auth('notauser', 'password') or inv.auth('jwatson', 'notapassword')
         assert res == False
 
@@ -87,12 +88,12 @@ class TestError(object):
         cfg2 = {}
         return True
         try:
-            inv = Backend(cfg2, cherrypy.log, 'ldap')
+            inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
         except MissingKey:
             return
         else:
             raise AssertionError("expected an exception")
 
     def testGetUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap')
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         return True

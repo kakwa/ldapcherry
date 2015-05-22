@@ -12,7 +12,7 @@ import ldapcherry.backend
 
 class Backend(ldapcherry.backend.Backend):
 
-    def __init__(self, config, logger, name):
+    def __init__(self, config, logger, name, attrslist):
         self.config = config
         self._logger = logger
         self.backend_name = name
@@ -25,6 +25,7 @@ class Backend(ldapcherry.backend.Backend):
         self.userdn = self.get_param('userdn')
         self.groupdn = self.get_param('groupdn')
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
+        self.attrlist = attrslist
 
     def auth(self, username, password):
 
