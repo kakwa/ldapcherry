@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.attributes import Attributes
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 class TestError(object):
@@ -29,6 +29,22 @@ class TestError(object):
         ret = inv.get_backends()
         expected = Set(['ldap', 'ad'])
         assert ret == expected
+
+    def testGetBackendAttributes(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        ret = inv.get_backend_attributes('ldap')
+        expected = ['shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
+        assert ret == expected
+
+    def testWrongGetBackendAttributes(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        try:
+            ret = inv.get_backend_attributes('notabackend')
+        except WrongBackend:
+            return
+        else:
+            raise AssertionError("expected an exception")
+ 
 
     def testNoFile(self):
         try:

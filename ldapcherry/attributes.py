@@ -10,7 +10,7 @@ import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend
 from sets import Set
 import yaml
 
@@ -22,6 +22,7 @@ class Attributes:
         self.attributes_file = attributes_file
         self.backends = Set([])
         self.self_attributes = Set([])
+        self.backend_attributes = {}
         try:
             stream = open(attributes_file, 'r')
         except:
@@ -40,6 +41,9 @@ class Attributes:
                 self.self_attributes.add(attrid)
             for b in attr['backends']:
                 self.backends.add(b)
+                if b not in self.backend_attributes:
+                    self.backend_attributes[b] = []
+                self.backend_attributes[b].append(attr['backends'][b])
 
     def _mandatory_check(self, attr):
         for m in ['description', 'display_name', 'type', 'backends']:
@@ -53,6 +57,11 @@ class Attributes:
     def get_backends(self):
         """return the list of backends in roles file"""
         return self.backends
+
+    def get_backend_attributes(self, backend):
+        if backend not in self.backends:
+            raise WrongBackend(backend)
+        return self.backend_attributes[backend]
 
     def get_attributes(self):
         """get the list of groups from roles"""
