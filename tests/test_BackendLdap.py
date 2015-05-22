@@ -50,6 +50,20 @@ class TestError(object):
         ldap = inv._connect()
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
+    def testLdapUnavaible(self):
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldaps://notaldap:637'
+        cfg2['checkcert'] = 'on'
+        cfg2['ca'] = './cfg/ca.crt'
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+        ldapc = inv._connect()
+        try:
+            ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
+        except SERVER_DOWN as e:
+            return 
+        else:
+            raise AssertionError("expected an exception")
+
     def testConnectSSLWrongCA(self):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
