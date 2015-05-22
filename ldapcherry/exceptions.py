@@ -33,6 +33,11 @@ class MissingBackend(Exception):
         self.backend = backend
         self.log = "backend <%(backend)s> does not exist in main config file" % { 'backend' : backend}
 
+class WrongBackend(Exception):
+    def __init__(self, backend):
+        self.backend = backend
+        self.log = "backend <%(backend)s> does not exist" % { 'backend' : backend}
+
 class DumplicateRoleContent(Exception):
     def __init__(self, role1, role2):
         self.role1 = role1
