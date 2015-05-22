@@ -56,7 +56,7 @@ class Backend(ldapcherry.backend.Backend):
     def del_user(self, username):
         pass
 
-    def get_user(self, username):
+    def get_user(self, username, attrs=None):
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
@@ -80,8 +80,9 @@ class Backend(ldapcherry.backend.Backend):
 
         r = ldap_client.search_s(self.userdn,
                 ldap.SCOPE_SUBTREE,
-                user_filter
-                 )
+                user_filter,
+                attrlist=attrs
+            )
         if len(r) == 0:
             ldap_client.unbind_s()
             return False
