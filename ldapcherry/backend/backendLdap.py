@@ -55,7 +55,7 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, attrs):
         pass
 
-    def rm_from_group(self):
+    def rm_from_group(self,username):
         pass
 
     def add_user(self, username):
