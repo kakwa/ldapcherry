@@ -64,6 +64,9 @@ class Backend(ldapcherry.backend.Backend):
     def del_user(self, username):
         pass
 
+    def search(self, search_string):
+        pass
+
     def get_user(self, username, attrs=True):
         if attrs:
             a = self.attrlist
