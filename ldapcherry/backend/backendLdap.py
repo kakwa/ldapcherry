@@ -37,7 +37,7 @@ class Backend(ldapcherry.backend.Backend):
     def auth(self, username, password):
 
         binddn = self.get_user(username, False)
-        if binddn:
+        if not binddn is None:
             ldap_client = self._connect()
             try:
                 ldap_client.simple_bind_s(binddn, password)
@@ -97,7 +97,7 @@ class Backend(ldapcherry.backend.Backend):
             )
         if len(r) == 0:
             ldap_client.unbind_s()
-            return False
+            return None
 
         ldap_client.unbind_s()
         if attrs:
