@@ -26,6 +26,8 @@ class Backend(ldapcherry.backend.Backend):
         self.userdn = self.get_param('userdn')
         self.groupdn = self.get_param('groupdn')
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
+        self.group_filter_tmpl = self.get_param('group_filter_tmpl')
+        self.search_filter_tmpl = self.get_param('search_filter_tmpl')
         self.attrlist = []
         for a in attrslist:
             try:
