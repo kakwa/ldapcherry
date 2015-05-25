@@ -26,6 +26,7 @@ cfg = {
 'user_filter_tmpl'   : '(uid=%(username)s)',
 'group_filter_tmpl'  : '(member=%(userdn)s)',
 'search_filter_tmpl' : '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))',
+'objectclasses'      : 'top, person, organizationalPerson, user',
 }
 
 cherrypy.log.error = syslog_error
