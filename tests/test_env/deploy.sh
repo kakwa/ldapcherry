@@ -17,7 +17,7 @@ sudo sed -i "s%tools.staticdir.dir.*%tools.staticdir.dir = '`pwd`/resources/stat
 chown -R openldap:openldap /etc/ldap/
 rm /etc/ldap/slapd.d/cn\=config/*mdb*
 /etc/init.d/slapd restart
-ldapadd -H ldap://localhost:390  -x -D "cn=admin,dc=example,dc=org" -f /etc/ldap/content.ldif -w password
+ldapadd -c -H ldap://localhost:390  -x -D "cn=admin,dc=example,dc=org" -f /etc/ldap/content.ldif -w password
 sed -i "s/\(127.0.0.1.*\)/\1 ldap.ldapcherry.org ad.ldapcherry.org/" /etc/hosts
 
 

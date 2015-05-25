@@ -32,6 +32,18 @@ mail: s.smith@example.com
 mail: ssmith@example.com
 mail: sheri.smith@example.com
 
+dn: cn=John Smith,ou=people,dc=example,dc=org
+objectclass: inetOrgPerson
+cn: John Smith
+sn: Smith
+uid: jsmith
+userpassword: passwordsmith
+carlicense: HISCAR 125
+homephone: 555-111-2225
+mail: j.smith@example.com
+mail: jsmith@example.com
+mail: jsmith.smith@example.com
+
 dn: cn=John Watson,ou=people,dc=example,dc=org
 objectclass: inetOrgPerson
 cn: John Watson

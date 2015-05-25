@@ -25,7 +25,7 @@ cfg = {
 'checkcert'          : 'off',
 'user_filter_tmpl'   : '(uid=%(username)s)',
 'group_filter_tmpl'  : '(member=%(userdn)s)',
-'search_filter_tmpl' : '&(uid=%(searchstring)s*)(sn=%(searchstring)s*)',
+'search_filter_tmpl' : '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))',
 }
 
 cherrypy.log.error = syslog_error
@@ -113,4 +113,10 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ret = inv.get_user('jwatson')
         expected = ('cn=John Watson,ou=People,dc=example,dc=org', {'uid': ['jwatson'], 'cn': ['John Watson'], 'sn': ['watson']})
+        assert ret == expected
+
+    def testSearchtUser(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        ret = inv.search('smith')
+        expected = [('cn=Sheri Smith,ou=People,dc=example,dc=org', {'uid': ['ssmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HERCAR 125'], 'sn': ['smith'], 'mail': ['s.smith@example.com', 'ssmith@example.com', 'sheri.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['Sheri Smith']}), ('cn=John Smith,ou=People,dc=example,dc=org', {'uid': ['jsmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HISCAR 125'], 'sn': ['Smith'], 'mail': ['j.smith@example.com', 'jsmith@example.com', 'jsmith.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['John Smith']})]
         assert ret == expected

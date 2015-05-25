@@ -66,8 +66,41 @@ class Backend(ldapcherry.backend.Backend):
     def del_user(self, username):
         pass
 
-    def search(self, search_string):
-        pass
+    def search(self, searchstring):
+        ldap_client = self._connect()
+        try:
+            ldap_client.simple_bind_s(self.binddn, self.bindpassword)
+        except ldap.INVALID_CREDENTIALS as e:
+            self._logger(
+                    logging.ERROR,
+                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
+                )
+            #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+            raise e
+        except ldap.SERVER_DOWN as e:
+            self._logger(
+                    logging.ERROR,
+                    "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
+                )
+            raise e 
+
+        user_filter = self.search_filter_tmpl % {
+            'searchstring': searchstring
+        }
+        print user_filter
+        try:
+            r = ldap_client.search_s(self.userdn,
+                    ldap.SCOPE_SUBTREE,
+                    user_filter,
+                    attrlist=None
+            )
+        except ldap.FILTER_ERROR as e:
+            #self._logger(
+            #        logging.ERROR,
+            #        "Bad search filter, check '" + self.backend_name + ".search_filter_tmpl'",
+            #    )
+            raise e
+        return r
 
     def get_user(self, username, attrs=True):
         if attrs:
