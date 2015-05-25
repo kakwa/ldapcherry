@@ -14,17 +14,19 @@ import cherrypy
 from ldap import SERVER_DOWN
 
 cfg = {
-'module'            : 'ldapcherry.backend.ldap',
-'groupdn'           : 'ou=group,dc=example,dc=org',
-'userdn'            : 'ou=People,dc=example,dc=org',
-'binddn'            : 'cn=dnscherry,dc=example,dc=org',
-'password'          : 'password',
-'uri'               : 'ldap://ldap.ldapcherry.org:390',
-'ca'                : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
-'starttls'          : 'off',
-'checkcert'         : 'off',
-'user_filter_tmpl'  : '(uid=%(username)s)',
-'group_filter_tmpl' : '(member=%(userdn)s)',
+'module'             : 'ldapcherry.backend.ldap',
+'groupdn'            : 'ou=group,dc=example,dc=org',
+'userdn'             : 'ou=People,dc=example,dc=org',
+'binddn'             : 'cn=dnscherry,dc=example,dc=org',
+'password'           : 'password',
+'uri'                : 'ldap://ldap.ldapcherry.org:390',
+'ca'                 : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
+'starttls'           : 'off',
+'checkcert'          : 'off',
+'user_filter_tmpl'   : '(uid=%(username)s)',
+'group_filter_tmpl'  : '(member=%(userdn)s)',
+'search_filter_tmpl' : '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))',
+
 }
 
 cherrypy.log.error = syslog_error
@@ -32,3 +34,4 @@ attr = ['shéll', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword',
 
 inv = Backend(cfg, cherrypy.log, 'ldap', attr)
 print inv.get_user('jwatson')
+print inv.search('smit')
