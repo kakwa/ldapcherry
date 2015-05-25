@@ -8,10 +8,10 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.backend.backendLdap import Backend
-from ldapcherry import syslog_error
 from ldapcherry.exceptions import * 
 import cherrypy
-from ldap import SERVER_DOWN
+import logging
+import ldap
 
 cfg = {
 'module'             : 'ldapcherry.backend.ldap',
@@ -26,8 +26,13 @@ cfg = {
 'user_filter_tmpl'   : '(uid=%(username)s)',
 'group_filter_tmpl'  : '(member=%(userdn)s)',
 'search_filter_tmpl' : '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))',
-'objectclasses'      : 'top, person, organizationalPerson, user',
+'objectclasses'      : 'top, person, organizationalPerson, simpleSecurityObject, posixAccount',
+'dn_user_attr'       : 'uid',
 }
+
+def syslog_error(msg='', context='',
+        severity=logging.INFO, traceback=False):
+    pass
 
 cherrypy.log.error = syslog_error
 attr = ['shéll', 'shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
@@ -61,7 +66,7 @@ class TestError(object):
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
-        except SERVER_DOWN as e:
+        except ldap.SERVER_DOWN as e:
             return 
         else:
             raise AssertionError("expected an exception")
@@ -75,7 +80,7 @@ class TestError(object):
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
-        except SERVER_DOWN as e:
+        except ldap.SERVER_DOWN as e:
             assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
 
 #    def testConnectSSLNoCheck(self):
@@ -116,8 +121,61 @@ class TestError(object):
         expected = ('cn=John Watson,ou=People,dc=example,dc=org', {'uid': ['jwatson'], 'cn': ['John Watson'], 'sn': ['watson']})
         assert ret == expected
 
-    def testSearchtUser(self):
+    def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ret = inv.search('smith')
         expected = [('cn=Sheri Smith,ou=People,dc=example,dc=org', {'uid': ['ssmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HERCAR 125'], 'sn': ['smith'], 'mail': ['s.smith@example.com', 'ssmith@example.com', 'sheri.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['Sheri Smith']}), ('cn=John Smith,ou=People,dc=example,dc=org', {'uid': ['jsmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HISCAR 125'], 'sn': ['Smith'], 'mail': ['j.smith@example.com', 'jsmith@example.com', 'jsmith.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['John Smith']})]
         assert ret == expected
+
+    def testAddUser(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        user = {
+        'uid': 'test',
+        'sn':  'test',
+        'cn':  'test',
+        'userPassword': 'test',
+        'uidNumber': '42',
+        'gidNumber': '42',
+        'homeDirectory': '/home/test/'
+        }
+        inv.add_user(user)
+        inv.del_user('test')
+
+    def testAddUserDuplicate(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        user = {
+        'uid': 'test',
+        'sn':  'test',
+        'cn':  'test',
+        'uidNumber': '42',
+        'userPassword': 'test',
+        'gidNumber': '42',
+        'homeDirectory': '/home/test/'
+        }
+        try:
+            inv.add_user(user)
+            inv.add_user(user)
+        except ldap.ALREADY_EXISTS:
+            inv.del_user('test')
+            return
+        else:
+            inv.del_user('test')
+            raise AssertionError("expected an exception")
+
+    def testAddUserMissingMustAttribute(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        user = {
+        'uid': 'test',
+        'sn':  'test',
+        'cn':  'test',
+        'userPassword': 'test',
+        'gidNumber': '42',
+        'homeDirectory': '/home/test/'
+        }
+        try:
+            inv.add_user(user)
+        except ldap.OBJECT_CLASS_VIOLATION:
+            return
+        else:
+            inv.del_user('test')
+            raise AssertionError("expected an exception")

@@ -7,8 +7,16 @@
 
 import cherrypy
 import ldap
+import ldap.modlist as modlist
 import logging
 import ldapcherry.backend
+import re
+
+class DelUserDontExists(Exception):
+    def __init__(self, user):
+        self.user = user
+        self.log = "cannot remove user, user <%(user)s> does not exist" % { 'user' : user}
+
 
 class Backend(ldapcherry.backend.Backend):
 
@@ -28,14 +36,20 @@ class Backend(ldapcherry.backend.Backend):
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
         self.group_filter_tmpl = self.get_param('group_filter_tmpl')
         self.search_filter_tmpl = self.get_param('search_filter_tmpl')
-        self.objectclasses = self.get_param('objectclasses')
+        self.dn_user_attr = self.get_param('dn_user_attr')
+        self.objectclasses = []
+        for o in re.split('\W+', self.get_param('objectclasses')):
+            self.objectclasses.append(self._str(o))
+
         self.attrlist = []
         for a in attrslist:
+            self.attrlist.append(self._str(a))
+
+    def _str(self, s):
             try:
-                self.attrlist.append(str(a))
+                return str(s)
             except UnicodeEncodeError:
-                tmp = unicode(a).encode('unicode_escape')
-                self.attrlist.append(tmp)
+                return unicode(s).encode('unicode_escape')
 
     def auth(self, username, password):
 
@@ -61,11 +75,47 @@ class Backend(ldapcherry.backend.Backend):
     def rm_from_group(self,username):
         pass
 
-    def add_user(self, username):
-        pass
+    def add_user(self, attrs):
+        ldap_client = self._bind()
+        attrs_str = {}
+        for a in attrs:
+            attrs_str[self._str(a)] = self._str(attrs[a])
+        attrs_str['objectClass'] = self.objectclasses
+        dn = self.dn_user_attr + '=' + attrs[self.dn_user_attr] + ',' + self.userdn
+        ldif = modlist.addModlist(attrs_str)
+        try:
+            ldap_client.add_s(dn,ldif)
+        except ldap.OBJECT_CLASS_VIOLATION as e:
+            info = e[0]['info']
+            desc = e[0]['desc']
+            self._logger(
+                    logging.ERROR,
+                    "Configuration error, " + desc + ", " + info,
+                )
+            raise e
+        except ldap.INSUFFICIENT_ACCESS as e:
+            info = e[0]['info']
+            desc = e[0]['desc']
+            self._logger(
+                    logging.ERROR,
+                    "Access error, " + desc + ", " + info,
+                )
+            raise e
+        except ldap.ALREADY_EXISTS as e:
+            desc = e[0]['desc']
+            self._logger(
+                    logging.ERROR,
+                    "adding user failed, " + desc,
+                )
+            raise e
 
     def del_user(self, username):
-        pass
+        ldap_client = self._bind()
+        dn = self.get_user(username, False)
+        if not dn is None:
+            ldap_client.delete_s(dn)
+        else:
+            raise DelUserDontExists(username)
 
     def _bind(self):
         ldap_client = self._connect()
