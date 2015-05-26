@@ -53,7 +53,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def auth(self, username, password):
 
-        binddn = self.get_user(username, False)
+        binddn = self._get_user(username, False)
         if not binddn is None:
             ldap_client = self._connect()
             try:
@@ -111,7 +111,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def del_user(self, username):
         ldap_client = self._bind()
-        dn = self.get_user(username, False)
+        dn = self._get_user(username, False)
         if not dn is None:
             ldap_client.delete_s(dn)
         else:
@@ -166,7 +166,18 @@ class Backend(ldapcherry.backend.Backend):
 
         return self._search(searchfilter, None)
 
-    def get_user(self, username, attrs=True):
+    def get_user(self, username):
+        ret = {}
+        attrs_tmp = self._get_user(username)[1]
+        for attr in attrs_tmp: 
+            value_tmp = attrs_tmp[attr]
+            if len(value_tmp) == 1:
+                ret[attr] = value_tmp[0]
+            else:
+                ret[attr] = value_tmp
+        return ret 
+
+    def _get_user(self, username, attrs=True):
         if attrs:
             a = self.attrlist
         else:
