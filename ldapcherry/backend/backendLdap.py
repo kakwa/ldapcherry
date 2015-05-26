@@ -72,8 +72,11 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, attrs):
         pass
 
-    def rm_from_group(self,username):
+    def rm_from_group(self, username):
         pass
+
+    def get_groups(self, username):
+        return []
 
     def add_user(self, attrs):
         ldap_client = self._bind()
@@ -89,23 +92,23 @@ class Backend(ldapcherry.backend.Backend):
             info = e[0]['info']
             desc = e[0]['desc']
             self._logger(
-                    logging.ERROR,
-                    "Configuration error, " + desc + ", " + info,
+                    severity = logging.ERROR,
+                    msg = "Configuration error, " + desc + ", " + info,
                 )
             raise e
         except ldap.INSUFFICIENT_ACCESS as e:
             info = e[0]['info']
             desc = e[0]['desc']
             self._logger(
-                    logging.ERROR,
-                    "Access error, " + desc + ", " + info,
+                    severity = logging.ERROR,
+                    msg = "Access error, " + desc + ", " + info,
                 )
             raise e
         except ldap.ALREADY_EXISTS as e:
             desc = e[0]['desc']
             self._logger(
-                    logging.ERROR,
-                    "adding user failed, " + desc,
+                    severity = logging.ERROR,
+                    msg = "adding user failed, " + desc,
                 )
             raise e
 
@@ -123,15 +126,15 @@ class Backend(ldapcherry.backend.Backend):
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
         except ldap.INVALID_CREDENTIALS as e:
             self._logger(
-                    logging.ERROR,
-                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
+                    severity = logging.ERROR,
+                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
                 )
             ldap_client.unbind_s()
             raise e
         except ldap.SERVER_DOWN as e:
             self._logger(
-                    logging.ERROR,
-                    "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
+                    severity = logging.ERROR,
+                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
                 )
             ldap_client.unbind_s()
             raise e 
@@ -148,8 +151,8 @@ class Backend(ldapcherry.backend.Backend):
             )
         except ldap.FILTER_ERROR as e:
             self._logger(
-                    logging.ERROR,
-                    "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
+                    severity = logging.ERROR,
+                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
                 )
             ldap_client.unbind_s()
             raise e
@@ -219,8 +222,8 @@ class Backend(ldapcherry.backend.Backend):
                 ldap_client.start_tls_s()
             except ldap.OPERATIONS_ERROR as e:
                 self._logger(
-                    logging.ERROR,
-                    "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
+                    severity = logging.ERROR,
+                    msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
                 )
                 raise e
                 #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
