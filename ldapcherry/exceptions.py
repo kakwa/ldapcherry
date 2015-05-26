@@ -5,6 +5,8 @@
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
+import string
+
 class MissingParameter(Exception):
     def __init__(self, section, key):
         self.section = section
@@ -68,6 +70,14 @@ class BackendModuleInitFail(Exception):
     def __init__(self, module):
         self.module = module
         self.log = "fail to init module <%(module)s>" % {'module': module}
+
+class WrongParamValue(Exception):
+    def __init__(self, param, section, possible_values):
+        self.possible_values = possible_values
+        self.section = section
+        self.param = param
+        possible_values_str = string.join(possible_values, ', ')
+        self.log = "wrong value for param <%(param)s> in section <%(section)s>, possible values are [%(values)s]" % {'param': param, 'section': section, 'values': possible_values_str}
 
 class WrongAttributeType(Exception):
     def __init__(self, key, section, ymlfile):
