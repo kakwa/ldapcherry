@@ -118,7 +118,7 @@ class TestError(object):
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ret = inv.get_user('jwatson')
-        expected = ('cn=John Watson,ou=People,dc=example,dc=org', {'uid': ['jwatson'], 'cn': ['John Watson'], 'sn': ['watson']})
+        expected = {'uid': 'jwatson', 'cn': 'John Watson', 'sn': 'watson'}
         assert ret == expected
 
     def testSearchUser(self):
