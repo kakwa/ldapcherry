@@ -15,7 +15,7 @@ import ldap
 
 cfg = {
 'module'             : 'ldapcherry.backend.ldap',
-'groupdn'            : 'ou=group,dc=example,dc=org',
+'groupdn'            : 'ou=groups,dc=example,dc=org',
 'userdn'             : 'ou=People,dc=example,dc=org',
 'binddn'             : 'cn=dnscherry,dc=example,dc=org',
 'password'           : 'password',
@@ -119,6 +119,12 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
         ret = inv.get_user('jwatson')
         expected = {'uid': 'jwatson', 'cn': 'John Watson', 'sn': 'watson'}
+        assert ret == expected
+
+    def testGetUser(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        ret = inv.get_groups('jwatson')
+        expected = ['cn=itpeople,ou=Groups,dc=example,dc=org']
         assert ret == expected
 
     def testSearchUser(self):
