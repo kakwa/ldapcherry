@@ -76,7 +76,18 @@ class Backend(ldapcherry.backend.Backend):
         pass
 
     def get_groups(self, username):
-        return []
+        userdn = self._get_user(username, False)
+        
+        searchfilter = self.group_filter_tmpl % {
+            'userdn': userdn,
+            'username': username
+        }
+
+        groups = self._search(searchfilter, None, self.groupdn)
+        ret = []
+        for entry in groups:
+            ret.append(entry[0])
+        return ret
 
     def add_user(self, attrs):
         ldap_client = self._bind()
@@ -141,10 +152,10 @@ class Backend(ldapcherry.backend.Backend):
         return ldap_client
 
 
-    def _search(self, searchfilter, attrs):
+    def _search(self, searchfilter, attrs, basedn):
         ldap_client = self._bind()
         try:
-            r = ldap_client.search_s(self.userdn,
+            r = ldap_client.search_s(basedn,
                     ldap.SCOPE_SUBTREE,
                     searchfilter,
                     attrlist=attrs
@@ -167,7 +178,7 @@ class Backend(ldapcherry.backend.Backend):
             'searchstring': searchstring
         }
 
-        return self._search(searchfilter, None)
+        return self._search(searchfilter, None, self.userdn)
 
     def get_user(self, username):
         ret = {}
@@ -190,7 +201,7 @@ class Backend(ldapcherry.backend.Backend):
             'username': username
         }
 
-        r = self._search(user_filter, a)
+        r = self._search(user_filter, a, self.userdn)
 
         if len(r) == 0:
             return None
