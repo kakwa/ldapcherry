@@ -361,6 +361,21 @@ class LdapCherry(object):
             message = 'Example warning'
             return render_error(alert, message)
 
+    def _check_auth(self, must_admin):
+        if not 'connected' in cherrypy.session or not cherrypy.session['connected']:
+            raise cherrypy.HTTPRedirect("/signin")
+        if cherrypy.session['connected'] and \
+                not cherrypy.session['isadmin']:
+            if must_admin:
+                raise cherrypy.HTTPError("403 Forbidden", "You are not allowed to access this resource.")
+            else:
+                return
+        if cherrypy.session['connected'] and \
+                cherrypy.session['isadmin']:
+            return
+        else:
+            raise cherrypy.HTTPRedirect("/signin")
+
     @cherrypy.expose
     def signin(self):
         """simple signin page
@@ -372,6 +387,9 @@ class LdapCherry(object):
         """login page
         """
         auth = self._auth(login, password)
+        cherrypy.session['isadmin'] = auth['isadmin']
+        cherrypy.session['connected'] = auth['connected']
+
         if auth['connected']:
             message = "login success for user '%(user)s'" % {
                 'user': login
@@ -381,7 +399,6 @@ class LdapCherry(object):
                 severity = logging.INFO
             )
             cherrypy.session[SESSION_KEY] = cherrypy.request.login = login
-            cherrypy.session['isadmin'] = auth['isadmin']
             raise cherrypy.HTTPRedirect("/")
         else:
             message = "login failed for user '%(user)s'" % {
@@ -405,36 +422,41 @@ class LdapCherry(object):
             msg = message,
             severity = logging.INFO
         )
-
         raise cherrypy.HTTPRedirect("/signin")
 
     @cherrypy.expose
     def index(self, **params):
         """main page rendering
         """
+        self._check_auth(must_admin=False)
         pass
 
     @cherrypy.expose
     def searchuser(self):
         """ search user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def adduser(self):
         """ add user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def removeuser(self):
         """ remove user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def modifyuser(self):
         """ modify user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def modifyself(self):
         """ self modify user page """
+        self._check_auth(must_admin=False)
         pass
