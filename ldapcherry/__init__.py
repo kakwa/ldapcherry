@@ -414,9 +414,14 @@ class LdapCherry(object):
     def logout(self):
         """ logout page 
         """
-        user = self.auth.end_session()
+        sess = cherrypy.session
+        username = sess.get(SESSION_KEY, None)
+        sess[SESSION_KEY] = None
+        if username:
+            cherrypy.request.login = None
+
         message = "user '%(user)s' logout" % {
-            'user': user
+            'user': username
         }
         cherrypy.log.error(
             msg = message,
