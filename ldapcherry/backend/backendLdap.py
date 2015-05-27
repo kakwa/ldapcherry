@@ -167,6 +167,16 @@ class Backend(ldapcherry.backend.Backend):
                 )
             ldap_client.unbind_s()
             raise e
+        except ldap.NO_SUCH_OBJECT as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Search DN '" + basedn \
+                            + "' doesn't exist, check '" \
+                            + self.backend_name + ".userdn' or '" \
+                            + self.backend_name + ".groupdn'",
+                )
+            ldap_client.unbind_s()
+            raise e
 
         ldap_client.unbind_s()
         return r
