@@ -178,6 +178,11 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testGetUser(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        ret = inv.get_user('jwatson')
+        expected = {'sn': 'watson', 'uid': 'jwatson', 'cn': 'John Watson'}
+        assert ret == expected
 
     def testAddUserMissingMustAttribute(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
