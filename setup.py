@@ -73,10 +73,13 @@ def get_list_files(basedir, targetdir):
         return_list.append((os.path.join(targetdir, subpath), files_list))
     return return_list
 
+# add static files and templates in the list of thing to deploy
 resources_files = get_list_files('resources', 
     os.path.join(datarootdir, 'share', 'ldapcherry'))
 
-resources_files.append((
+# add the configuration files if they don't exist
+if not os.path.exists(os.path.join(sysconfdir, 'ldapcherry')):
+    resources_files.append((
         os.path.join(sysconfdir, 'ldapcherry'),
         [ 'conf/ldapcherry.ini', 'conf/attributes.yml', 'conf/roles.yml']
     ))
@@ -87,7 +90,7 @@ setup(
     version          = '0.0.1',
     author           = 'Pierre-Francois Carpentier',
     author_email     = 'carpentier.pf@gmail.com',
-    packages         = ['ldapcherry'],
+    packages         = ['ldapcherry', 'ldapcherry.backend'],
     data_files       = resources_files,
     scripts          = ['scripts/ldapcherryd'],
     url              = 'https://github.com/kakwa/ldapcherry',

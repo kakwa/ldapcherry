@@ -7,8 +7,16 @@
 
 import cherrypy
 import ldap
+import ldap.modlist as modlist
 import logging
 import ldapcherry.backend
+import re
+
+class DelUserDontExists(Exception):
+    def __init__(self, user):
+        self.user = user
+        self.log = "cannot remove user, user <%(user)s> does not exist" % { 'user' : user}
+
 
 class Backend(ldapcherry.backend.Backend):
 
@@ -26,17 +34,26 @@ class Backend(ldapcherry.backend.Backend):
         self.userdn = self.get_param('userdn')
         self.groupdn = self.get_param('groupdn')
         self.user_filter_tmpl = self.get_param('user_filter_tmpl')
+        self.group_filter_tmpl = self.get_param('group_filter_tmpl')
+        self.search_filter_tmpl = self.get_param('search_filter_tmpl')
+        self.dn_user_attr = self.get_param('dn_user_attr')
+        self.objectclasses = []
+        for o in re.split('\W+', self.get_param('objectclasses')):
+            self.objectclasses.append(self._str(o))
+
         self.attrlist = []
         for a in attrslist:
+            self.attrlist.append(self._str(a))
+
+    def _str(self, s):
             try:
-                self.attrlist.append(str(a))
+                return str(s)
             except UnicodeEncodeError:
-                tmp = unicode(a).encode('unicode_escape')
-                self.attrlist.append(tmp)
+                return unicode(s).encode('unicode_escape')
 
     def auth(self, username, password):
 
-        binddn = self.get_user(username, False)
+        binddn = self._get_user(username, False)
         if not binddn is None:
             ldap_client = self._connect()
             try:
@@ -55,51 +72,150 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, attrs):
         pass
 
-    def rm_from_group(self,username):
+    def rm_from_group(self, username):
         pass
 
-    def add_user(self, username):
-        pass
+    def get_groups(self, username):
+        userdn = self._get_user(username, False)
+        
+        searchfilter = self.group_filter_tmpl % {
+            'userdn': userdn,
+            'username': username
+        }
+
+        groups = self._search(searchfilter, None, self.groupdn)
+        ret = []
+        for entry in groups:
+            ret.append(entry[0])
+        return ret
+
+    def add_user(self, attrs):
+        ldap_client = self._bind()
+        attrs_str = {}
+        for a in attrs:
+            attrs_str[self._str(a)] = self._str(attrs[a])
+        attrs_str['objectClass'] = self.objectclasses
+        dn = self.dn_user_attr + '=' + attrs[self.dn_user_attr] + ',' + self.userdn
+        ldif = modlist.addModlist(attrs_str)
+        try:
+            ldap_client.add_s(dn,ldif)
+        except ldap.OBJECT_CLASS_VIOLATION as e:
+            info = e[0]['info']
+            desc = e[0]['desc']
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Configuration error, " + desc + ", " + info,
+                )
+            raise e
+        except ldap.INSUFFICIENT_ACCESS as e:
+            info = e[0]['info']
+            desc = e[0]['desc']
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Access error, " + desc + ", " + info,
+                )
+            raise e
+        except ldap.ALREADY_EXISTS as e:
+            desc = e[0]['desc']
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "adding user failed, " + desc,
+                )
+            raise e
 
     def del_user(self, username):
-        pass
-
-    def get_user(self, username, attrs=True):
-        if attrs:
-            a = self.attrlist
+        ldap_client = self._bind()
+        dn = self._get_user(username, False)
+        if not dn is None:
+            ldap_client.delete_s(dn)
         else:
-            a = None
+            raise DelUserDontExists(username)
+
+    def _bind(self):
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
         except ldap.INVALID_CREDENTIALS as e:
             self._logger(
-                    logging.ERROR,
-                    "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
+                    severity = logging.ERROR,
+                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
                 )
-            #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+            ldap_client.unbind_s()
             raise e
         except ldap.SERVER_DOWN as e:
             self._logger(
-                    logging.ERROR,
-                    "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
+                    severity = logging.ERROR,
+                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
                 )
+            ldap_client.unbind_s()
             raise e 
+        return ldap_client
+
+
+    def _search(self, searchfilter, attrs, basedn):
+        ldap_client = self._bind()
+        try:
+            r = ldap_client.search_s(basedn,
+                    ldap.SCOPE_SUBTREE,
+                    searchfilter,
+                    attrlist=attrs
+            )
+        except ldap.FILTER_ERROR as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
+                )
+            ldap_client.unbind_s()
+            raise e
+        except ldap.NO_SUCH_OBJECT as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Search DN '" + basedn \
+                            + "' doesn't exist, check '" \
+                            + self.backend_name + ".userdn' or '" \
+                            + self.backend_name + ".groupdn'",
+                )
+            ldap_client.unbind_s()
+            raise e
+
+        ldap_client.unbind_s()
+        return r
+
+
+    def search(self, searchstring):
+
+        searchfilter = self.search_filter_tmpl % {
+            'searchstring': searchstring
+        }
+
+        return self._search(searchfilter, None, self.userdn)
+
+    def get_user(self, username):
+        ret = {}
+        attrs_tmp = self._get_user(username)[1]
+        for attr in attrs_tmp: 
+            value_tmp = attrs_tmp[attr]
+            if len(value_tmp) == 1:
+                ret[attr] = value_tmp[0]
+            else:
+                ret[attr] = value_tmp
+        return ret 
+
+    def _get_user(self, username, attrs=True):
+        if attrs:
+            a = self.attrlist
+        else:
+            a = None
 
         user_filter = self.user_filter_tmpl % {
             'username': username
         }
 
-        r = ldap_client.search_s(self.userdn,
-                ldap.SCOPE_SUBTREE,
-                user_filter,
-                attrlist=a
-            )
+        r = self._search(user_filter, a, self.userdn)
+
         if len(r) == 0:
-            ldap_client.unbind_s()
             return None
 
-        ldap_client.unbind_s()
         if attrs:
             dn_entry = r[0]
         else:
@@ -127,8 +243,8 @@ class Backend(ldapcherry.backend.Backend):
                 ldap_client.start_tls_s()
             except ldap.OPERATIONS_ERROR as e:
                 self._logger(
-                    logging.ERROR,
-                    "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
+                    severity = logging.ERROR,
+                    msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
                 )
                 raise e
                 #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")

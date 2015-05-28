@@ -76,6 +76,21 @@ class LdapCherry(object):
         else:
             raise MissingParameter(section, key)
 
+
+    def _get_groups(self, username):
+        ret = {}
+        for b in self.backends:
+            ret[b] = self.backends[b].get_groups(username)
+        return ret
+
+    def _get_roles(self, username):
+        groups = self._get_groups(username)
+        return self.roles.get_roles(groups)
+
+    def _is_admin(self, username):
+        roles = self._get_roles(username)
+        return self.roles.is_admin(roles['roles'])
+
     def _check_backends(self):
         backends = self.backends_params.keys()
         for b in self.roles.get_backends():
@@ -113,6 +128,27 @@ class LdapCherry(object):
                 raise e
             except:
                 raise BackendModuleInitFail(module)
+
+
+    def _init_auth(self, config):
+        self.auth_mode = self._get_param('auth', 'auth.mode', config)
+        if self.auth_mode in ['and', 'or', 'none']:
+            pass
+        elif self.auth_mode == 'custom':
+            # load custom auth module
+            auth_module = self._get_param('auth', 'auth.module', config)
+            auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
+            self.auth = auth.Auth(config['auth'], cherrypy.log)
+        else:
+            raise WrongParamValue('auth.mode', 'auth', ['and', 'or', 'none', 'custom'])
+
+        self.roles_file = self._get_param('roles', 'roles.file', config)
+        cherrypy.log.error(
+            msg = "loading roles file <%(file)s>" % { 'file': self.roles_file },
+            severity = logging.DEBUG
+        )
+        self.roles = Roles(self.roles_file)
+
 
     def _set_access_log(self, config, level):
         access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
@@ -201,6 +237,27 @@ class LdapCherry(object):
         else:
             return logging.INFO
 
+    def _auth(self, user, password):
+        if self.auth_mode == 'none':
+            return {'connected': True, 'isadmin': True}
+        elif self.auth_mode == 'and':
+            ret1 = True
+            for b in self.backends:
+                ret1 = self.backends[b].auth(user, password) and ret1
+        elif self.auth_mode == 'or':
+            ret1 = False
+            for b in self.backends:
+                ret1 = self.backends[b].auth(user, password) or ret1
+        elif self.auth_mode == 'custom':
+            ret1 = self.auth.auth(user, password)
+        else:
+            raise Exception()
+        if not ret1:
+            return {'connected': False, 'isadmin': False}
+        else:
+            isadmin = self._is_admin(user)
+            return {'connected': True, 'isadmin': isadmin}
+
     def reload(self, config = None):
         """ load/reload the configuration
         """
@@ -229,18 +286,14 @@ class LdapCherry(object):
             self.temp_login = self.temp_lookup.get_template('login.tmpl')
 
 
-            self.roles_file = self._get_param('roles', 'roles.file', config)
-            cherrypy.log.error(
-                msg = "loading roles file <%(file)s>" % { 'file': self.roles_file },
-                severity = logging.DEBUG
-            )
-            self.roles = Roles(self.roles_file)
+            self._init_auth(config)
 
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
             cherrypy.log.error(
                 msg = "loading attributes file <%(file)s>" % { 'file': self.attributes_file },
                 severity = logging.DEBUG
             )
+
             self.attributes = Attributes(self.attributes_file)
 
             cherrypy.log.error(
@@ -308,6 +361,21 @@ class LdapCherry(object):
             message = 'Example warning'
             return render_error(alert, message)
 
+    def _check_auth(self, must_admin):
+        if not 'connected' in cherrypy.session or not cherrypy.session['connected']:
+            raise cherrypy.HTTPRedirect("/signin")
+        if cherrypy.session['connected'] and \
+                not cherrypy.session['isadmin']:
+            if must_admin:
+                raise cherrypy.HTTPError("403 Forbidden", "You are not allowed to access this resource.")
+            else:
+                return
+        if cherrypy.session['connected'] and \
+                cherrypy.session['isadmin']:
+            return
+        else:
+            raise cherrypy.HTTPRedirect("/signin")
+
     @cherrypy.expose
     def signin(self):
         """simple signin page
@@ -318,7 +386,11 @@ class LdapCherry(object):
     def login(self, login, password):
         """login page
         """
-        if self.auth.check_credentials(login, password):
+        auth = self._auth(login, password)
+        cherrypy.session['isadmin'] = auth['isadmin']
+        cherrypy.session['connected'] = auth['connected']
+
+        if auth['connected']:
             message = "login success for user '%(user)s'" % {
                 'user': login
             }
@@ -342,44 +414,54 @@ class LdapCherry(object):
     def logout(self):
         """ logout page 
         """
-        user = self.auth.end_session()
+        sess = cherrypy.session
+        username = sess.get(SESSION_KEY, None)
+        sess[SESSION_KEY] = None
+        if username:
+            cherrypy.request.login = None
+
         message = "user '%(user)s' logout" % {
-            'user': user
+            'user': username
         }
         cherrypy.log.error(
             msg = message,
             severity = logging.INFO
         )
-
         raise cherrypy.HTTPRedirect("/signin")
 
     @cherrypy.expose
     def index(self, **params):
         """main page rendering
         """
+        self._check_auth(must_admin=False)
         pass
 
     @cherrypy.expose
     def searchuser(self):
         """ search user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def adduser(self):
         """ add user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def removeuser(self):
         """ remove user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def modifyuser(self):
         """ modify user page """
+        self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
     def modifyself(self):
         """ self modify user page """
+        self._check_auth(must_admin=False)
         pass
