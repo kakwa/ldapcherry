@@ -15,6 +15,8 @@ from cherrypy.process import plugins, servers
 from cherrypy import Application
 import logging
 
+cherrypy.session = {}
+
 # monkey patching cherrypy to disable config interpolation
 def new_as_dict(self, raw=True, vars=None):
     """Convert an INI file to a dictionary"""
@@ -76,8 +78,6 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
-
-
     def testLog(self):
         app = LdapCherry()
         cfg = { 'global' : {}}
@@ -112,6 +112,17 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry.ini', app)
         e = Exception()
         app._handle_exception(e)
+
+    def testLogin(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        try:
+            app.login('jwatson', 'passwordwatson')
+        except cherrypy.HTTPRedirect as e:
+            expected = 'http://127.0.0.1:8080/'
+            assert e[0][0] == expected
+        else:
+            raise AssertionError("expected an exception")
 
     def testLogger(self):
         app = LdapCherry()
