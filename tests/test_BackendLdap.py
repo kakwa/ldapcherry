@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from sets import Set
-from ldapcherry.backend.backendLdap import Backend
+from ldapcherry.backend.backendLdap import Backend, DelUserDontExists
 from ldapcherry.exceptions import * 
 import cherrypy
 import logging
@@ -167,6 +167,17 @@ class TestError(object):
         else:
             inv.del_user('test')
             raise AssertionError("expected an exception")
+
+    def testDelUserDontExists(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        try:
+            inv.del_user('test')
+            inv.del_user('test')
+        except DelUserDontExists:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
 
     def testAddUserMissingMustAttribute(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr)
