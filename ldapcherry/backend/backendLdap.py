@@ -45,6 +45,104 @@ class Backend(ldapcherry.backend.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
+    def _connect(self):
+        ldap_client = ldap.initialize(self.uri)
+        ldap_client.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_client.set_option(ldap.OPT_TIMEOUT, self.timeout)
+        if self.starttls == 'on':
+            ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
+        else:
+            ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
+        if self.ca and self.checkcert == 'on':
+            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+        #else:
+        #    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
+        if self.checkcert == 'off':
+            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+        else:
+            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
+        if self.starttls == 'on': 
+            try:
+                ldap_client.start_tls_s()
+            except ldap.OPERATIONS_ERROR as e:
+                self._logger(
+                    severity = logging.ERROR,
+                    msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
+                )
+                raise e
+                #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+        return ldap_client
+
+    def _bind(self):
+        ldap_client = self._connect()
+        try:
+            ldap_client.simple_bind_s(self.binddn, self.bindpassword)
+        except ldap.INVALID_CREDENTIALS as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
+                )
+            ldap_client.unbind_s()
+            raise e
+        except ldap.SERVER_DOWN as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
+                )
+            ldap_client.unbind_s()
+            raise e 
+        return ldap_client
+
+    def _search(self, searchfilter, attrs, basedn):
+        ldap_client = self._bind()
+        try:
+            r = ldap_client.search_s(basedn,
+                    ldap.SCOPE_SUBTREE,
+                    searchfilter,
+                    attrlist=attrs
+            )
+        except ldap.FILTER_ERROR as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
+                )
+            ldap_client.unbind_s()
+            raise e
+        except ldap.NO_SUCH_OBJECT as e:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Search DN '" + basedn \
+                            + "' doesn't exist, check '" \
+                            + self.backend_name + ".userdn' or '" \
+                            + self.backend_name + ".groupdn'",
+                )
+            ldap_client.unbind_s()
+            raise e
+
+        ldap_client.unbind_s()
+        return r
+
+    def _get_user(self, username, attrs=True):
+        if attrs:
+            a = self.attrlist
+        else:
+            a = None
+
+        user_filter = self.user_filter_tmpl % {
+            'username': username
+        }
+
+        r = self._search(user_filter, a, self.userdn)
+
+        if len(r) == 0:
+            return None
+
+        if attrs:
+            dn_entry = r[0]
+        else:
+            dn_entry = r[0][0]
+        return dn_entry
+
     def _str(self, s):
             try:
                 return str(s)
@@ -65,29 +163,6 @@ class Backend(ldapcherry.backend.Backend):
             return True
         else:
             return False
-
-    def add_to_group(self):
-        pass
-
-    def set_attrs(self, attrs):
-        pass
-
-    def rm_from_group(self, username):
-        pass
-
-    def get_groups(self, username):
-        userdn = self._get_user(username, False)
-        
-        searchfilter = self.group_filter_tmpl % {
-            'userdn': userdn,
-            'username': username
-        }
-
-        groups = self._search(searchfilter, None, self.groupdn)
-        ret = []
-        for entry in groups:
-            ret.append(entry[0])
-        return ret
 
     def add_user(self, attrs):
         ldap_client = self._bind()
@@ -131,56 +206,14 @@ class Backend(ldapcherry.backend.Backend):
         else:
             raise DelUserDontExists(username)
 
-    def _bind(self):
-        ldap_client = self._connect()
-        try:
-            ldap_client.simple_bind_s(self.binddn, self.bindpassword)
-        except ldap.INVALID_CREDENTIALS as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
-                )
-            ldap_client.unbind_s()
-            raise e
-        except ldap.SERVER_DOWN as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
-                )
-            ldap_client.unbind_s()
-            raise e 
-        return ldap_client
+    def set_attrs(self, attrs, username):
+        pass
 
+    def add_to_group(self, username):
+        pass
 
-    def _search(self, searchfilter, attrs, basedn):
-        ldap_client = self._bind()
-        try:
-            r = ldap_client.search_s(basedn,
-                    ldap.SCOPE_SUBTREE,
-                    searchfilter,
-                    attrlist=attrs
-            )
-        except ldap.FILTER_ERROR as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
-                )
-            ldap_client.unbind_s()
-            raise e
-        except ldap.NO_SUCH_OBJECT as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Search DN '" + basedn \
-                            + "' doesn't exist, check '" \
-                            + self.backend_name + ".userdn' or '" \
-                            + self.backend_name + ".groupdn'",
-                )
-            ldap_client.unbind_s()
-            raise e
-
-        ldap_client.unbind_s()
-        return r
-
+    def rm_from_group(self, username):
+        pass
 
     def search(self, searchstring):
 
@@ -201,51 +234,16 @@ class Backend(ldapcherry.backend.Backend):
                 ret[attr] = value_tmp
         return ret 
 
-    def _get_user(self, username, attrs=True):
-        if attrs:
-            a = self.attrlist
-        else:
-            a = None
-
-        user_filter = self.user_filter_tmpl % {
+    def get_groups(self, username):
+        userdn = self._get_user(username, False)
+        
+        searchfilter = self.group_filter_tmpl % {
+            'userdn': userdn,
             'username': username
         }
 
-        r = self._search(user_filter, a, self.userdn)
-
-        if len(r) == 0:
-            return None
-
-        if attrs:
-            dn_entry = r[0]
-        else:
-            dn_entry = r[0][0]
-        return dn_entry
-
-    def _connect(self):
-        ldap_client = ldap.initialize(self.uri)
-        ldap_client.set_option(ldap.OPT_REFERRALS, 0)
-        ldap_client.set_option(ldap.OPT_TIMEOUT, self.timeout)
-        if self.starttls == 'on':
-            ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
-        else:
-            ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
-        if self.ca and self.checkcert == 'on':
-            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
-        #else:
-        #    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
-        if self.checkcert == 'off':
-            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
-        else:
-            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
-        if self.starttls == 'on': 
-            try:
-                ldap_client.start_tls_s()
-            except ldap.OPERATIONS_ERROR as e:
-                self._logger(
-                    severity = logging.ERROR,
-                    msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
-                )
-                raise e
-                #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
-        return ldap_client
+        groups = self._search(searchfilter, None, self.groupdn)
+        ret = []
+        for entry in groups:
+            ret.append(entry[0])
+        return ret
