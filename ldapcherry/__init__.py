@@ -362,6 +362,10 @@ class LdapCherry(object):
             return render_error(alert, message)
 
     def _check_auth(self, must_admin):
+        username = cherrypy.session.get(SESSION_KEY)
+        if not username:
+           raise cherrypy.HTTPRedirect("/signin")
+
         if not 'connected' in cherrypy.session or not cherrypy.session['connected']:
             raise cherrypy.HTTPRedirect("/signin")
         if cherrypy.session['connected'] and \
@@ -369,10 +373,10 @@ class LdapCherry(object):
             if must_admin:
                 raise cherrypy.HTTPError("403 Forbidden", "You are not allowed to access this resource.")
             else:
-                return
+                return username
         if cherrypy.session['connected'] and \
                 cherrypy.session['isadmin']:
-            return
+            return username
         else:
             raise cherrypy.HTTPRedirect("/signin")
 
@@ -391,9 +395,14 @@ class LdapCherry(object):
         cherrypy.session['connected'] = auth['connected']
 
         if auth['connected']:
-            message = "login success for user '%(user)s'" % {
-                'user': login
-            }
+            if auth['isadmin']:
+                message = "login success for user '%(user)s' as administrator" % {
+                    'user': login
+                }
+            else:
+                message = "login success for user '%(user)s' as normal user" % {
+                    'user': login
+                }
             cherrypy.log.error(
                 msg = message,
                 severity = logging.INFO
@@ -434,7 +443,7 @@ class LdapCherry(object):
         """main page rendering
         """
         self._check_auth(must_admin=False)
-        pass
+        return self.temp_index.render()
 
     @cherrypy.expose
     def searchuser(self):
