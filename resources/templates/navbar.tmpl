@@ -8,19 +8,18 @@
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span><span class="icon-bar"></span>
                     <span class="icon-bar"></span></button> 
-                    <a class="navbar-brand" href="/self">Self Modify</a>
+                    <a class="navbar-brand" href="/modifyself">Self Modify</a>
                     <a class="navbar-brand" href="/adduser">Add User</a>
-                    <a class="navbar-brand" href="/search">Delete/Modify User</a>
+                    <a class="navbar-brand" href="/searchadmin">Delete/Modify User</a>
 				    </div>
-		            <form class="navbar-form navbar-left" role="search">
+
+                    <a class="navbar-brand navbar-right" href='/logout'><span class="glyphicon glyphicon-off"> Logout</a>
+		            <form class="navbar-form navbar-right" role="search">
                         <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" placeholder="Search User">
                     </div>
                     <button type="submit" class="btn btn-default">Submit</button>
-                    </form>		
-                    %if logout_button:
-                    <a class="navbar-brand navbar-right" href='/logout'><span class="glyphicon glyphicon-off"> Logout</a>
-                    %endif
+                    </form>
 				</div>
 			</nav>
 		</div>
