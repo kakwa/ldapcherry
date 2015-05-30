@@ -448,6 +448,12 @@ class LdapCherry(object):
     @cherrypy.expose
     def searchuser(self):
         """ search user page """
+        self._check_auth(must_admin=False)
+        pass
+
+    @cherrypy.expose
+    def searchadmin(self):
+        """ search user page """
         self._check_auth(must_admin=True)
         pass
 
