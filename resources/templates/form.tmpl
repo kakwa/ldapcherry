@@ -1,0 +1,23 @@
+% for a in attributes: 
+<% attr = attributes[a] %>
+<div class="form-group">
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
+    % if attr['type'] == 'string':
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" required>
+    % elif attr['type'] == 'email':
+  <input type="email" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+    % elif attr['type'] == 'int':
+  <input type="number" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+    % elif attr['type'] == 'fix':
+  <input type="text" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+    % elif attr['type'] == 'stringlist':
+  <input type="text" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+    % elif attr['type'] == 'password':
+  <input type="password" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
+  <input type="password" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+    % endif
+</div>
+</div>
+% endfor
