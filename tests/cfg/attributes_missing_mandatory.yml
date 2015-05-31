@@ -40,6 +40,7 @@ email:
 uid:
     display_name: "UID"
     type: string
+    key: True
     autofill: 
         function: uid
         args:

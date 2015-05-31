@@ -2,6 +2,7 @@ cn:
     description: "Firt Name and Display Name"
     display_name: "Display Name"
     type: notatype
+    key: True
     autofill: 
         function: cn
         args:

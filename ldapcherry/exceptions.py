@@ -79,6 +79,16 @@ class WrongParamValue(Exception):
         possible_values_str = string.join(possible_values, ', ')
         self.log = "wrong value for param <%(param)s> in section <%(section)s>, possible values are [%(values)s]" % {'param': param, 'section': section, 'values': possible_values_str}
 
+class DumplicateUserKey(Exception):
+    def __init__(self, attrid1, attrid2):
+        self.attrid1 = attrid1
+        self.attrid2 = attrid2
+        self.log = "duplicate key in <%(attrid1)s> and <%(attrid2)s>" % {'attrid1': attrid1, 'attrid2': attrid2}
+
+class MissingUserKey(Exception):
+    def __init__(self):
+        self.log = "missing key"
+
 class WrongAttributeType(Exception):
     def __init__(self, key, section, ymlfile):
         self.key = key

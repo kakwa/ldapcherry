@@ -2,6 +2,7 @@ cn:
     description: "Firt Name and Display Name"
     display_name: "Display Name"
     type: string
+    search_displayed: True
     autofill: 
         function: cn
         args:
@@ -13,6 +14,7 @@ cn:
 first-name:
     description: "First name of the user"
     display_name: "First Name"
+    search_displayed: True
     type: string
     backends:
         ldap: givenName
@@ -20,6 +22,7 @@ first-name:
 name:
     description: "Family name of the user"
     display_name: "Name"
+    search_displayed: True
     type: string
     backends:
         ldap: sn
@@ -27,6 +30,7 @@ name:
 email:
     description: "Email of the user"
     display_name: "Name"
+    search_displayed: True
     type: email
     autofill: 
         function: email
@@ -40,6 +44,8 @@ email:
 uid:
     description: "UID of the user"
     display_name: "UID"
+    search_displayed: True
+    key: True
     type: string
     autofill: 
         function: uid

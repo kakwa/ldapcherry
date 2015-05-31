@@ -10,7 +10,7 @@ import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend
+from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend, DumplicateUserKey, MissingUserKey
 from sets import Set
 import yaml
 
@@ -23,6 +23,8 @@ class Attributes:
         self.backends = Set([])
         self.self_attributes = Set([])
         self.backend_attributes = {}
+        self.displayed_attributes = []
+        self.key = None
         try:
             stream = open(attributes_file, 'r')
         except:
@@ -39,11 +41,26 @@ class Attributes:
                 raise WrongAttributeType(attr['type'], attrid, attributes_file)
             if 'self' in attr and attr['self']:
                 self.self_attributes.add(attrid)
+            if 'key' in attr and attr['key']:
+                if not self.key is None:
+                    raise DumplicateUserKey(attrid, self.key)
+                self.key = attrid
             for b in attr['backends']:
                 self.backends.add(b)
                 if b not in self.backend_attributes:
                     self.backend_attributes[b] = []
                 self.backend_attributes[b].append(attr['backends'][b])
+            if 'search_displayed' in attr and attr['search_displayed']:
+                self.displayed_attributes.append(attrid)
+
+        if self.key is None:
+            raise MissingUserKey()
+
+    def get_search_attributes(self):
+        return self.displayed_attributes
+
+    def get_key(self):
+        return self.key
 
     def _mandatory_check(self, attr):
         for m in ['description', 'display_name', 'type', 'backends']:
