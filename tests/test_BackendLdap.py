@@ -40,11 +40,11 @@ attr = ['shéll', 'shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userP
 class TestError(object):
 
     def testNominal(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         return True
 
     def testConnect(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ldap = inv._connect()
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
         return True
@@ -53,7 +53,7 @@ class TestError(object):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
-        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldap = inv._connect()
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
@@ -62,7 +62,7 @@ class TestError(object):
         cfg2['uri'] = 'ldaps://notaldap:637'
         cfg2['checkcert'] = 'on'
         cfg2['ca'] = './cfg/ca.crt'
-        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
@@ -76,7 +76,7 @@ class TestError(object):
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
         cfg2['ca'] = './cfg/wrong_ca.crt'
-        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
@@ -87,21 +87,21 @@ class TestError(object):
 #        cfg2 = cfg.copy()
 #        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
 #        cfg2['checkcert'] = 'off'
-#        inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+#        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
 #        ldap = inv._connect()
 #        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
     def testAuthSuccess(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         return True
 
     def testAuthSuccess(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.auth('jwatson', 'passwordwatson')
         assert ret == True
 
     def testAuthFailure(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         res = inv.auth('notauser', 'password') or inv.auth('jwatson', 'notapassword')
         assert res == False
 
@@ -109,32 +109,32 @@ class TestError(object):
         cfg2 = {}
         return True
         try:
-            inv = Backend(cfg2, cherrypy.log, 'ldap', attr)
+            inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         except MissingKey:
             return
         else:
             raise AssertionError("expected an exception")
 
     def testGetUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_user('jwatson')
         expected = {'uid': 'jwatson', 'cn': 'John Watson', 'sn': 'watson'}
         assert ret == expected
 
     def testGetUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_groups('jwatson')
         expected = ['cn=itpeople,ou=Groups,dc=example,dc=org']
         assert ret == expected
 
     def testSearchUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.search('smith')
-        expected = [('cn=Sheri Smith,ou=People,dc=example,dc=org', {'uid': ['ssmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HERCAR 125'], 'sn': ['smith'], 'mail': ['s.smith@example.com', 'ssmith@example.com', 'sheri.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['Sheri Smith']}), ('cn=John Smith,ou=People,dc=example,dc=org', {'uid': ['jsmith'], 'objectClass': ['inetOrgPerson'], 'carLicense': ['HISCAR 125'], 'sn': ['Smith'], 'mail': ['j.smith@example.com', 'jsmith@example.com', 'jsmith.smith@example.com'], 'homePhone': ['555-111-2225'], 'cn': ['John Smith']})]
+        expected = {'ssmith': {'uid': 'ssmith', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'smith', 'mail': ['s.smith@example.com', 'ssmith@example.com', 'sheri.smith@example.com'], 'homePhone': '555-111-2225', 'cn': 'Sheri Smith'}, 'jsmith': {'uid': 'jsmith', 'objectClass': 'inetOrgPerson', 'carLicense': 'HISCAR 125', 'sn': 'Smith', 'mail': ['j.smith@example.com', 'jsmith@example.com', 'jsmith.smith@example.com'], 'homePhone': '555-111-2225', 'cn': 'John Smith'}} 
         assert ret == expected
 
     def testAddUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
         'uid': 'test',
         'sn':  'test',
@@ -148,7 +148,7 @@ class TestError(object):
         inv.del_user('test')
 
     def testAddUserDuplicate(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
         'uid': 'test',
         'sn':  'test',
@@ -169,7 +169,7 @@ class TestError(object):
             raise AssertionError("expected an exception")
 
     def testDelUserDontExists(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         try:
             inv.del_user('test')
             inv.del_user('test')
@@ -179,13 +179,13 @@ class TestError(object):
             raise AssertionError("expected an exception")
 
     def testGetUser(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_user('jwatson')
         expected = {'sn': 'watson', 'uid': 'jwatson', 'cn': 'John Watson'}
         assert ret == expected
 
-    def testAddUserMissingMustAttribute(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr)
+    def testAddUserMissingMustattribute(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
         'uid': 'test',
         'sn':  'test',

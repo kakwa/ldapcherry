@@ -20,7 +20,7 @@ class DelUserDontExists(Exception):
 
 class Backend(ldapcherry.backend.Backend):
 
-    def __init__(self, config, logger, name, attrslist):
+    def __init__(self, config, logger, name, attrslist, key):
         self.config = config
         self._logger = logger
         self.backend_name = name
@@ -38,6 +38,7 @@ class Backend(ldapcherry.backend.Backend):
         self.search_filter_tmpl = self.get_param('search_filter_tmpl')
         self.dn_user_attr = self.get_param('dn_user_attr')
         self.objectclasses = []
+        self.key = key
         for o in re.split('\W+', self.get_param('objectclasses')):
             self.objectclasses.append(self._str(o))
 
@@ -216,12 +217,24 @@ class Backend(ldapcherry.backend.Backend):
         pass
 
     def search(self, searchstring):
+        ret = {}
 
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
         }
-
-        return self._search(searchfilter, None, self.userdn)
+        for u in self._search(searchfilter, None, self.userdn):
+            attrs = {}
+            attrs_tmp = u[1]
+            for attr in attrs_tmp: 
+                value_tmp = attrs_tmp[attr]
+                if len(value_tmp) == 1:
+                    attrs[attr] = value_tmp[0]
+                else:
+                    attrs[attr] = value_tmp
+    
+            if self.key in attrs:
+                ret[attrs[self.key]] = attrs
+        return ret 
 
     def get_user(self, username):
         ret = {}

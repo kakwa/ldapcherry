@@ -80,6 +80,11 @@ class Attributes:
             raise WrongBackend(backend)
         return self.backend_attributes[backend]
 
+    def get_backend_key(self, backend):
+        if backend not in self.backends:
+            raise WrongBackend(backend)
+        return self.attributes[self.key]['backends'][backend]
+
     def get_attributes(self):
         """get the list of groups from roles"""
         return self.self_attributes
