@@ -421,7 +421,9 @@ class LdapCherry(object):
     def searchuser(self, searchstring):
         """ search user page """
         self._check_auth(must_admin=False)
-        pass
+        res = self._search(searchstring)
+        attrs_list = self.attributes.get_search_attributes()
+        return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list)
 
     @cherrypy.expose
     def searchadmin(self, searchstring=None):
