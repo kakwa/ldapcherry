@@ -286,7 +286,8 @@ class LdapCherry(object):
             self.temp_login = self.temp_lookup.get_template('login.tmpl')
             self.temp_searchadmin = self.temp_lookup.get_template('searchadmin.tmpl')
             self.temp_searchuser  = self.temp_lookup.get_template('searchuser.tmpl')
-
+            self.temp_adduser     = self.temp_lookup.get_template('adduser.tmpl')
+            self.temp_form        = self.temp_lookup.get_template('form.tmpl')
 
             self._init_auth(config)
 
@@ -418,10 +419,13 @@ class LdapCherry(object):
         return self.temp_index.render()
 
     @cherrypy.expose
-    def searchuser(self, searchstring):
+    def searchuser(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=False)
-        res = self._search(searchstring)
+        if not searchstring is None:
+            res = self._search(searchstring)
+        else:
+            res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list)
 
@@ -429,7 +433,10 @@ class LdapCherry(object):
     def searchadmin(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=True)
-        res = self._search(searchstring)
+        if not searchstring is None:
+            res = self._search(searchstring)
+        else:
+            res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp_searchadmin.render(searchresult = res, attrs_list = attrs_list)
 
@@ -437,7 +444,8 @@ class LdapCherry(object):
     def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
-        pass
+        form = self.temp_form.render(attributes=self.attributes.attributes)
+        return self.temp_adduser.render(form=form)
 
     @cherrypy.expose
     def delete(self, **params):
