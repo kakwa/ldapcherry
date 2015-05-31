@@ -3,25 +3,23 @@
 	<div class="row clearfix">
 		<div class="col-md-12 column">
 			<nav class="navbar navbar-inverse" role="navigation">
-				<div class="navbar-header">
-			        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span><span class="icon-bar"></span>
-                    <span class="icon-bar"></span></button> 
-                    <a class="navbar-brand" href="/modifyself">Self Modify</a>
-                    <a class="navbar-brand" href="/adduser">Add User</a>
-                    <a class="navbar-brand" href="/searchadmin">Delete/Modify User</a>
-				    </div>
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+                <a class="navbar-brand" href="/selfmodify">Self Modify</a>
+                <a class="navbar-brand" href="/adduser">Add User</a>
+                <a class="navbar-brand navbar" href="/searchadmin">Delete/Modify User</a>
+                </div>
 
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <a class="navbar-brand navbar-right" href='/logout'><span class="glyphicon glyphicon-off"> Logout</a>
-		            <form class="navbar-form navbar-right" role="search">
+		            <form method='GET' action='/searchuser' class="navbar-form navbar-right" role="search">
                         <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search User">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
+                            <input type="text" class="form-control" name="searchstring" placeholder="Search User">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
                     </form>
-				</div>
-			</nav>
+                </div>
+            </nav>
 		</div>
 	</div>
 </%block>
