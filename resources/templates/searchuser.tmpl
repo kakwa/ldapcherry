@@ -15,6 +15,7 @@
             </form>
         </div>
     </div>
+    % if not searchresult is None:
     <div class="row clearfix top-buffer bottom-buffer">
         <div class="col-md-12 column">
             <div class="well well-sm">
@@ -41,15 +42,9 @@
                             </tr>
                             % endfor
                         </tbody>
-                            <tr>
-                            %for attr in attrs_list:
-                                <th>
-                                    ${attrs_list[attr]}
-                                </th>
-                            % endfor
-                            </tr>
                     </table>
             </div>
         </div>
     </div>
+    %endif
 </%block>
