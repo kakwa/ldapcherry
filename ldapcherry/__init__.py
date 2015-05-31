@@ -288,6 +288,7 @@ class LdapCherry(object):
             self.temp_searchuser  = self.temp_lookup.get_template('searchuser.tmpl')
             self.temp_adduser     = self.temp_lookup.get_template('adduser.tmpl')
             self.temp_form        = self.temp_lookup.get_template('form.tmpl')
+            self.temp_selfmodify  = self.temp_lookup.get_template('selfmodify.tmpl')
 
             self._init_auth(config)
 
@@ -463,4 +464,5 @@ class LdapCherry(object):
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
-        pass
+        form = self.temp_form.render(attributes=self.attributes.get_selfattributes())
+        return self.temp_selfmodify.render(form=form)
