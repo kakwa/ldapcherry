@@ -129,7 +129,6 @@ class LdapCherry(object):
             except:
                 raise BackendModuleInitFail(module)
 
-
     def _init_auth(self, config):
         self.auth_mode = self._get_param('auth', 'auth.mode', config)
         if self.auth_mode in ['and', 'or', 'none']:
@@ -284,6 +283,8 @@ class LdapCherry(object):
             self.temp_index = self.temp_lookup.get_template('index.tmpl')
             self.temp_error = self.temp_lookup.get_template('error.tmpl')
             self.temp_login = self.temp_lookup.get_template('login.tmpl')
+            self.temp_searchadmin = self.temp_lookup.get_template('searchadmin.tmpl')
+            self.temp_searchuser  = self.temp_lookup.get_template('searchuser.tmpl')
 
 
             self._init_auth(config)
@@ -314,52 +315,11 @@ class LdapCherry(object):
                 severity = logging.ERROR
             )
             exit(1)
-            
-    def _reraise(self, exception):
-        """ reraise a given exception"""
-        raise exception
-    
-    def _error_handler(self, exception, backend=''):
-        """ exception handling function, takes an exception
-        and returns the right error page and emits a log
-        """
 
-        # log and error page handling
-        def render_error(alert, message):
-            if alert == 'danger':
-                severity = logging.ERROR
-            elif alert == 'warning':
-                severity = logging.WARNING
-            else:
-                severity = logging.CRITICAL
-
-            cherrypy.log.error(
-                    msg = message,
-                    severity = severity
-                    )
-
-            return self.temp_error.render(
-                        logout_button = self.auth.logout_button,
-                        alert = alert,
-                        message = message,
-                )
-
-        # reraise the exception
-        try:
-            self._reraise(exception)
-
-        # error handling
-        except ldapcherry.exception.MissingParameter:
-            cherrypy.response.status = 500 
-            alert = 'danger'
-            message = 'Example danger'
-            return render_error(alert, message)
-
-        except KeyError:
-            cherrypy.response.status = 400
-            alert = 'warning'
-            message = 'Example warning'
-            return render_error(alert, message)
+    def _search(self, searchstring):
+        ret = {} 
+        for b in self.backends:
+            ret[b] = self.backends[b].search(searchstring)
 
     def _check_auth(self, must_admin):
         if self.auth_mode == 'none':
@@ -441,44 +401,44 @@ class LdapCherry(object):
         raise cherrypy.HTTPRedirect("/signin")
 
     @cherrypy.expose
-    def index(self, **params):
+    def index(self):
         """main page rendering
         """
         self._check_auth(must_admin=False)
         return self.temp_index.render()
 
     @cherrypy.expose
-    def searchuser(self):
+    def searchuser(self, searchstring):
         """ search user page """
         self._check_auth(must_admin=False)
         pass
 
     @cherrypy.expose
-    def searchadmin(self):
+    def searchadmin(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=True)
-        pass
+        return self.temp_searchadmin.render(searchresult=['test', 'toto', 'tata'])
 
     @cherrypy.expose
-    def adduser(self):
+    def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
-    def removeuser(self):
+    def delete(self, **params):
         """ remove user page """
         self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
-    def modifyuser(self):
+    def modify(self, **params):
         """ modify user page """
         self._check_auth(must_admin=True)
         pass
 
     @cherrypy.expose
-    def modifyself(self):
+    def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
         pass
