@@ -122,6 +122,7 @@ password:
 logscript:
     description: "Windows login script"
     display_name: "Login script"
+    weight: 100
     type: fix
     value: login1.bat
     backends:

@@ -3,6 +3,7 @@ cn:
     display_name: "Display Name"
     type: notatype
     key: True
+    weight: 10
     autofill: 
         function: cn
         args:
@@ -16,6 +17,7 @@ first-name:
     description: "First name of the user"
     display_name: "First Name"
     type: string
+    weight: 10
     backends:
         ldap: givenName
         ad: givenName

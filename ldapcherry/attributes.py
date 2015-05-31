@@ -21,7 +21,7 @@ class Attributes:
     def __init__(self, attributes_file):
         self.attributes_file = attributes_file
         self.backends = Set([])
-        self.self_attributes = Set([])
+        self.self_attributes = {} 
         self.backend_attributes = {}
         self.displayed_attributes = {}
         self.key = None
@@ -40,7 +40,7 @@ class Attributes:
             if not attr['type'] in types:
                 raise WrongAttributeType(attr['type'], attrid, attributes_file)
             if 'self' in attr and attr['self']:
-                self.self_attributes.add(attrid)
+                self.self_attributes[attrid] = attr
             if 'key' in attr and attr['key']:
                 if not self.key is None:
                     raise DumplicateUserKey(attrid, self.key)
@@ -51,7 +51,7 @@ class Attributes:
                     self.backend_attributes[b] = []
                 self.backend_attributes[b].append(attr['backends'][b])
             if 'search_displayed' in attr and attr['search_displayed']:
-                self.displayed_attributes[attrid] = attr['display_name']
+                self.displayed_attributes[attrid] = attr
 
         if self.key is None:
             raise MissingUserKey()
@@ -63,7 +63,7 @@ class Attributes:
         return self.key
 
     def _mandatory_check(self, attr):
-        for m in ['description', 'display_name', 'type', 'backends']:
+        for m in ['description', 'display_name', 'type', 'backends', 'weight']:
             if m not in self.attributes[attr]:
                 raise MissingKey(m, attr, self.attributes_file)
 

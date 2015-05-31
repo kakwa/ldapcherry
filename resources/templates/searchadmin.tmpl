@@ -22,9 +22,9 @@
                     <table id="RecordTable" class="table table-hover table-condensed tablesorter">
                         <thead>
                             <tr>
-                            %for attr in attrs_list:
+                            %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
                                 <th>
-                                    ${attrs_list[attr]}
+                                    ${attrs_list[attr]['display_name']}
                                 </th>
                             % endfor
                                 <th class="sorter-false">
@@ -38,7 +38,7 @@
                         <tbody>
                             %for user in searchresult:
                             <tr>
-                            %for attr in attrs_list:
+                            %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
                                 <td>
                                     % if attr in searchresult[user]:
                                         ${searchresult[user][attr]}
