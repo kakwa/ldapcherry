@@ -318,9 +318,18 @@ class LdapCherry(object):
             exit(1)
 
     def _search(self, searchstring):
+        if searchstring is None:
+            return {}
         ret = {} 
         for b in self.backends:
-            ret[b] = self.backends[b].search(searchstring)
+            tmp = self.backends[b].search(searchstring)
+            for u in tmp:
+                if not u in ret:
+                    ret[u] = {}
+                for attr in tmp[u]:
+                    if not attr in ret[u]:
+                        ret[u][attr] = tmp[u][attr]
+        return ret
 
     def _check_auth(self, must_admin):
         if self.auth_mode == 'none':
@@ -418,7 +427,9 @@ class LdapCherry(object):
     def searchadmin(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=True)
-        return self.temp_searchadmin.render(searchresult=['test', 'toto', 'tata'])
+        res = self._search(searchstring)
+        attrs_list = self.attributes.get_search_attributes()
+        return self.temp_searchadmin.render(searchresult = res, attrs_list = attrs_list)
 
     @cherrypy.expose
     def adduser(self, **params):

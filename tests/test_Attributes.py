@@ -30,10 +30,22 @@ class TestError(object):
         expected = Set(['ldap', 'ad'])
         assert ret == expected
 
+    def testGetSearchAttributes(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        ret = inv.get_search_attributes()
+        expected = {'first-name': 'First Name', 'cn': 'Display Name', 'name': 'Name', 'uid': 'UID', 'email': 'Name'}
+        assert ret == expected
+
     def testGetBackendAttributes(self):
         inv = Attributes('./tests/cfg/attributes.yml')
         ret = inv.get_backend_attributes('ldap')
         expected = ['shell', 'cn', 'uid', 'uidNumber', 'gidNumber', 'home', 'userPassword', 'givenName', 'email', 'sn']
+        assert ret == expected
+
+    def testGetKey(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        ret = inv.get_key()
+        expected = 'uid' 
         assert ret == expected
 
     def testWrongGetBackendAttributes(self):
@@ -44,7 +56,6 @@ class TestError(object):
             return
         else:
             raise AssertionError("expected an exception")
- 
 
     def testNoFile(self):
         try:

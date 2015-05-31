@@ -23,7 +23,7 @@ class Attributes:
         self.backends = Set([])
         self.self_attributes = Set([])
         self.backend_attributes = {}
-        self.displayed_attributes = []
+        self.displayed_attributes = {}
         self.key = None
         try:
             stream = open(attributes_file, 'r')
@@ -51,7 +51,7 @@ class Attributes:
                     self.backend_attributes[b] = []
                 self.backend_attributes[b].append(attr['backends'][b])
             if 'search_displayed' in attr and attr['search_displayed']:
-                self.displayed_attributes.append(attrid)
+                self.displayed_attributes[attrid] = attr['display_name']
 
         if self.key is None:
             raise MissingUserKey()

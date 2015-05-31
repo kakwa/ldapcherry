@@ -21,9 +21,11 @@
                     <table id="RecordTable" class="table table-hover table-condensed tablesorter">
                         <thead>
                             <tr>
+                            %for attr in attrs_list:
                                 <th>
-                                    User
+                                    ${attrs_list[attr]}
                                 </th>
+                            % endfor
                                 <th class="sorter-false">
                                     Modify
                                 </th>
@@ -35,9 +37,13 @@
                         <tbody>
                             %for user in searchresult:
                             <tr>
+                            %for attr in attrs_list:
                                 <td>
-                                    ${user}
+                                    % if attr in searchresult[user]:
+                                        ${searchresult[user][attr]}
+                                    % endif
                                 </td>
+                            % endfor
                                 <td>
                                     <a href="/modify?user=${user}">
                                     <button type="submit" class="btn btn-xs blue">
@@ -56,9 +62,11 @@
                             % endfor
                         </tbody>
                             <tr>
+                            %for attr in attrs_list:
                                 <th>
-                                    User
+                                    ${attrs_list[attr]}
                                 </th>
+                            % endfor
                                 <th class="sorter-false">
                                     Modify
                                 </th>
