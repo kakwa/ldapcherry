@@ -3,6 +3,7 @@ cn:
     display_name: "Display Name"
     type: string
     search_displayed: True
+    weight: 30
     autofill: 
         function: cn
         args:
@@ -17,6 +18,7 @@ first-name:
     display_name: "First Name"
     search_displayed: True
     type: string
+    weight: 20
     backends:
         ldap: givenName
         ad: givenName
@@ -24,6 +26,7 @@ name:
     description: "Family name of the user"
     display_name: "Name"
     search_displayed: True
+    weight: 10
     type: string
     backends:
         ldap: sn
@@ -32,6 +35,7 @@ email:
     description: "Email of the user"
     display_name: "Name"
     type: email
+    weight: 40
     autofill: 
         function: email
         args:
@@ -47,6 +51,7 @@ uid:
     search_displayed: True
     key: True
     type: string
+    weight: 50
     autofill: 
         function: uid
         args:
@@ -58,6 +63,7 @@ uid:
 uidNumber:
     description: "User ID Number of the user"
     display_name: "UID Number"
+    weight: 60
     type: int
     autofill: 
         function: uidNumber
@@ -70,6 +76,7 @@ uidNumber:
 gidNumber:
     description: "Group ID Number of the user"
     display_name: "GID Number"
+    weight: 70
     type: int
     default: 10000
     backends:
@@ -78,6 +85,7 @@ gidNumber:
 shell:
     description: "Shell of the user"
     display_name: "Shell"
+    weight: 80
     self: True
     type: stringlist
     values:
@@ -90,6 +98,7 @@ shell:
 home:
     description: "Home user path"
     display_name: "Home"
+    weight: 90
     type: string
     autofill: 
         function: home
@@ -104,6 +113,7 @@ home:
 password:
     description: "Password of the user"
     display_name: "Password"
+    weight: 31
     self: True
     type: password
     backends:
