@@ -362,6 +362,8 @@ class LdapCherry(object):
             return render_error(alert, message)
 
     def _check_auth(self, must_admin):
+        if self.auth_mode == 'none':
+            return 'anonymous'
         username = cherrypy.session.get(SESSION_KEY)
         if not username:
            raise cherrypy.HTTPRedirect("/signin")
