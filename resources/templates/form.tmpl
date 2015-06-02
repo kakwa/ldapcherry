@@ -12,7 +12,11 @@
     % elif attr['type'] == 'fix':
   <input type="text" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'stringlist':
-  <input type="text" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <select class="form-control" name="type">
+        %for val in attr['values']:
+        <option>${val}</option>
+        %endfor
+  </select>
     % elif attr['type'] == 'password':
   <input type="password" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
   <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
