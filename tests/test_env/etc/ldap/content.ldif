@@ -10,6 +10,13 @@ cn: dnscherry
 description: [applicative account]
 userPassword: password
 
+dn: cn=ldapcherry,dc=example,dc=org
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: ldapcherry
+description: [applicative account]
+userPassword: password
+
 dn: ou=People,dc=example,dc=org
 ou: People
 objectClass: top
