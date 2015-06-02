@@ -4,13 +4,13 @@
 <div class="input-group">
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
     % if attr['type'] == 'string':
-  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" required>
+  <input type="text"   class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'email':
-  <input type="email" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="email"  class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'int':
   <input type="number" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'fix':
-  <input type="text" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="text"   class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" name="type">
         %for val in attr['values']:
