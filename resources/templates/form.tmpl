@@ -10,7 +10,8 @@
     % elif attr['type'] == 'int':
   <input type="number" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'fix':
-  <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="hidden"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required value="${attr['value']}">
+  <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" name="type">
         %for val in attr['values']:
