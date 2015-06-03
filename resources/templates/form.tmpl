@@ -6,7 +6,7 @@
     % if attr['type'] == 'string':
   <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'email':
-  <input type="email"  name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="email"  name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required data-error="email address is invalid">
     % elif attr['type'] == 'int':
   <input type="number" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
     % elif attr['type'] == 'fix':
@@ -19,9 +19,9 @@
         %endfor
   </select>
     % elif attr['type'] == 'password':
-  <input type="password" name="${a}1" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
-  <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
-  <input type="password" name="${a}2" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+      <input type="password" class="form-control" name="${a}1" id="${a}1" placeholder="${attr['description']}" required>
+      <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
+      <input type="password" class="form-control" name="${a}2" id="#${a}2" data-match="#${a}1" placeholder="Confirm" required>
     % endif
 </div>
 </div>
