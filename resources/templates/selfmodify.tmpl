@@ -1,7 +1,9 @@
 <%inherit file="navbar.tmpl"/>
 <%block name="core">
     <div class="row clearfix top-buffer bottom-buffer">
-        <div class="col-md-12 column">
+        <div class="col-md-2 column">
+        </div>
+        <div class="col-md-8 column">
             <div class="well well-sm">
               <form method='POST' action='/selfmodify' role="form" class="form-signin">
               ${form}
@@ -13,6 +15,8 @@
               </div>
               </form>
             </div>
+        </div>
+        <div class="col-md-2 column">
         </div>
     </div>
 </%block>
