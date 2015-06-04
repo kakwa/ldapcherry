@@ -1,0 +1,26 @@
+users:
+  backends_groups:
+    ad: [Domain Users]
+    ldap: ['cn=users,ou=group,dc=example,dc=com']
+  display_name: Simple Users
+  subroles:
+    admin-lv2:
+      LC_admins: true
+      backends_groups:
+        ad: [Domain Users]
+        ldap: ['cn=nagios admins,ou=group,dc=example,dc=com']
+      display_name: Administrators Level 2
+      subroles:
+        admin-lv3:
+          backends_groups:
+            ad: [Domain Users, Administrators, Domain Controllers]
+            ldap: ['cn=dns admins,ou=group,dc=example,dc=com', 'cn=nagios admins,ou=group,dc=example,dc=com',
+              'cn=puppet admins,ou=group,dc=example,dc=com',]
+          display_name: Administrators Level 3
+          subroles: {}
+    developpers:
+      backends_groups:
+        ad: [Domain Users]
+        ldap: ['cn=developpers,ou=group,dc=example,dc=com']
+      display_name: Developpers
+      subroles: {}

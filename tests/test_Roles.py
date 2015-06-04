@@ -67,6 +67,11 @@ class TestError(object):
         }
         assert res == expected
 
+    def testNested(self):
+        inv = Roles('./tests/cfg/nested.yml')
+        expected = {'developpers': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=developpers,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Developpers'}, 'admin-lv3': {'backends_groups': {'ad': ['Domain Users', 'Administrators', 'Domain Controllers'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 3'}, 'admin-lv2': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 2', 'LC_admins': True}, 'users': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Simple Users'}}
+        assert expected == inv.flatten
+
     def testGetGroupMissingRole(self):
         inv = Roles('./tests/cfg/roles.yml')
         try:
