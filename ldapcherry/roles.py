@@ -79,8 +79,8 @@ class Roles:
     def _is_parent(self, roleid1, roleid2):
         """Test if roleid1 is contained inside roleid2"""
 
-        role2 = self.flatten[roleid2]
-        role1 = self.flatten[roleid1]
+        role2 = copy.deepcopy(self.flatten[roleid2])
+        role1 = copy.deepcopy(self.flatten[roleid1])
 
         if role1 == role2:
             return False
@@ -107,7 +107,7 @@ class Roles:
         self._flatten()
         parents = {} 
         for roleid in self.flatten:
-            role = self.flatten[roleid]
+            role = copy.deepcopy(self.flatten[roleid])
 
             # Display name is mandatory
             if not 'display_name' in role:
@@ -123,11 +123,11 @@ class Roles:
 
         # Create the nested groups
         for roleid in self.flatten:
-            role = self.flatten[roleid]
+            role = copy.deepcopy(self.flatten[roleid])
 
             parents[roleid]=[]
             for roleid2 in self.flatten:
-                role2 = self.flatten[roleid2]
+                role2 = copy.deepcopy(self.flatten[roleid2])
                 if self._is_parent(roleid, roleid2):
                     parents[roleid].append(roleid2)
 
@@ -138,7 +138,7 @@ class Roles:
                         parents[r].remove(p)
 
         def nest(p):
-            ret = self.flatten[p]
+            ret = copy.deepcopy(self.flatten[p])
             ret['subroles'] = {}
             if len(parents[p]) == 0:
                 return ret
