@@ -34,9 +34,34 @@ class Roles:
         except DumplicatedKey as e:
             raise DumplicateRoleKey(e.key)
         stream.close()
+        self.graph = {}
         self.roles = {}
+        self.flatten = {}
         self.admin_roles = []
         self._nest()
+
+    def _merge_groups(self, backends_list):
+        ret = {}
+        for backends in backends_list:
+            for b in backends:
+                if not b in ret:
+                    ret[b] = Set([])
+                for group in backends[b]:
+                    ret[b].add(group)
+        return ret
+
+    def _flatten(self, roles=None, groups=[]):
+        if roles is None:
+            roles = copy(self.roles_raw)
+        for roleid in role:
+            role = self.roles_raw[roleid]
+            if 'subroles' in role:
+                self._flatten(role['subroles'], role)
+                del role['subroles']
+
+            self.flatten[roleid] = role
+
+        pass
 
     def _set_admin(self, role):
         for r in role['subroles']:
@@ -54,19 +79,19 @@ class Roles:
             return False
 
         # Check if role1 is contained by role2
-        for b1 in role1['backends']:
-            if not b1 in role2['backends']:
+        for b1 in role1['backends_groups']:
+            if not b1 in role2['backends_groups']:
                 return False
-            for group in role1['backends'][b1]['groups']:
-                if not group in role2['backends'][b1]['groups']:
+            for group in role1['backends_groups'][b1]:
+                if not group in role2['backends_groups'][b1]:
                     return False
 
         # If role2 is inside role1, roles are equal, throw exception
-        for b2 in role2['backends']:
-            if not b2 in role1['backends']:
+        for b2 in role2['backends_groups']:
+            if not b2 in role1['backends_groups']:
                 return True
-            for group in role2['backends'][b2]['groups']:
-                if not group in role1['backends'][b2]['groups']:
+            for group in role2['backends_groups'][b2]:
+                if not group in role1['backends_groups'][b2]:
                     return True
         raise DumplicateRoleContent(roleid1, roleid2)
 
@@ -81,11 +106,11 @@ class Roles:
                 raise MissingKey('display_name', role, self.role_file)
 
             # Backend is mandatory
-            if not 'backends' in role:
-                raise MissingKey('backends', role, self.role_file)
+            if not 'backends_groups' in role:
+                raise MissingKey('backends_groups', role, self.role_file)
 
             # Create the list of backends
-            for backend in role['backends']:
+            for backend in role['backends_groups']:
                 self.backends.add(backend)
 
         # Create the nested groups
@@ -145,8 +170,8 @@ class Roles:
         # (parentroles is a list of roles that the user is member of by
         # being member of one of their subroles)
         if not (role in parentroles or role in roles):
-            for b in self.roles[role]['backends']:
-                for g in self.roles[role]['backends'][b]['groups']:
+            for b in self.roles[role]['backends_groups']:
+                for g in self.roles[role]['backends_groups'][b]:
                     if b not in groups:
                         notroles.add(role)
                         return False
@@ -155,10 +180,10 @@ class Roles:
                         return False
 
         # add groups of the role to usedgroups
-        for b in self.roles[role]['backends']:
+        for b in self.roles[role]['backends_groups']:
             if not b in usedgroups:
                 usedgroups[b] = Set([])
-            for g in self.roles[role]['backends'][b]['groups']:
+            for g in self.roles[role]['backends_groups'][b]:
                 usedgroups[b].add(g)
 
         flag = True
@@ -212,7 +237,7 @@ class Roles:
         """get the list of groups from role"""
         if not role in self.roles_raw:
             raise MissingRole(role)
-        return self.roles_raw[role]['backends']
+        return self.roles_raw[role]['backends_groups']
 
     def is_admin(self, roles):
         """determine from a list of roles if is ldapcherry administrator"""

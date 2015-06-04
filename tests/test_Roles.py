@@ -62,8 +62,8 @@ class TestError(object):
         inv = Roles('./tests/cfg/roles.yml')
         res = inv.get_groups('users')
         expected = {
-            'ad': {'groups': ['Domain Users']},
-            'ldap': {'groups': ['cn=users,ou=group,dc=example,dc=com']}
+            'ad': ['Domain Users'],
+            'ldap': ['cn=users,ou=group,dc=example,dc=com']
         }
         assert res == expected
 
