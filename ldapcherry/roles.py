@@ -7,6 +7,7 @@
 
 import os
 import sys
+import copy
 
 from sets import Set
 from ldapcherry.pyyamlwrapper import loadNoDump
@@ -41,6 +42,7 @@ class Roles:
         self._nest()
 
     def _merge_groups(self, backends_list):
+        """ merge a list backends_groups"""
         ret = {}
         for backends in backends_list:
             for b in backends:
@@ -48,21 +50,26 @@ class Roles:
                     ret[b] = Set([])
                 for group in backends[b]:
                     ret[b].add(group)
+        for b in ret:
+            ret[b] = list(ret[b])
         return ret
 
-    def _flatten(self, roles=None, groups=[]):
+    def _flatten(self, roles=None, groups=None):
+        """ flatten a (semi) nest roles structure"""
         if roles is None:
-            roles = copy(self.roles_raw)
-        for roleid in role:
-            role = self.roles_raw[roleid]
+            roles_in = copy.deepcopy(self.roles_raw)
+        else:
+            roles_in = roles
+        for roleid in roles_in:
+            role = roles_in[roleid]
+            if not groups is None:
+                role['backends_groups'] = self._merge_groups([role['backends_groups'], groups])
             if 'subroles' in role:
-                self._flatten(role['subroles'], role)
+                self._flatten(role['subroles'], 
+                        role['backends_groups'])
                 del role['subroles']
 
             self.flatten[roleid] = role
-
-        pass
-
     def _set_admin(self, role):
         for r in role['subroles']:
             self.admin_roles.append(r)
@@ -72,8 +79,8 @@ class Roles:
     def _is_parent(self, roleid1, roleid2):
         """Test if roleid1 is contained inside roleid2"""
 
-        role2 = self.roles_raw[roleid2]
-        role1 = self.roles_raw[roleid1]
+        role2 = self.flatten[roleid2]
+        role1 = self.flatten[roleid1]
 
         if role1 == role2:
             return False
@@ -97,9 +104,10 @@ class Roles:
 
     def _nest(self):
         """nests the roles (creates roles hierarchy)"""
+        self._flatten()
         parents = {} 
-        for roleid in self.roles_raw:
-            role = self.roles_raw[roleid]
+        for roleid in self.flatten:
+            role = self.flatten[roleid]
 
             # Display name is mandatory
             if not 'display_name' in role:
@@ -114,12 +122,12 @@ class Roles:
                 self.backends.add(backend)
 
         # Create the nested groups
-        for roleid in self.roles_raw:
-            role = self.roles_raw[roleid]
+        for roleid in self.flatten:
+            role = self.flatten[roleid]
 
             parents[roleid]=[]
-            for roleid2 in self.roles_raw:
-                role2 = self.roles_raw[roleid2]
+            for roleid2 in self.flatten:
+                role2 = self.flatten[roleid2]
                 if self._is_parent(roleid, roleid2):
                     parents[roleid].append(roleid2)
 
@@ -130,7 +138,7 @@ class Roles:
                         parents[r].remove(p)
 
         def nest(p):
-            ret = self.roles_raw[p]
+            ret = self.flatten[p]
             ret['subroles'] = {}
             if len(parents[p]) == 0:
                 return ret
@@ -157,6 +165,10 @@ class Roles:
     def dump_nest(self):
         """dump the nested role hierarchy"""
         return yaml.dump(self.roles, Dumper=CustomDumper)
+
+    def dump_flatten(self):
+        """dump the nested role hierarchy"""
+        return yaml.dump(self.flatten, Dumper=CustomDumper)
 
     def _check_member(self, role, groups, notroles, roles, parentroles, usedgroups):
 
@@ -225,19 +237,19 @@ class Roles:
 
     def get_allroles(self):
         """get the list of roles"""
-        return self.roles_raw.keys()
+        return self.flatten.keys()
 
     def get_display_name(self, role):
         """get the display name of a role"""
-        if not role in self.roles_raw:
+        if not role in self.flatten:
             raise MissingRole(role)
-        return self.roles_raw[role]['display_name']
+        return self.flatten[role]['display_name']
 
     def get_groups(self, role):
         """get the list of groups from role"""
-        if not role in self.roles_raw:
+        if not role in self.flatten:
             raise MissingRole(role)
-        return self.roles_raw[role]['backends_groups']
+        return self.flatten[role]['backends_groups']
 
     def is_admin(self, roles):
         """determine from a list of roles if is ldapcherry administrator"""
