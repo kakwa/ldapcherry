@@ -18,7 +18,7 @@ class MissingKey(Exception):
         self.key = key
         self.section = section
         self.ymlfile = ymlfile
-        self.log = "missing key <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile } 
+        self.log = "missing key <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile }
 
 class DumplicateRoleKey(Exception):
     def __init__(self, role):
@@ -94,4 +94,4 @@ class WrongAttributeType(Exception):
         self.key = key
         self.section = section
         self.ymlfile = ymlfile
-        self.log = "wrong attribute type <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile } 
+        self.log = "wrong attribute type <%(key)s> in section <%(section)s> inside file <%(ymlfile)s>" % {'key': key, 'section': section, 'ymlfile': ymlfile }

@@ -62,7 +62,7 @@ class Backend(ldapcherry.backend.Backend):
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
-        if self.starttls == 'on': 
+        if self.starttls == 'on':
             try:
                 ldap_client.start_tls_s()
             except ldap.OPERATIONS_ERROR as e:
@@ -91,7 +91,7 @@ class Backend(ldapcherry.backend.Backend):
                     msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
                 )
             ldap_client.unbind_s()
-            raise e 
+            raise e
         return ldap_client
 
     def _search(self, searchfilter, attrs, basedn):
@@ -225,31 +225,31 @@ class Backend(ldapcherry.backend.Backend):
         for u in self._search(searchfilter, None, self.userdn):
             attrs = {}
             attrs_tmp = u[1]
-            for attr in attrs_tmp: 
+            for attr in attrs_tmp:
                 value_tmp = attrs_tmp[attr]
                 if len(value_tmp) == 1:
                     attrs[attr] = value_tmp[0]
                 else:
                     attrs[attr] = value_tmp
-    
+
             if self.key in attrs:
                 ret[attrs[self.key]] = attrs
-        return ret 
+        return ret
 
     def get_user(self, username):
         ret = {}
         attrs_tmp = self._get_user(username)[1]
-        for attr in attrs_tmp: 
+        for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
                 ret[attr] = value_tmp[0]
             else:
                 ret[attr] = value_tmp
-        return ret 
+        return ret
 
     def get_groups(self, username):
         userdn = self._get_user(username, False)
-        
+
         searchfilter = self.group_filter_tmpl % {
             'userdn': userdn,
             'username': username

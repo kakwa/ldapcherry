@@ -12,7 +12,7 @@ class Backend:
     def __init__(self):
         pass
 
-    def auth(self, username, password): 
+    def auth(self, username, password):
         return False
 
     def add_user(self, attrs):
@@ -44,6 +44,6 @@ class Backend:
             return self.config[param]
         elif not default is None:
             return default
-        else: 
+        else:
             raise MissingParameter('backends', self.backend_name+'.'+param)
 

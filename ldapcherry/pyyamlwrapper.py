@@ -29,7 +29,7 @@ try:
 except ImportError:
         from yaml import Loader, Dumper
 
-# PyYaml wrapper that loads yaml files throwing an exception 
+# PyYaml wrapper that loads yaml files throwing an exception
 #if a key is dumplicated
 class MyLoader(Reader, Scanner, Parser, Composer, Constructor, Resolver):
 

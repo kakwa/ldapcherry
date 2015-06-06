@@ -65,7 +65,7 @@ class Roles:
             if not groups is None:
                 role['backends_groups'] = self._merge_groups([role['backends_groups'], groups])
             if 'subroles' in role:
-                self._flatten(role['subroles'], 
+                self._flatten(role['subroles'],
                         role['backends_groups'])
                 del role['subroles']
 
@@ -74,7 +74,6 @@ class Roles:
         for r in role['subroles']:
             self.admin_roles.append(r)
             self._set_admin(role['subroles'][r])
-
 
     def _is_parent(self, roleid1, roleid2):
         """Test if roleid1 is contained inside roleid2"""
@@ -105,7 +104,7 @@ class Roles:
     def _nest(self):
         """nests the roles (creates roles hierarchy)"""
         self._flatten()
-        parents = {} 
+        parents = {}
         for roleid in self.flatten:
             role = copy.deepcopy(self.flatten[roleid])
 
@@ -143,7 +142,7 @@ class Roles:
             if len(parents[p]) == 0:
                 return ret
             else:
-                for i in parents[p]: 
+                for i in parents[p]:
                     sub = nest(i)
                     ret['subroles'][i] = sub
                 return ret
@@ -205,7 +204,7 @@ class Roles:
         # if not, add role to the list of roles
         if flag:
             roles.add(role)
-        # else remove it from the list of roles and add 
+        # else remove it from the list of roles and add
         # it to the list of parentroles
         else:
             if role in roles:

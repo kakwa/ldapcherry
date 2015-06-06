@@ -31,14 +31,14 @@ SESSION_KEY = '_cp_username'
 
 # Custom log function to overrige weird error.log function
 # of cherrypy
-def syslog_error(msg='', context='', 
+def syslog_error(msg='', context='',
         severity=logging.INFO, traceback=False):
     if traceback:
         msg += cherrypy._cperror.format_exc()
     if context == '':
         cherrypy.log.error_log.log(severity, msg)
     else:
-        cherrypy.log.error_log.log(severity, 
+        cherrypy.log.error_log.log(severity,
                 ' '.join((context, msg)))
 
 class LdapCherry(object):
@@ -120,7 +120,7 @@ class LdapCherry(object):
             try:
                 bc = __import__(module, globals(), locals(), ['Backend'], -1)
             except:
-                raise BackendModuleLoadingFail(module) 
+                raise BackendModuleLoadingFail(module)
             try:
                 attrslist = self.attributes.get_backend_attributes(backend)
                 key = self.attributes.get_backend_key(backend)
@@ -190,8 +190,8 @@ class LdapCherry(object):
             cherrypy.log.error_log.handlers = []
 
             # redefining log.error method because cherrypy does weird
-            # things like adding the date inside the message 
-            # or adding space even if context is empty 
+            # things like adding the date inside the message
+            # or adding space even if context is empty
             # (by the way, what's the use of "context"?)
             cherrypy.log.error = syslog_error
 
@@ -263,7 +263,7 @@ class LdapCherry(object):
         """
         try:
             # log configuration handling
-            # get log level 
+            # get log level
             # (if not in configuration file, log level is set to debug)
             level = self._get_loglevel(self._get_param('global', 'log.level', config, 'debug'))
             # configure access log
@@ -322,7 +322,7 @@ class LdapCherry(object):
     def _search(self, searchstring):
         if searchstring is None:
             return {}
-        ret = {} 
+        ret = {}
         for b in self.backends:
             tmp = self.backends[b].search(searchstring)
             for u in tmp:
@@ -395,7 +395,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     def logout(self):
-        """ logout page 
+        """ logout page
         """
         sess = cherrypy.session
         username = sess.get(SESSION_KEY, None)

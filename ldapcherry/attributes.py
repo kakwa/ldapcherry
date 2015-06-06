@@ -21,7 +21,7 @@ class Attributes:
     def __init__(self, attributes_file):
         self.attributes_file = attributes_file
         self.backends = Set([])
-        self.self_attributes = {} 
+        self.self_attributes = {}
         self.backend_attributes = {}
         self.displayed_attributes = {}
         self.key = None

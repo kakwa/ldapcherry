@@ -21,7 +21,7 @@ def start(configfile=None, daemonize=False, environment=None,
           cgi=False):
     """Subscribe all engine plugins and start the engine."""
     sys.path = [''] + sys.path
-    
+
     # monkey patching cherrypy to disable config interpolation
     def new_as_dict(self, raw=True, vars=None):
         """Convert an INI file to a dictionary"""
@@ -50,24 +50,24 @@ def start(configfile=None, daemonize=False, environment=None,
     instance.reload(app.config)
 
     engine = cherrypy.engine
-    
+
     if environment is not None:
         cherrypy.config.update({'environment': environment})
-    
+
     # Only daemonize if asked to.
     if daemonize:
         # Don't print anything to stdout/sterr.
         cherrypy.config.update({'log.screen': False})
         plugins.Daemonizer(engine).subscribe()
-    
+
     if pidfile:
         plugins.PIDFile(engine, pidfile).subscribe()
-    
+
     if hasattr(engine, "signal_handler"):
         engine.signal_handler.subscribe()
     if hasattr(engine, "console_control_handler"):
         engine.console_control_handler.subscribe()
-    
+
     if (fastcgi and (scgi or cgi)) or (scgi and cgi):
         cherrypy.log.error("You may only specify one of the cgi, fastcgi, and "
                            "scgi options.", 'ENGINE')
@@ -77,7 +77,7 @@ def start(configfile=None, daemonize=False, environment=None,
         cherrypy.config.update({'engine.autoreload_on': False})
         # Turn off the default HTTP server (which is subscribed by default).
         cherrypy.server.unsubscribe()
-        
+
         addr = cherrypy.server.bind_addr
         if fastcgi:
             f = servers.FlupFCGIServer(application=cherrypy.tree,
@@ -90,7 +90,7 @@ def start(configfile=None, daemonize=False, environment=None,
                                       bindAddress=addr)
         s = servers.ServerAdapter(engine, httpserver=f, bind_addr=addr)
         s.subscribe()
-    
+
     # Always start the engine; this will start all other services
     try:
         engine.start()
@@ -103,7 +103,7 @@ def start(configfile=None, daemonize=False, environment=None,
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     p = OptionParser()
     p.add_option('-c', '--config', dest='config',
                  help="specify config file")
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     p.add_option('-P', '--Path', action="append", dest='Path',
                  help="add the given paths to sys.path")
     options, args = p.parse_args()
-    
+
     if options.Path:
         for p in options.Path:
             sys.path.insert(0, p)
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     if not os.path.isfile(options.config):
         print('configuration file "'+ options.config + '" doesn\'t exist' )
         exit(1)
-    
+
     start(options.config, options.daemonize,
           options.environment, options.fastcgi, options.scgi,
           options.pidfile, options.cgi)
