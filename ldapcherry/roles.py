@@ -35,9 +35,11 @@ class Roles:
         except DumplicatedKey as e:
             raise DumplicateRoleKey(e.key)
         stream.close()
+
         self.graph = {}
         self.roles = {}
         self.flatten = {}
+        self.group2roles = {}
         self.admin_roles = []
         self._nest()
 
@@ -70,6 +72,7 @@ class Roles:
                 del role['subroles']
 
             self.flatten[roleid] = role
+
     def _set_admin(self, role):
         for r in role['subroles']:
             self.admin_roles.append(r)
@@ -123,6 +126,14 @@ class Roles:
         # Create the nested groups
         for roleid in self.flatten:
             role = copy.deepcopy(self.flatten[roleid])
+            # create reverse groups 2 roles
+            for b in role['backends_groups']:
+                for g in role['backends_groups'][b]:
+                    if not b in self.group2roles:
+                        self.group2roles[b] = {}
+                    if not g in self.group2roles[b]:
+                        self.group2roles[b][g] = Set([])
+                    self.group2roles[b][g].add(roleid)
 
             parents[roleid]=[]
             for roleid2 in self.flatten:
