@@ -107,7 +107,7 @@ class Roles:
     def _nest(self):
         """nests the roles (creates roles hierarchy)"""
         self._flatten()
-        parents = {}
+        parent_roles = {}
         for roleid in self.flatten:
             role = copy.deepcopy(self.flatten[roleid])
 
@@ -123,6 +123,9 @@ class Roles:
             for backend in role['backends_groups']:
                 self.backends.add(backend)
 
+            if not roleid in self.graph:
+                self.graph[roleid] = {'parent_roles': Set([]), 'sub_roles': Set([])}
+
         # Create the nested groups
         for roleid in self.flatten:
             role = copy.deepcopy(self.flatten[roleid])
@@ -135,31 +138,33 @@ class Roles:
                         self.group2roles[b][g] = Set([])
                     self.group2roles[b][g].add(roleid)
 
-            parents[roleid]=[]
+            parent_roles[roleid]=[]
             for roleid2 in self.flatten:
                 role2 = copy.deepcopy(self.flatten[roleid2])
                 if self._is_parent(roleid, roleid2):
-                    parents[roleid].append(roleid2)
+                    parent_roles[roleid].append(roleid2)
+                    self.graph[roleid2]['parent_roles'].add(roleid)
+                    self.graph[roleid]['sub_roles'].add(roleid2)
 
-        for r in parents:
-            for p in parents[r]:
-                for p2 in parents[r]:
-                    if p != p2 and p in parents[p2]:
-                        parents[r].remove(p)
+        for r in parent_roles:
+            for p in parent_roles[r]:
+                for p2 in parent_roles[r]:
+                    if p != p2 and p in parent_roles[p2]:
+                        parent_roles[r].remove(p)
 
         def nest(p):
             ret = copy.deepcopy(self.flatten[p])
             ret['subroles'] = {}
-            if len(parents[p]) == 0:
+            if len(parent_roles[p]) == 0:
                 return ret
             else:
-                for i in parents[p]:
+                for i in parent_roles[p]:
                     sub = nest(i)
                     ret['subroles'][i] = sub
                 return ret
 
-        for p in parents.keys():
-            if p in parents:
+        for p in parent_roles.keys():
+            if p in parent_roles:
                 self.roles[p] = nest(p)
 
         for roleid in self.roles:
