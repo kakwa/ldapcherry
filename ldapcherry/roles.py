@@ -228,6 +228,50 @@ class Roles:
             parentroles.add(role)
         return True
 
+    def get_groups_to_remove(self, current_roles, roles_to_remove):
+        """get groups to remove from list of roles to remove and current roles"""
+        current_roles = Set(current_roles)
+
+        ret = {}
+        roles_to_remove = Set(roles_to_remove)
+        tmp = Set([])
+        # get sub roles of the role to remove that the user belongs to
+        # if we remove a role, there is no reason to keep the sub roles
+        for r in roles_to_remove:
+            for sr in self._get_subroles(r):
+                if not sr in roles_to_remove and sr in current_roles:
+                    tmp.add(sr)
+
+        roles_to_remove = roles_to_remove.union(tmp)
+        roles = current_roles.difference(Set(roles_to_remove))
+        groups_roles = self._get_groups(roles)
+        groups_roles_to_remove = self._get_groups(roles_to_remove)
+
+        # if groups belongs to roles the user keeps, don't remove it
+        for b in groups_roles_to_remove:
+            if b in groups_roles:
+                groups_roles_to_remove[b] = \
+                    groups_roles_to_remove[b].difference(groups_roles[b])
+        return groups_roles_to_remove
+
+    def _get_groups(self, roles):
+        ret = {}
+        for r in roles:
+            for b in self.flatten[r]['backends_groups']:
+                groups = self.flatten[r]['backends_groups'][b]
+                if b not in ret:
+                    ret[b] = Set(groups)
+                ret[b] = ret[b].union(Set(groups))
+        return ret
+
+    def _get_subroles(self, role):
+        ret = Set([])
+        for sr in self.graph[role]['sub_roles']:
+            tmp = self._get_subroles(sr)
+            tmp.add(sr)
+            ret = ret.union(tmp)
+        return ret
+
     def get_roles(self, groups):
         """get list of roles and list of standalone groups"""
         roles = Set([])

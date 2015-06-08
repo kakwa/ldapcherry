@@ -58,6 +58,15 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testGroupsRemove(self):
+        inv = Roles('./tests/cfg/roles.yml')
+        groups = inv.get_groups_to_remove(
+                ['admin-lv2', 'admin-lv3', 'users'],
+                ['admin-lv2']
+        )
+        expected = {'ad': Set(['Administrators', 'Domain Controllers']), 'ldap': Set(['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com'])}
+        assert groups == expected
+
     def testGetGroup(self):
         inv = Roles('./tests/cfg/roles.yml')
         res = inv.get_groups('users')
