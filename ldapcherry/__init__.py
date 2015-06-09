@@ -445,7 +445,7 @@ class LdapCherry(object):
     def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
-        form = self.temp_form.render(attributes=self.attributes.attributes)
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
         return self.temp_adduser.render(form=form)
 
     @cherrypy.expose
@@ -464,5 +464,5 @@ class LdapCherry(object):
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
-        form = self.temp_form.render(attributes=self.attributes.get_selfattributes())
+        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=None)
         return self.temp_selfmodify.render(form=form)

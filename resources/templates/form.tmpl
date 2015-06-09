@@ -2,18 +2,27 @@
 <% attr = attributes[a] %>
 <div class="form-group">
 <div class="input-group">
+  <% 
+    if not values is None and a in values:
+        value = ' value="'+ values[a] + '"'
+        value2 = '<option>'+ values[a] +'</option>'
+    else:
+        value = ''
+        value2 = ''
+  %>
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
     % if attr['type'] == 'string':
-  <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required ${value}>
     % elif attr['type'] == 'email':
-  <input type="email"  name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required data-error="email address is invalid">
+  <input type="email"  name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required ${value} data-error="email address is invalid">
     % elif attr['type'] == 'int':
-  <input type="number" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required>
+  <input type="number" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required ${value}>
     % elif attr['type'] == 'fix':
   <input type="hidden"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required value="${attr['value']}">
   <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" name="type">
+        ${value2}
         %for val in attr['values']:
         <option>${val}</option>
         %endfor
