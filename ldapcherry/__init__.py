@@ -335,6 +335,11 @@ class LdapCherry(object):
                         ret[u][attr] = tmp[u][attr]
         return ret
 
+    def _check_admin(self):
+        if self.auth_mode == 'none':
+            return True
+        return cherrypy.session['isadmin']
+
     def _check_auth(self, must_admin):
         if self.auth_mode == 'none':
             return 'anonymous'
@@ -419,53 +424,60 @@ class LdapCherry(object):
         """main page rendering
         """
         self._check_auth(must_admin=False)
-        return self.temp_index.render()
+        is_admin = self._check_admin()
+        return self.temp_index.render(is_admin=is_admin)
 
     @cherrypy.expose
     def searchuser(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=False)
+        is_admin = self._check_admin()
         if not searchstring is None:
             res = self._search(searchstring)
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list)
+        return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list, is_admin=is_admin)
 
     @cherrypy.expose
     def searchadmin(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=True)
+        is_admin = self._check_admin()
         if not searchstring is None:
             res = self._search(searchstring)
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchadmin.render(searchresult = res, attrs_list = attrs_list)
+        return self.temp_searchadmin.render(searchresult = res, attrs_list = attrs_list, is_admin=is_admin)
 
     @cherrypy.expose
     def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
+        is_admin = self._check_admin()
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph)
-        return self.temp_adduser.render(form=form, roles=roles)
+        return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin)
 
     @cherrypy.expose
     def delete(self, **params):
         """ remove user page """
-        self._check_auth(must_admin=True)
+        self._check_auth(must_admin=True, is_admin=is_admin)
+        is_admin = self._check_admin()
         pass
 
     @cherrypy.expose
     def modify(self, **params):
         """ modify user page """
-        self._check_auth(must_admin=True)
+        self._check_auth(must_admin=True, is_admin=is_admin)
+        is_admin = self._check_admin()
         pass
 
     @cherrypy.expose
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
+        is_admin = self._check_admin()
         form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=None)
-        return self.temp_selfmodify.render(form=form)
+        return self.temp_selfmodify.render(form=form, is_admin=is_admin)
