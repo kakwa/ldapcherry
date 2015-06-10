@@ -287,6 +287,8 @@ class LdapCherry(object):
             self.temp_searchadmin = self.temp_lookup.get_template('searchadmin.tmpl')
             self.temp_searchuser  = self.temp_lookup.get_template('searchuser.tmpl')
             self.temp_adduser     = self.temp_lookup.get_template('adduser.tmpl')
+            self.temp_roles       = self.temp_lookup.get_template('roles.tmpl')
+            self.temp_groups      = self.temp_lookup.get_template('groups.tmpl')
             self.temp_form        = self.temp_lookup.get_template('form.tmpl')
             self.temp_selfmodify  = self.temp_lookup.get_template('selfmodify.tmpl')
 
@@ -446,7 +448,8 @@ class LdapCherry(object):
         """ add user page """
         self._check_auth(must_admin=True)
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
-        return self.temp_adduser.render(form=form)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph)
+        return self.temp_adduser.render(form=form, roles=roles)
 
     @cherrypy.expose
     def delete(self, **params):

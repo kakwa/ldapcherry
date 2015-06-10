@@ -1,0 +1,39 @@
+<table id="RecordTable" class="table table-hover table-condensed tablesorter">
+    <thead>
+        <tr>
+            <th>
+                Role 
+            </th>
+            <th>
+                Parent roles
+            </th>
+            <th class="sorter-false">
+                Enable/Disable
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        %for role in roles:
+        <tr>
+            <td>
+                ${roles[role]['display_name']}
+            </td>
+            <td>
+                <%
+                sep = ', '
+                parents_roles = []
+                for r in graph[role]['parent_roles']:
+                    parents_roles.append(roles[r]['display_name'])
+                parents = sep.join(parents_roles)
+                %>
+                ${parents} 
+            </td>
+            <td>
+                <input data-on-text="Enabled" data-off-text="Disabled" data-handle-width="90" type="checkbox" name="${role}" data-size="mini">
+                <script>$("[name='${role}']").bootstrapSwitch();</script>
+            </td>
+        </tr>
+        % endfor
+    </tbody>
+</table>
+
