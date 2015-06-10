@@ -115,6 +115,9 @@ class Roles:
             if not 'display_name' in role:
                 raise MissingKey('display_name', role, self.role_file)
 
+            if not 'description' in role:
+                raise MissingKey('description', role, self.role_file)
+
             # Backend is mandatory
             if not 'backends_groups' in role:
                 raise MissingKey('backends_groups', role, self.role_file)
