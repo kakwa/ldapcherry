@@ -1,10 +1,20 @@
 <% 
-len_second_column = len(attributes) / 2
-counter = -1
+len_attr = len(attributes)
+switch = len_attr / 2
+if not switch * 2 == len_attr:
+    switch = switch + 1
+counter = 1
+lc1 = []
+lc2 = []
+for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
+    if counter <= switch:
+        lc1.append(a)
+    else:
+        lc2.append(a)
+    counter = counter + 1
 %>
-<div class="row">
-<div class="col-md-6 column">
-% for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
+<%def name="form_col(l)">
+% for a in l: 
 <% attr = attributes[a] %>
 <div class="form-group">
 <div class="input-group">
@@ -16,7 +26,6 @@ counter = -1
         value = ''
         value2 = ''
   %>
-  <% counter = counter + 1 %>
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
     % if attr['type'] == 'string':
   <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required ${value}>
@@ -41,10 +50,13 @@ counter = -1
     % endif
 </div>
 </div>
-% if counter == len_second_column:
+% endfor
+</%def>
+<div class="row">
+<div class="col-md-6 column">
+${form_col(lc1)}
 </div>
 <div class="col-md-6 column">
-% endif
-% endfor
+${form_col(lc2)}
 </div>
 </div>
