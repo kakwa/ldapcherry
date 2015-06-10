@@ -1,5 +1,5 @@
 cn:
-    description: "Firt Name and Display Name"
+    description: "First Name and Display Name"
     display_name: "Display Name"
     type: string
     search_displayed: True
