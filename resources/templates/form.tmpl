@@ -1,3 +1,9 @@
+<% 
+len_second_column = len(attributes) / 2
+counter = -1
+%>
+<div class="row">
+<div class="col-md-6 column">
 % for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
 <% attr = attributes[a] %>
 <div class="form-group">
@@ -10,6 +16,7 @@
         value = ''
         value2 = ''
   %>
+  <% counter = counter + 1 %>
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
     % if attr['type'] == 'string':
   <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" required ${value}>
@@ -34,4 +41,10 @@
     % endif
 </div>
 </div>
+% if counter == len_second_column:
+</div>
+<div class="col-md-6 column">
+% endif
 % endfor
+</div>
+</div>
