@@ -457,8 +457,15 @@ class LdapCherry(object):
         """ add user page """
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
+
+        graph={}
+        for r in self.roles.graph:
+            s = list(self.roles.graph[r]['sub_roles'])
+            p = list(self.roles.graph[r]['parent_roles'])
+            graph[r] = { 'sub_roles': s, 'parent_roles': p}
+        graph_js = json.dumps(graph, separators=(',',':'))
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js)
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin)
 
     @cherrypy.expose
@@ -467,18 +474,6 @@ class LdapCherry(object):
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
         pass
-
-    @cherrypy.expose
-    def graph(self, **params):
-        """ remove user page """
-        self._check_auth(must_admin=True)
-        is_admin = self._check_admin()
-        graph={}
-        for r in self.roles.graph:
-            s = list(self.roles.graph[r]['sub_roles'])
-            p = list(self.roles.graph[r]['parent_roles'])
-            graph[r] = { 'sub_roles': s, 'parent_roles': p}
-        return json.dumps(graph, separators=(',',':'))
 
     @cherrypy.expose
     def modify(self, **params):

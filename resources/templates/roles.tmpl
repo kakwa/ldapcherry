@@ -1,3 +1,22 @@
+<script type="text/javascript">
+    var roles = ${graph_js};
+    function enableParentRoles(roleid){
+        var parentRoles = roles[roleid]['parent_roles'];
+        var len = parentRoles.length;
+        for (var i = 0; i < len; i++) {
+            var role = parentRoles[i];
+            $('input[name=' + role +']').bootstrapSwitch('state', true, true);
+        }
+    }
+    function disableSubRoles(roleid){
+        var parentRoles = roles[roleid]['sub_roles'];
+        var len = parentRoles.length;
+        for (var i = 0; i < len; i++) {
+            var role = parentRoles[i];
+            $('input[name=' + role +']').bootstrapSwitch('state', false, true);
+        }
+    }
+</script>
 <table id="RecordTable" class="table table-hover table-condensed tablesorter">
     <thead>
         <tr>
@@ -35,11 +54,21 @@
                 ${parents} 
             </td>
             <td>
-                <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" data-off-text="Disabled" data-handle-width="75" type="checkbox" name="${role}" data-size="mini">
-                <script>$("[name='${role}']").bootstrapSwitch();</script>
+                <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" 
+                       data-off-text="Disabled" data-handle-width="75" type="checkbox" 
+                       name="${role}" data-size="mini" id="${role}" >
+                <script>$("[name='${role}']").bootstrapSwitch();
+                    $('input[name="${role}"]').on('switchChange.bootstrapSwitch', function(event, state) {
+                        if (state) {
+                            enableParentRoles('${role}');
+                        }
+                        else {
+                            disableSubRoles('${role}');
+                        }
+                    });
+                </script>
             </td>
         </tr>
         % endfor
     </tbody>
 </table>
-
