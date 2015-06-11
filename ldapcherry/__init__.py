@@ -10,6 +10,7 @@
 import sys
 import re
 import traceback
+import json
 import logging
 import logging.handlers
 from operator import itemgetter
@@ -463,14 +464,26 @@ class LdapCherry(object):
     @cherrypy.expose
     def delete(self, **params):
         """ remove user page """
-        self._check_auth(must_admin=True, is_admin=is_admin)
+        self._check_auth(must_admin=True)
         is_admin = self._check_admin()
         pass
 
     @cherrypy.expose
+    def graph(self, **params):
+        """ remove user page """
+        self._check_auth(must_admin=True)
+        is_admin = self._check_admin()
+        graph={}
+        for r in self.roles.graph:
+            s = list(self.roles.graph[r]['sub_roles'])
+            p = list(self.roles.graph[r]['parent_roles'])
+            graph[r] = { 'sub_roles': s, 'parent_roles': p}
+        return json.dumps(graph, separators=(',',':'))
+
+    @cherrypy.expose
     def modify(self, **params):
         """ modify user page """
-        self._check_auth(must_admin=True, is_admin=is_admin)
+        self._check_auth(must_admin=True)
         is_admin = self._check_admin()
         pass
 

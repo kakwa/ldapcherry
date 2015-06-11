@@ -1,6 +1,7 @@
 admin-lv3:
     display_name: Administrators Level 3
     LC_admins: True
+    description: description
     backends_groups:
         ldap:
             - cn=dns admins,ou=group,dc=example,dc=com
@@ -13,6 +14,7 @@ admin-lv3:
             - Domain Controllers 
 
 admin-lv2:
+    description: description
     backends_groups:
         ldap:
             - cn=nagios admins,ou=group,dc=example,dc=com
@@ -22,6 +24,7 @@ admin-lv2:
 
 developpers:
     display_name: Developpers
+    description: description
     backends_groups:
         ldap:
             - cn=developpers,ou=group,dc=example,dc=com
@@ -31,6 +34,7 @@ developpers:
 
 users:
     display_name: Simple Users
+    description: description
     backends_groups:
         ldap:
             - cn=users,ou=group,dc=example,dc=com

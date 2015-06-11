@@ -1,5 +1,6 @@
 admin-lv3:
     display_name: Administrators Level 3
+    description: description
     backends_groups:
         ldap:
             - cn=dns admins,ou=group,dc=example,dc=com
@@ -13,6 +14,7 @@ admin-lv3:
 
 admin-lv2:
     display_name: Administrators Level 2
+    description: description
     LC_admins: True
     backends_groups:
         ldap:
@@ -23,6 +25,7 @@ admin-lv2:
 
 developpers:
     display_name: Developpers
+    description: description
     backends_groups:
         ldap:
             - cn=developpers,ou=group,dc=example,dc=com
@@ -32,6 +35,7 @@ developpers:
 
 users:
     display_name: Simple Users
+    description: description
     backends_groups:
         ldap:
             - cn=users,ou=group,dc=example,dc=com
