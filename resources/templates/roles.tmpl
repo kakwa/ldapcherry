@@ -11,7 +11,13 @@
             var checked = document.getElementById(role).checked;
             $('input[name=' + role +']').bootstrapSwitch('state', true, true);
             if ( ! checked){
-                $.notify("Added Role '" + DnParentRole + "' (Parent Role of '" + DnRole  +"')");
+                $.notify("Enable Role '" + DnParentRole + "' (Parent Role of '" + DnRole  +"')",
+                    {   
+                        type: 'info',
+                        delay: 6500, 
+                    }
+
+                );
             }
         }
     }
@@ -25,7 +31,12 @@
             var checked = document.getElementById(role).checked;
             $('input[name=' + role +']').bootstrapSwitch('state', false, true);
             if (checked){
-                $.notify("Removed Role '" + DnParentRole + "' (Sub Role of '" + DnRole  +"')");
+                $.notify("Disable Role '" + DnParentRole + "' (Sub Role of '" + DnRole  +"')",
+                    {   
+                        type: 'warning',
+                        delay: 6500, 
+                    }
+                );
             }
         }
     }
