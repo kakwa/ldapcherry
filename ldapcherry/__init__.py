@@ -464,8 +464,12 @@ class LdapCherry(object):
             p = list(self.roles.graph[r]['parent_roles'])
             graph[r] = { 'sub_roles': s, 'parent_roles': p}
         graph_js = json.dumps(graph, separators=(',',':'))
+        display_names = {}
+        for r in self.roles.flatten:
+            display_names[r] = self.roles.flatten[r]['display_name']
+        roles_js = json.dumps(display_names, separators=(',',':'))
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin)
 
     @cherrypy.expose

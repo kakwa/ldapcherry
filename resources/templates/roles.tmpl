@@ -1,19 +1,32 @@
 <script type="text/javascript">
-    var roles = ${graph_js};
+    var graph = ${graph_js};
+    var roles = ${roles_js};
     function enableParentRoles(roleid){
-        var parentRoles = roles[roleid]['parent_roles'];
+        var parentRoles = graph[roleid]['parent_roles'];
+        var DnRole = roles[roleid];
         var len = parentRoles.length;
         for (var i = 0; i < len; i++) {
             var role = parentRoles[i];
+            var DnParentRole = roles[role];
+            var checked = document.getElementById(role).checked;
             $('input[name=' + role +']').bootstrapSwitch('state', true, true);
+            if ( ! checked){
+                $.notify("Added Role '" + DnParentRole + "' (Parent Role of '" + DnRole  +"')");
+            }
         }
     }
     function disableSubRoles(roleid){
-        var parentRoles = roles[roleid]['sub_roles'];
+        var parentRoles = graph[roleid]['sub_roles'];
+        var DnRole = roles[roleid];
         var len = parentRoles.length;
         for (var i = 0; i < len; i++) {
             var role = parentRoles[i];
+            var DnParentRole = roles[role];
+            var checked = document.getElementById(role).checked;
             $('input[name=' + role +']').bootstrapSwitch('state', false, true);
+            if (checked){
+                $.notify("Removed Role '" + DnParentRole + "' (Sub Role of '" + DnRole  +"')");
+            }
         }
     }
 </script>
