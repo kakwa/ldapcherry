@@ -458,6 +458,11 @@ class LdapCherry(object):
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
 
+        if cherrypy.request.method.upper() == 'POST':
+            notification = "<script type=\"text/javascript\">$.notify('User Added')</script>"
+        else:
+            notification = ''
+
         graph={}
         for r in self.roles.graph:
             s = list(self.roles.graph[r]['sub_roles'])
@@ -470,7 +475,7 @@ class LdapCherry(object):
         roles_js = json.dumps(display_names, separators=(',',':'))
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
-        return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin)
+        return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
     @cherrypy.expose
     def delete(self, **params):
