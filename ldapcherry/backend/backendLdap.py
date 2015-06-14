@@ -41,6 +41,11 @@ class Backend(ldapcherry.backend.Backend):
         self.key = key
         for o in re.split('\W+', self.get_param('objectclasses')):
             self.objectclasses.append(self._str(o))
+        self.group_attrs = {}
+        for param in config:
+            name, sep, group = param.partition('.')
+            if name == 'group_attr':
+                self.group_attrs[group] = self.get_param(param)
 
         self.attrlist = []
         for a in attrslist:
@@ -182,6 +187,7 @@ class Backend(ldapcherry.backend.Backend):
                     severity = logging.ERROR,
                     msg = "Configuration error, " + desc + ", " + info,
                 )
+            ldap_client.unbind_s()
             raise e
         except ldap.INSUFFICIENT_ACCESS as e:
             info = e[0]['info']
@@ -190,6 +196,7 @@ class Backend(ldapcherry.backend.Backend):
                     severity = logging.ERROR,
                     msg = "Access error, " + desc + ", " + info,
                 )
+            ldap_client.unbind_s()
             raise e
         except ldap.ALREADY_EXISTS as e:
             desc = e[0]['desc']
@@ -197,7 +204,9 @@ class Backend(ldapcherry.backend.Backend):
                     severity = logging.ERROR,
                     msg = "adding user failed, " + desc,
                 )
+            ldap_client.unbind_s()
             raise e
+        ldap_client.unbind_s()
 
     def del_user(self, username):
         ldap_client = self._bind()
@@ -206,15 +215,50 @@ class Backend(ldapcherry.backend.Backend):
             ldap_client.delete_s(dn)
         else:
             raise DelUserDontExists(username)
+        ldap_client.unbind_s()
 
     def set_attrs(self, attrs, username):
-        pass
+        ldap_client = self._bind()
+        tmp = self._get_user(username, True)
+        dn = tmp[0]
+        old_attrs = tmp[1] 
+        for attr in attrs: 
+            content = attrs[attr]
+            new = { attr : content }
+            if attr in old_attrs:
+                old = { attr: old_attrs[attr]}
+                ldif = modlist.modifyModlist(old,new)
+                ldap_client.modify_s(dn,ldif)
+            else:
+                ldif = modlist.addModlist({ attr : content })
+                ldap_client.add_s(dn,ldif)
+        ldap_client.unbind_s()
 
-    def add_to_group(self, username):
-        pass
-
+    def add_to_group(self, username, groups):
+        ldap_client = self._bind()
+        tmp = self._get_user(username, True)
+        dn = tmp[0]
+        attrs = tmp[1] 
+        attrs['dn'] = dn
+        for group in groups:
+            for attr in self.group_attrs:
+                content = self.group_attrs[attr] % attrs
+                ldif = modlist.addModlist({ attr : content })
+                ldap_client.add_s(group,ldif)
+        ldap_client.unbind_s()
+            
     def rm_from_group(self, username):
-        pass
+        ldap_client = self._bind()
+        tmp = self._get_user(username, True)
+        dn = tmp[0]
+        attrs = tmp[1] 
+        attrs['dn'] = dn
+        for group in groups:
+            for attr in self.group_attrs:
+                content = self.group_attrs[attr] % attrs
+                ldif = modlist.addModlist({ attr : content })
+                ldap_client.delete_s(group,ldif)
+        ldap_client.unbind_s()
 
     def search(self, searchstring):
         ret = {}
