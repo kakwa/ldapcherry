@@ -41,7 +41,12 @@
                             %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
                                 <td>
                                     % if attr in searchresult[user]:
-                                        ${searchresult[user][attr]}
+                                        <% 
+                                        value = searchresult[user][attr] 
+                                        if type(value) is list:
+                                            value = ', '.join(value)
+                                        %>
+                                        ${value}
                                     % endif
                                 </td>
                             % endfor
