@@ -48,8 +48,8 @@ class Attributes:
             for b in attr['backends']:
                 self.backends.add(b)
                 if b not in self.backend_attributes:
-                    self.backend_attributes[b] = []
-                self.backend_attributes[b].append(attr['backends'][b])
+                    self.backend_attributes[b] = {}
+                self.backend_attributes[b][attr['backends'][b]] = attrid
             if 'search_displayed' in attr and attr['search_displayed']:
                 self.displayed_attributes[attrid] = attr
 
@@ -78,7 +78,7 @@ class Attributes:
     def get_backend_attributes(self, backend):
         if backend not in self.backends:
             raise WrongBackend(backend)
-        return self.backend_attributes[backend]
+        return self.backend_attributes[backend].keys()
 
     def get_backend_key(self, backend):
         if backend not in self.backends:

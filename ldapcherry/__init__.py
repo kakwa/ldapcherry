@@ -332,8 +332,10 @@ class LdapCherry(object):
                 if not u in ret:
                     ret[u] = {}
                 for attr in tmp[u]:
-                    if not attr in ret[u]:
-                        ret[u][attr] = tmp[u][attr]
+                    if attr in self.attributes.backend_attributes[b]:
+                        attrid = self.attributes.backend_attributes[b][attr]
+                        if not attr in ret[u]:
+                            ret[u][attrid] = tmp[u][attr]
         return ret
 
     def _check_admin(self):
