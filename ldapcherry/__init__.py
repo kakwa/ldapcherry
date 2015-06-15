@@ -480,10 +480,6 @@ class LdapCherry(object):
 
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Added')</script>"
-            cherrypy.log.error(
-                msg = params ,
-                severity = logging.DEBUG
-            )
             self._adduser(params)
         else:
             notification = ''
