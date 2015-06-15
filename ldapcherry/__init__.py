@@ -401,6 +401,24 @@ class LdapCherry(object):
             )
             raise cherrypy.HTTPRedirect("/signin")
 
+    def _adduser(self, params):
+        badd = {}
+        for attr in self.attributes.get_attributes():
+            if self.attributes.attributes[attr]['type'] == 'password':
+                pwd1 = attr + '1'
+                pwd2 = attr + '2'
+                if params[pwd1] != params[pwd2]:
+                    raise Exception()
+                params[attr] = params[pwd1]
+            if attr in params:
+                backends = self.attributes.get_backends_attributes(attr)
+                for b in backends:
+                    if not b in badd:
+                        badd[b] = {}
+                    badd[b][backends[b]] = params[attr]
+        for b in badd:
+            self.backends[b].add_user(badd[b])
+
     @cherrypy.expose
     def logout(self):
         """ logout page
@@ -460,6 +478,11 @@ class LdapCherry(object):
 
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Added')</script>"
+            cherrypy.log.error(
+                msg = params ,
+                severity = logging.DEBUG
+            )
+            self._adduser(params)
         else:
             notification = ''
 

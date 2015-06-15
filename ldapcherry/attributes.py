@@ -87,4 +87,7 @@ class Attributes:
 
     def get_attributes(self):
         """get the list of groups from roles"""
-        return self.self_attributes
+        return self.attributes.keys()
+
+    def get_backends_attributes(self, attribute):
+        return self.attributes[attribute]['backends']
