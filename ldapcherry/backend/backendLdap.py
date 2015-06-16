@@ -17,6 +17,11 @@ class DelUserDontExists(Exception):
         self.user = user
         self.log = "cannot remove user, user <%(user)s> does not exist" % { 'user' : user}
 
+NO_ATTR   = 0
+DISPLAYED_ATTRS = 1
+LISTED_ATTRS = 2
+ALL_ATTRS = 3
+
 
 class Backend(ldapcherry.backend.Backend):
 
@@ -100,12 +105,24 @@ class Backend(ldapcherry.backend.Backend):
         return ldap_client
 
     def _search(self, searchfilter, attrs, basedn):
+        if attrs == NO_ATTR:
+            attrlist = []
+        elif attrs == DISPLAYED_ATTRS:
+            # fix me later (to much attributes)
+            attrlist = self.attrlist
+        elif attrs == LISTED_ATTRS:
+            attrlist = self.attrlist
+        elif attrs == ALL_ATTRS:
+            attrlist = None
+        else:
+            attrlist = None
+
         ldap_client = self._bind()
         try:
             r = ldap_client.search_s(basedn,
                     ldap.SCOPE_SUBTREE,
                     searchfilter,
-                    attrlist=attrs
+                    attrlist=attrlist
             )
         except ldap.FILTER_ERROR as e:
             self._logger(
@@ -128,25 +145,21 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.unbind_s()
         return r
 
-    def _get_user(self, username, attrs=True):
-        if attrs:
-            a = self.attrlist
-        else:
-            a = None
+    def _get_user(self, username, attrs=ALL_ATTRS):
 
         user_filter = self.user_filter_tmpl % {
             'username': username
         }
 
-        r = self._search(user_filter, a, self.userdn)
+        r = self._search(user_filter, attrs, self.userdn)
 
         if len(r) == 0:
             return None
 
-        if attrs:
-            dn_entry = r[0]
-        else:
+        if attrs == NO_ATTR:
             dn_entry = r[0][0]
+        else:
+            dn_entry = r[0]
         return dn_entry
 
     def _str(self, s):
@@ -157,7 +170,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def auth(self, username, password):
 
-        binddn = self._get_user(username, False)
+        binddn = self._get_user(username, NO_ATTR)
         if not binddn is None:
             ldap_client = self._connect()
             try:
@@ -210,33 +223,34 @@ class Backend(ldapcherry.backend.Backend):
 
     def del_user(self, username):
         ldap_client = self._bind()
-        dn = self._get_user(username, False)
+        dn = self._get_user(username, NO_ATTR)
         if not dn is None:
             ldap_client.delete_s(dn)
         else:
             raise DelUserDontExists(username)
         ldap_client.unbind_s()
 
-    def set_attrs(self, attrs, username):
+    def set_attrs(self, username, attrs):
         ldap_client = self._bind()
-        tmp = self._get_user(username, True)
+        tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
         old_attrs = tmp[1] 
         for attr in attrs: 
-            content = attrs[attr]
+            content = self._str(attrs[attr])
+            attr = self._str(attr)
             new = { attr : content }
             if attr in old_attrs:
                 old = { attr: old_attrs[attr]}
-                ldif = modlist.modifyModlist(old,new)
-                ldap_client.modify_s(dn,ldif)
             else:
-                ldif = modlist.addModlist({ attr : content })
-                ldap_client.add_s(dn,ldif)
+                old = {}
+            ldif = modlist.modifyModlist(old, new)
+            ldap_client.modify_s(dn, ldif)
+
         ldap_client.unbind_s()
 
     def add_to_group(self, username, groups):
         ldap_client = self._bind()
-        tmp = self._get_user(username, True)
+        tmp = self._get_user(username, NO_ATTR)
         dn = tmp[0]
         attrs = tmp[1] 
         attrs['dn'] = dn
@@ -249,7 +263,7 @@ class Backend(ldapcherry.backend.Backend):
             
     def rm_from_group(self, username):
         ldap_client = self._bind()
-        tmp = self._get_user(username, True)
+        tmp = self._get_user(username, NO_ATTR)
         dn = tmp[0]
         attrs = tmp[1] 
         attrs['dn'] = dn
@@ -266,7 +280,7 @@ class Backend(ldapcherry.backend.Backend):
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
         }
-        for u in self._search(searchfilter, None, self.userdn):
+        for u in self._search(searchfilter, DISPLAYED_ATTRS, self.userdn):
             attrs = {}
             attrs_tmp = u[1]
             for attr in attrs_tmp:
@@ -282,7 +296,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def get_user(self, username):
         ret = {}
-        attrs_tmp = self._get_user(username)[1]
+        attrs_tmp = self._get_user(username, ALL_ATTRS)[1]
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
@@ -292,14 +306,14 @@ class Backend(ldapcherry.backend.Backend):
         return ret
 
     def get_groups(self, username):
-        userdn = self._get_user(username, False)
+        userdn = self._get_user(username, NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {
             'userdn': userdn,
             'username': username
         }
 
-        groups = self._search(searchfilter, None, self.groupdn)
+        groups = self._search(searchfilter, NO_ATTR, self.groupdn)
         ret = []
         for entry in groups:
             ret.append(entry[0])
