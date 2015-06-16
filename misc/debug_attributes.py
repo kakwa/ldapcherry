@@ -16,7 +16,9 @@ class CustomDumper(yaml.SafeDumper):
         return True
 
 try:
-    #inv = Attributes('./conf/attributes.yml')
-    inv = Attributes('./tests/cfg/attributes_wrong_type.yml')
+    inv = Attributes('./tests/cfg/attributes.yml')
+    #inv = Attributes('./tests/cfg/attributes_wrong_type.yml')
 except Exception as e:
     print e.log
+
+print inv.backend_attributes
