@@ -248,9 +248,9 @@ class Backend(ldapcherry.backend.Backend):
 
         ldap_client.unbind_s()
 
-    def add_to_group(self, username, groups):
+    def add_to_groups(self, username, groups):
         ldap_client = self._bind()
-        tmp = self._get_user(username, NO_ATTR)
+        tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1] 
         attrs['dn'] = dn
@@ -261,9 +261,9 @@ class Backend(ldapcherry.backend.Backend):
                 ldap_client.add_s(group,ldif)
         ldap_client.unbind_s()
             
-    def rm_from_group(self, username):
+    def del_from_groups(self, username, groups):
         ldap_client = self._bind()
-        tmp = self._get_user(username, NO_ATTR)
+        tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1] 
         attrs['dn'] = dn
