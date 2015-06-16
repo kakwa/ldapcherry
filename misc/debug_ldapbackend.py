@@ -61,5 +61,15 @@ print inv.get_user('test')
 print inv.get_groups('test')
 inv.del_user('test')
 
+groups = [
+   'cn=hrpeople,ou=Groups,dc=example,dc=org',
+   'cn=itpeople,ou=Groups,dc=example,dc=org',
+]
+inv.add_to_groups('jwatson', groups)
+ret = inv.get_groups('jwatson')
+print ret
+inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+
 
 print inv.group_attrs
