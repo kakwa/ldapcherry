@@ -28,6 +28,7 @@ cfg = {
 'search_filter_tmpl' : '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))',
 'objectclasses'      : 'top, person, organizationalPerson, simpleSecurityObject, posixAccount',
 'dn_user_attr'       : 'uid',
+'group_attr.member'  : "%(dn)s",
 }
 
 def syslog_error(msg='', context='',
@@ -121,11 +122,25 @@ class TestError(object):
         expected = {'uid': 'jwatson', 'cn': 'John Watson', 'sn': 'watson'}
         assert ret == expected
 
-    def testGetUser(self):
+    def testGetGroups(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_groups('jwatson')
         expected = ['cn=itpeople,ou=Groups,dc=example,dc=org']
         assert ret == expected
+
+    def testAddDeleteGroups(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
+        groups = [
+           'cn=hrpeople,ou=Groups,dc=example,dc=org',
+           'cn=itpeople,ou=Groups,dc=example,dc=org',
+        ]
+        inv.add_to_groups('jwatson', groups)
+        ret = inv.get_groups('jwatson')
+        print ret
+        inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+        inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+        assert ret == ['cn=itpeople,ou=Groups,dc=example,dc=org', 'cn=hrpeople,ou=Groups,dc=example,dc=org']
+
 
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
