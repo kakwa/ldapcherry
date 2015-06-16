@@ -71,7 +71,7 @@ class Backend(ldapcherry.backend.Backend):
         if self.checkcert == 'off':
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
-            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
+            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
         if self.starttls == 'on':
             try:
                 ldap_client.start_tls_s()
@@ -255,10 +255,14 @@ class Backend(ldapcherry.backend.Backend):
         attrs = tmp[1] 
         attrs['dn'] = dn
         for group in groups:
+            group = self._str(group)
             for attr in self.group_attrs:
-                content = self.group_attrs[attr] % attrs
-                ldif = modlist.addModlist({ attr : content })
-                ldap_client.add_s(group,ldif)
+                content = self._str(self.group_attrs[attr] % attrs)
+                ldif = modlist.modifyModlist({}, { attr : content })
+                try:
+                    ldap_client.modify_s(group, ldif)
+                except ldap.TYPE_OR_VALUE_EXISTS as e:
+                    pass
         ldap_client.unbind_s()
             
     def del_from_groups(self, username, groups):
@@ -268,10 +272,14 @@ class Backend(ldapcherry.backend.Backend):
         attrs = tmp[1] 
         attrs['dn'] = dn
         for group in groups:
+            group = self._str(group)
             for attr in self.group_attrs:
-                content = self.group_attrs[attr] % attrs
-                ldif = modlist.addModlist({ attr : content })
-                ldap_client.delete_s(group,ldif)
+                content = self._str(self.group_attrs[attr] % attrs)
+                ldif =  [(ldap.MOD_DELETE, attr, content)]
+                try:
+                    ldap_client.modify_s(group, ldif)
+                except ldap.NO_SUCH_ATTRIBUTE as e:
+                    pass
         ldap_client.unbind_s()
 
     def search(self, searchstring):
