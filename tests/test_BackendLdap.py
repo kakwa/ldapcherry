@@ -130,7 +130,7 @@ class TestError(object):
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.search('smith')
-        expected = {'ssmith': {'uid': 'ssmith', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'smith', 'mail': ['s.smith@example.com', 'ssmith@example.com', 'sheri.smith@example.com'], 'homePhone': '555-111-2225', 'cn': 'Sheri Smith'}, 'jsmith': {'uid': 'jsmith', 'objectClass': 'inetOrgPerson', 'carLicense': 'HISCAR 125', 'sn': 'Smith', 'mail': ['j.smith@example.com', 'jsmith@example.com', 'jsmith.smith@example.com'], 'homePhone': '555-111-2225', 'cn': 'John Smith'}} 
+        expected = {'ssmith': {'sn': 'smith', 'uid': 'ssmith', 'cn': 'Sheri Smith'}, 'jsmith': {'sn': 'Smith', 'uid': 'jsmith', 'cn': 'John Smith'}} 
         assert ret == expected
 
     def testAddUser(self):
@@ -145,6 +145,21 @@ class TestError(object):
         'homeDirectory': '/home/test/'
         }
         inv.add_user(user)
+        inv.del_user('test')
+
+    def testModifyUser(self):
+        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
+        user = {
+        'uid': 'test',
+        'sn':  'test',
+        'cn':  'test',
+        'userPassword': 'test',
+        'uidNumber': '42',
+        'gidNumber': '42',
+        'homeDirectory': '/home/test/'
+        }
+        inv.add_user(user)
+        inv.set_attrs('test', {'gecos': 'test2', 'homeDirectory': '/home/test/'})
         inv.del_user('test')
 
     def testAddUserDuplicate(self):
@@ -181,7 +196,7 @@ class TestError(object):
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_user('jwatson')
-        expected = {'sn': 'watson', 'uid': 'jwatson', 'cn': 'John Watson'}
+        expected = {'uid': 'jwatson', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'watson', 'mail': 'j.watson@example.com', 'homePhone': '555-111-2225', 'cn': 'John Watson'} 
         assert ret == expected
 
     def testAddUserMissingMustattribute(self):
