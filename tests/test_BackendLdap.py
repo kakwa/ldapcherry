@@ -92,6 +92,21 @@ class TestError(object):
         except ldap.SERVER_DOWN as e:
             assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
 
+    def testConnectStartTLS(self):
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldap://ldap.ldapcherry.org:390'
+        cfg2['checkcert'] = 'off'
+        cfg2['starttls'] = 'on'
+        cfg2['ca'] = './test/cfg/ca.crt'
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
+        ldapc = inv._connect()
+        try:
+            ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
+        except ldap.SERVER_DOWN as e:
+            assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
+
+
+
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         return True
