@@ -22,6 +22,8 @@ install:
   - pip install coveralls
 # command to run tests
 script: 
-  - coverage run --source=ldapcherry setup.py test || cat /var/log/syslog && exit 1
+  - coverage run --source=ldapcherry setup.py test
 after_success:
   - coveralls
+after_failure:
+  - sudo cat /var/log/syslog

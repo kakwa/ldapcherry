@@ -19,7 +19,7 @@ cfg = {
 'userdn'             : 'ou=People,dc=example,dc=org',
 'binddn'             : 'cn=dnscherry,dc=example,dc=org',
 'password'           : 'password',
-'uri'                : 'ldap://ldap.ldapcherry.org:390',
+'uri'                : 'ldap://ldap.dnscherry.org:390',
 'ca'                 : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
 'starttls'           : 'off',
 'checkcert'          : 'off',
