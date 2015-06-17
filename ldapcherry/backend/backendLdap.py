@@ -61,17 +61,17 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.set_option(ldap.OPT_REFERRALS, 0)
         ldap_client.set_option(ldap.OPT_TIMEOUT, self.timeout)
         if self.starttls == 'on':
-            ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
+            ldap_client.set_option(ldap.OPT_X_TLS_DEMAND, True)
         else:
-            ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
+            ldap_client.set_option(ldap.OPT_X_TLS_DEMAND, False)
         if self.ca and self.checkcert == 'on':
-            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+            ldap_client.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
         #else:
-        #    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
+        #    ldap_client.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
         if self.checkcert == 'off':
-            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+            ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
         else:
-            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+            ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
         if self.starttls == 'on':
             try:
                 ldap_client.start_tls_s()
