@@ -20,7 +20,7 @@ cfg = {
 'binddn'             : 'cn=dnscherry,dc=example,dc=org',
 'password'           : 'password',
 'uri'                : 'ldap://ldap.dnscherry.org:390',
-'ca'                 : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
+'ca'                 : './test/cfg/ca.crt',
 'starttls'           : 'off',
 'checkcert'          : 'off',
 'user_filter_tmpl'   : '(uid=%(username)s)',
@@ -71,7 +71,6 @@ class TestError(object):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://notaldap:637'
         cfg2['checkcert'] = 'on'
-        cfg2['ca'] = './cfg/ca.crt'
         inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
         try:
@@ -85,7 +84,7 @@ class TestError(object):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
-        cfg2['ca'] = './cfg/wrong_ca.crt'
+        cfg2['ca'] = './test/cfg/wrong_ca.crt'
         inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
         try:
