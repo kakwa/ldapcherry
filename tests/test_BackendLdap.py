@@ -29,6 +29,7 @@ cfg = {
 'objectclasses'      : 'top, person, organizationalPerson, simpleSecurityObject, posixAccount',
 'dn_user_attr'       : 'uid',
 'group_attr.member'  : "%(dn)s",
+'timeout'            : 10,
 }
 
 def syslog_error(msg='', context='',
