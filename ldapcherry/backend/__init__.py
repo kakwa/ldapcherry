@@ -9,7 +9,7 @@ from ldapcherry.exceptions import MissingParameter
 
 class Backend:
 
-    def __init__(self):
+    def __init__(self, config, logger, name, attrslist, key):
         pass
 
     def auth(self, username, password):
@@ -21,20 +21,20 @@ class Backend:
     def del_user(self, username):
         pass
 
-    def set_attrs(self, attrs, username):
+    def set_attrs(self, username, attrs):
         pass
 
-    def add_to_group(self, username):
+    def add_to_groups(self, username, groups):
         pass
 
-    def rm_from_group(self, username):
+    def del_from_groups(self, username, groups):
         pass
 
     def search(self, searchstring):
-        return []
+        return {}
 
     def get_user(self, username):
-        return None
+        return {}
 
     def get_groups(self, username):
         return []
