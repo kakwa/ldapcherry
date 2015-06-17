@@ -10,7 +10,7 @@ from ldapcherry.exceptions import MissingParameter
 class Backend:
 
     def __init__(self, config, logger, name, attrslist, key):
-        pass
+        raise Exception()
 
     def auth(self, username, password):
         return False
