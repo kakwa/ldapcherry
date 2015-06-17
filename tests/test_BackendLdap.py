@@ -45,13 +45,13 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         return True
 
-#    def testConnectSSLNoCheck(self):
-#        cfg2 = cfg.copy()
-#        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
-#        cfg2['checkcert'] = 'off'
-#        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
-#        ldap = inv._connect()
-#        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
+    def testConnectSSLNoCheck(self):
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
+        cfg2['checkcert'] = 'off'
+        inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
+        ldap = inv._connect()
+        ldap.simple_bind_s(inv.binddn, inv.bindpassword)
 
     def testConnect(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
