@@ -69,7 +69,7 @@ class TestError(object):
 
     def testGetGroup(self):
         inv = Roles('./tests/cfg/roles.yml')
-        res = inv.get_groups('users')
+        res = inv.get_groups(['users'])
         expected = {
             'ad': ['Domain Users'],
             'ldap': ['cn=users,ou=group,dc=example,dc=com']

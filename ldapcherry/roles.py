@@ -307,11 +307,17 @@ class Roles:
             raise MissingRole(role)
         return self.flatten[role]['display_name']
 
-    def get_groups(self, role):
+    def get_groups(self, roles):
         """get the list of groups from role"""
-        if not role in self.flatten:
-            raise MissingRole(role)
-        return self.flatten[role]['backends_groups']
+        ret = {}
+        for role in roles:
+            if not role in self.flatten:
+                raise MissingRole(role)
+            for b in self.flatten[role]['backends_groups']:
+                if b not in ret:
+                    ret[b] = []
+                ret[b] = ret[b] + self.flatten[role]['backends_groups'][b]
+        return ret
 
     def is_admin(self, roles):
         """determine from a list of roles if is ldapcherry administrator"""
