@@ -421,6 +421,16 @@ class LdapCherry(object):
         for b in badd:
             self.backends[b].add_user(badd[b])
 
+        roles = []
+        for r in self.roles.get_allroles():
+            if r in params:
+                roles.append(r)
+        key = self.attributes.get_key()
+        username = params[key]
+        groups = self.roles.get_groups(roles)
+        for b in groups:
+            self.backends[b].add_to_groups(username, groups[b])
+
     @cherrypy.expose
     def logout(self):
         """ logout page
