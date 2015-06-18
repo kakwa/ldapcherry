@@ -258,11 +258,20 @@ class Backend(ldapcherry.backend.Backend):
             group = self._str(group)
             for attr in self.group_attrs:
                 content = self._str(self.group_attrs[attr] % attrs)
+                self._logger(
+                    severity = logging.DEBUG,
+                    msg = "%(backend)s: adding user '%(user)s' with dn '%(dn)s' to group '%(group)s' by setting '%(attr)s' to '%(content)s'" % \
+                            { 'user': username, 'dn': dn, 'group': group, 'attr': attr, 'content': content, 'backend': self.backend_name }
+                )
                 ldif = modlist.modifyModlist({}, { attr : content })
                 try:
                     ldap_client.modify_s(group, ldif)
                 except ldap.TYPE_OR_VALUE_EXISTS as e:
-                    pass
+                    self._logger(
+                        severity = logging.INFO,
+                        msg = "%(backend)s: user '%(user)s' already member of group '%(group)s' (attribute '%(attr)s')"  % \
+                                { 'user': username, 'group': group, 'attr': attr, 'backend': self.backend_name}
+                    )
         ldap_client.unbind_s()
             
     def del_from_groups(self, username, groups):
