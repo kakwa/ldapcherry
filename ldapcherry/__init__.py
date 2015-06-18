@@ -292,6 +292,7 @@ class LdapCherry(object):
             self.temp_groups      = self.temp_lookup.get_template('groups.tmpl')
             self.temp_form        = self.temp_lookup.get_template('form.tmpl')
             self.temp_selfmodify  = self.temp_lookup.get_template('selfmodify.tmpl')
+            self.temp_modify      = self.temp_lookup.get_template('modify.tmpl')
 
             self._init_auth(config)
 
@@ -337,6 +338,21 @@ class LdapCherry(object):
                         if not attr in ret[u]:
                             ret[u][attrid] = tmp[u][attr]
         return ret
+
+    def _get_user(self, username):
+        if username is None:
+            return {}
+        ret = {}
+        for b in self.backends:
+            tmp = self.backends[b].get_user(username)
+            for attr in tmp:
+                if attr in self.attributes.backend_attributes[b]:
+                    attrid = self.attributes.backend_attributes[b][attr]
+                    if not attr in ret:
+                        ret[attrid] = tmp[attr]
+        return ret
+
+
 
     def _check_admin(self):
         if self.auth_mode == 'none':
@@ -504,7 +520,7 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',',':'))
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=None)
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=None, modify=False)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
@@ -516,16 +532,36 @@ class LdapCherry(object):
         pass
 
     @cherrypy.expose
-    def modify(self, **params):
+    def modify(self, user=None, **params):
         """ modify user page """
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
-        pass
+
+        if cherrypy.request.method.upper() == 'POST':
+            notification = "<script type=\"text/javascript\">$.notify('User Modify')</script>"
+            self._adduser(params)
+        else:
+            notification = ''
+
+        graph={}
+        for r in self.roles.graph:
+            s = list(self.roles.graph[r]['sub_roles'])
+            p = list(self.roles.graph[r]['parent_roles'])
+            graph[r] = { 'sub_roles': s, 'parent_roles': p}
+        graph_js = json.dumps(graph, separators=(',',':'))
+        display_names = {}
+        for r in self.roles.flatten:
+            display_names[r] = self.roles.flatten[r]['display_name']
+        user_attrs = self._get_user(user)
+        roles_js = json.dumps(display_names, separators=(',',':'))
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
+        return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
     @cherrypy.expose
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=None)
+        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=None, modify=True)
         return self.temp_selfmodify.render(form=form, is_admin=is_admin)

@@ -1,0 +1,26 @@
+<%inherit file="navbar.tmpl"/>
+    <%block name="core">
+    <div class="row clearfix top-buffer bottom-buffer">
+        <div class="col-md-2 column">
+        </div>
+        <div class="col-md-12 column">
+            <div class="well well-sm">
+              <form method='POST' action='/modify' role="form" class="form-signin" data-toggle="validator">
+              <h2 class="h3">Modify user's attributes:</h2>
+              ${form}
+              <h2 class="h3">Enable/Disable user's roles:</h2>
+              ${roles}
+              <h2 class="h3">Delete user's individual groups:</h2>
+              <div class="form-group">
+                <div class="input-group">
+                  <button class="btn btn-default blue" type="submit">
+                  <span class="glyphicon glyphicon-cog"> Modify User</button>
+                </div>
+              </div>
+              </form>
+            </div>
+        </div>
+        <div class="col-md-2 column">
+        </div>
+    </div>
+</%block>
