@@ -27,6 +27,12 @@ ou: Groups
 objectClass: top
 objectclass: organizationalunit
 
+dn: ou=Group,dc=example,dc=org
+ou: Group
+objectClass: top
+objectclass: organizationalunit
+
+
 dn: cn=Sheri Smith,ou=people,dc=example,dc=org
 objectclass: inetOrgPerson
 cn: Sheri Smith
@@ -67,8 +73,39 @@ cn: itpeople
 description: IT security group
 member: cn=John Watson,ou=people,dc=example,dc=org
 
-dn: cn=hrpeople,ou=groups,dc=example,dc=org
+dn: cn=itpeople,ou=groups,dc=example,dc=org
 objectclass: groupofnames
-cn: hrpeople
-description: Human Resources group
+cn: itpeople
+description: IT security group
+member: cn=John Watson,ou=people,dc=example,dc=org
+
+dn: cn=nagios admins,ou=group,dc=example,dc=org
+objectclass: groupofnames
+cn: nagios admins
+description: Nagios Administrators 
 member: cn=Sheri Smith,ou=people,dc=example,dc=org
+
+dn: cn=dns admins,ou=group,dc=example,dc=org
+objectclass: groupofnames
+cn: dns admins
+description: Dns Administrators
+member: cn=Sheri Smith,ou=people,dc=example,dc=org
+
+dn: cn=puppet admins,ou=group,dc=example,dc=org 
+objectclass: groupofnames
+cn: puppet admins
+description: Dns Administrators
+member: cn=Sheri Smith,ou=people,dc=example,dc=org
+
+dn: cn=users,ou=group,dc=example,dc=org 
+objectclass: groupofnames
+cn: users
+description: Basic Users
+member: cn=Sheri Smith,ou=people,dc=example,dc=org
+
+dn: cn=developpers,ou=group,dc=example,dc=org
+objectclass: groupofnames
+cn: developpers
+description: Developpers 
+member: cn=Sheri Smith,ou=people,dc=example,dc=org
+
