@@ -73,11 +73,11 @@ cn: itpeople
 description: IT security group
 member: cn=John Watson,ou=people,dc=example,dc=org
 
-dn: cn=itpeople,ou=groups,dc=example,dc=org
+dn: cn=hrpeople,ou=groups,dc=example,dc=org
 objectclass: groupofnames
 cn: itpeople
 description: IT security group
-member: cn=John Watson,ou=people,dc=example,dc=org
+member: cn=John Smith,ou=people,dc=example,dc=org 
 
 dn: cn=nagios admins,ou=group,dc=example,dc=org
 objectclass: groupofnames
