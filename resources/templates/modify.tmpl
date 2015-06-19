@@ -10,7 +10,44 @@
               ${form}
               <h2 class="h3">Enable/Disable user's roles:</h2>
               ${roles}
+              % if len(standalone_groups) != 0:
               <h2 class="h3">Delete user's individual groups:</h2>
+              <table id="RecordTable" class="table table-hover table-condensed tablesorter">
+              <thead>
+              <tr>
+                  <th class="sorter-false">
+                      Backend
+                  </th>
+                  <th class="sorter-false">
+                      Group 
+                  </th>
+                  <th class="sorter-false">
+                      Enable/Disable
+                  </th>
+              </tr>
+              </thead>
+              <tbody>
+              % for backend in standalone_groups:
+                  % for group in standalone_groups[backend]:
+                  <tr>
+                    <td>
+                    ${backend} 
+                    </td>
+                    <td>
+                    ${group}
+                    </td>
+                    <td>
+                    <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" 
+                           data-off-text="Disabled" data-handle-width="75" type="checkbox" 
+                           name="${group}" data-size="mini" id="${group}" checked>
+                    <script>$("[name='${group}']").bootstrapSwitch();</script>
+                    </td>
+                  </tr>
+                  % endfor
+              % endfor
+              </tbody>
+              </table>
+              % endif
               <div class="form-group">
                 <div class="input-group">
                   <button class="btn btn-default blue" type="submit">

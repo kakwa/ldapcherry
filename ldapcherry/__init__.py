@@ -82,11 +82,22 @@ class LdapCherry(object):
         ret = {}
         for b in self.backends:
             ret[b] = self.backends[b].get_groups(username)
+        cherrypy.log.error(
+            msg = ret,
+            severity = logging.DEBUG,
+        )
         return ret
 
     def _get_roles(self, username):
         groups = self._get_groups(username)
-        return self.roles.get_roles(groups)
+        user_roles = self.roles.get_roles(groups)
+        cherrypy.log.error(
+            msg = user_roles,
+            severity = logging.DEBUG,
+        )
+        return user_roles 
+
+
 
     def _is_admin(self, username):
         roles = self._get_roles(username)
@@ -521,7 +532,7 @@ class LdapCherry(object):
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',',':'))
         form = self.temp_form.render(attributes=self.attributes.attributes, values=None, modify=False)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=None)
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
     @cherrypy.expose
@@ -553,10 +564,13 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         user_attrs = self._get_user(user)
+        tmp = self._get_roles(user)
+        user_roles = tmp['roles']
+        user_lonely_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',',':'))
         form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js)
-        return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
+        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=user_roles)
+        return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification, standalone_groups=user_lonely_groups)
 
     @cherrypy.expose
     def selfmodify(self, **params):

@@ -60,6 +60,12 @@
     </thead>
     <tbody>
         %for role in roles:
+            <%
+                if not current_roles is None and role in current_roles:
+                    checked = ' checked '
+                else:
+                    checked = ''
+            %>
         <tr>
             <td>
                 ${roles[role]['display_name']}
@@ -80,7 +86,7 @@
             <td>
                 <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" 
                        data-off-text="Disabled" data-handle-width="75" type="checkbox" 
-                       name="${role}" data-size="mini" id="${role}" >
+                       name="${role}" data-size="mini" id="${role}" ${checked}>
                 <script>$("[name='${role}']").bootstrapSwitch();
                     $('input[name="${role}"]').on('switchChange.bootstrapSwitch', function(event, state) {
                         if (state) {

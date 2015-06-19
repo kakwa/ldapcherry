@@ -280,12 +280,14 @@ class Roles:
         roles = Set([])
         parentroles = Set([])
         notroles = Set([])
+        tmp = Set([])
         usedgroups = {}
         unusedgroups = {}
         ret = {}
         # determine roles membership
         for role in self.roles:
-            self._check_member(role, groups, notroles, roles, parentroles, usedgroups)
+            if self._check_member(role, groups, notroles, tmp, parentroles, usedgroups):
+                roles.add(role)
         # determine standalone groups not matching any roles
         for b in groups:
             for g in groups[b]:
@@ -293,6 +295,7 @@ class Roles:
                     if b not in unusedgroups:
                         unusedgroups[b] = Set([])
                     unusedgroups[b].add(g)
+
         ret['roles'] = roles
         ret['unusedgroups'] = unusedgroups
         return ret
