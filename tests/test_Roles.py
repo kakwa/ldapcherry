@@ -147,5 +147,5 @@ class TestError(object):
             ],
         'toto': ['not a group'],
         }
-        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2'])} 
+        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2', 'users'])} 
         assert inv.get_roles(groups) == expected
