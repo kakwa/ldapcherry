@@ -52,7 +52,7 @@ class LdapCherry(object):
             )
         else:
             cherrypy.log.error(
-                msg = "Unkwon exception <%(e)s>" % { 'e' : str(e) },
+                msg = "Unkwon exception '%(e)s'" % { 'e' : str(e) },
                 severity = logging.ERROR
             )
         # log the traceback as 'debug'
@@ -83,7 +83,7 @@ class LdapCherry(object):
         for b in self.backends:
             ret[b] = self.backends[b].get_groups(username)
         cherrypy.log.error(
-            msg = ret,
+            msg = "user '" + username +"' groups: " + str(ret),
             severity = logging.DEBUG,
         )
         return ret
@@ -92,12 +92,10 @@ class LdapCherry(object):
         groups = self._get_groups(username)
         user_roles = self.roles.get_roles(groups)
         cherrypy.log.error(
-            msg = user_roles,
+            msg = "user '" + username +"' roles: " + str(user_roles),
             severity = logging.DEBUG,
         )
         return user_roles 
-
-
 
     def _is_admin(self, username):
         roles = self._get_roles(username)
@@ -156,7 +154,7 @@ class LdapCherry(object):
 
         self.roles_file = self._get_param('roles', 'roles.file', config)
         cherrypy.log.error(
-            msg = "loading roles file <%(file)s>" % { 'file': self.roles_file },
+            msg = "loading roles file '%(file)s'" % { 'file': self.roles_file },
             severity = logging.DEBUG
         )
         self.roles = Roles(self.roles_file)
@@ -286,16 +284,16 @@ class LdapCherry(object):
             # definition of the template directory
             self.template_dir = self._get_param('resources', 'templates.dir', config)
             cherrypy.log.error(
-                msg = "loading templates from dir <%(dir)s>" % { 'dir': self.template_dir },
+                msg = "loading templates from dir '%(dir)s'" % { 'dir': self.template_dir },
                 severity = logging.DEBUG
             )
             # preload templates
             self.temp_lookup = lookup.TemplateLookup(
                     directories=self.template_dir, input_encoding='utf-8'
                     )
-            self.temp_index = self.temp_lookup.get_template('index.tmpl')
-            self.temp_error = self.temp_lookup.get_template('error.tmpl')
-            self.temp_login = self.temp_lookup.get_template('login.tmpl')
+            self.temp_index       = self.temp_lookup.get_template('index.tmpl')
+            self.temp_error       = self.temp_lookup.get_template('error.tmpl')
+            self.temp_login       = self.temp_lookup.get_template('login.tmpl')
             self.temp_searchadmin = self.temp_lookup.get_template('searchadmin.tmpl')
             self.temp_searchuser  = self.temp_lookup.get_template('searchuser.tmpl')
             self.temp_adduser     = self.temp_lookup.get_template('adduser.tmpl')
@@ -309,7 +307,7 @@ class LdapCherry(object):
 
             self.attributes_file = self._get_param('attributes', 'attributes.file', config)
             cherrypy.log.error(
-                msg = "loading attributes file <%(file)s>" % { 'file': self.attributes_file },
+                msg = "loading attributes file '%(file)s'" % { 'file': self.attributes_file },
                 severity = logging.DEBUG
             )
 
