@@ -389,6 +389,53 @@ class LdapCherry(object):
         else:
             raise cherrypy.HTTPRedirect("/signin")
 
+    def _adduser(self, params):
+        badd = {}
+        for attr in self.attributes.get_attributes():
+            if self.attributes.attributes[attr]['type'] == 'password':
+                pwd1 = attr + '1'
+                pwd2 = attr + '2'
+                if params[pwd1] != params[pwd2]:
+                    raise Exception()
+                params[attr] = params[pwd1]
+            if attr in params:
+                backends = self.attributes.get_backends_attributes(attr)
+                for b in backends:
+                    if not b in badd:
+                        badd[b] = {}
+                    badd[b][backends[b]] = params[attr]
+        for b in badd:
+            self.backends[b].add_user(badd[b])
+
+        key = self.attributes.get_key()
+        username = params[key]
+        sess = cherrypy.session
+        admin = str(sess.get(SESSION_KEY, None))
+
+        cherrypy.log.error(
+            msg = "User '" + username + "' added by '" + admin + "'",
+            severity = logging.INFO
+        )
+
+        cherrypy.log.error(
+            msg = "User '" + username + "' attributes: " + str(badd),
+            severity = logging.DEBUG
+        )
+
+        roles = []
+        for r in self.roles.get_allroles():
+            if r in params:
+                roles.append(r)
+        groups = self.roles.get_groups(roles)
+        for b in groups:
+            self.backends[b].add_to_groups(username, groups[b])
+
+    def _modify(self, params):
+        pass
+
+    def _deleteuser(self, username):
+        pass
+
     @cherrypy.expose
     def signin(self):
         """simple signin page
@@ -427,34 +474,6 @@ class LdapCherry(object):
                 severity = logging.WARNING
             )
             raise cherrypy.HTTPRedirect("/signin")
-
-    def _adduser(self, params):
-        badd = {}
-        for attr in self.attributes.get_attributes():
-            if self.attributes.attributes[attr]['type'] == 'password':
-                pwd1 = attr + '1'
-                pwd2 = attr + '2'
-                if params[pwd1] != params[pwd2]:
-                    raise Exception()
-                params[attr] = params[pwd1]
-            if attr in params:
-                backends = self.attributes.get_backends_attributes(attr)
-                for b in backends:
-                    if not b in badd:
-                        badd[b] = {}
-                    badd[b][backends[b]] = params[attr]
-        for b in badd:
-            self.backends[b].add_user(badd[b])
-
-        roles = []
-        for r in self.roles.get_allroles():
-            if r in params:
-                roles.append(r)
-        key = self.attributes.get_key()
-        username = params[key]
-        groups = self.roles.get_groups(roles)
-        for b in groups:
-            self.backends[b].add_to_groups(username, groups[b])
 
     @cherrypy.expose
     def logout(self):
@@ -548,7 +567,7 @@ class LdapCherry(object):
 
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Modify')</script>"
-            self._adduser(params)
+            self._modify(params)
         else:
             notification = ''
 
