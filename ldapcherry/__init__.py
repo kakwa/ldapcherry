@@ -27,6 +27,7 @@ from cherrypy.lib.httputil import parse_query_string
 #mako template engines imports
 from mako.template import Template
 from mako import lookup
+from sets import Set
 
 SESSION_KEY = '_cp_username'
 
@@ -428,7 +429,17 @@ class LdapCherry(object):
                 roles.append(r)
         groups = self.roles.get_groups(roles)
         for b in groups:
-            self.backends[b].add_to_groups(username, groups[b])
+            self.backends[b].add_to_groups(username, Set(groups[b]))
+
+        cherrypy.log.error(
+            msg = "User '" + username + "' made member of " + str(roles)+ " by '" + admin + "'",
+            severity = logging.INFO
+        )
+
+        cherrypy.log.error(
+            msg = "User '" + username + "' groups: " + str(groups),
+            severity = logging.DEBUG
+        )
 
     def _modify(self, params):
         pass
