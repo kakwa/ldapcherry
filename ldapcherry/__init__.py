@@ -445,7 +445,8 @@ class LdapCherry(object):
         pass
 
     def _deleteuser(self, username):
-        pass
+        for b in self.backends:
+            self.backends[b].del_user(username)
 
     @cherrypy.expose
     def signin(self):
