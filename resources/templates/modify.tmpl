@@ -6,12 +6,17 @@
         <div class="col-md-12 column">
             <div class="well well-sm">
               <form method='POST' action='/modify' role="form" class="form-signin" data-toggle="validator">
-              <h2 class="h3">Modify user's attributes:</h2>
+              <fieldset>
+              <legend>Modify user's attributes:</legend>
               ${form}
-              <h2 class="h3">Enable/Disable user's roles:</h2>
+              </fieldset>
+              <fieldset>
+              <legend>Enable/Disable user's roles:</legend>
               ${roles}
+              </fieldset>
               % if len(standalone_groups) != 0:
-              <h2 class="h3">Delete user's individual groups:</h2>
+              <fieldset>
+              <legend>Delete user's individual groups:</legend>
               <table id="RecordTable" class="table table-hover table-condensed tablesorter">
               <thead>
               <tr>
@@ -47,6 +52,7 @@
               % endfor
               </tbody>
               </table>
+              </fieldset>
               % endif
               <div class="form-group">
                 <div class="input-group">
