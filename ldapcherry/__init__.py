@@ -447,6 +447,14 @@ class LdapCherry(object):
     def _deleteuser(self, username):
         for b in self.backends:
             self.backends[b].del_user(username)
+            cherrypy.log.error(
+                msg = "User '" + username + "' deleted from backend '" + b + "'",
+                severity = logging.DEBUG
+            )
+        cherrypy.log.error(
+            msg = "User '" + username + "' deleted",
+            severity = logging.INFO
+        )
 
     @cherrypy.expose
     def signin(self):
@@ -565,11 +573,13 @@ class LdapCherry(object):
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
     @cherrypy.expose
-    def delete(self, **params):
+    def delete(self, user):
         """ remove user page """
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
-        pass
+        referer = cherrypy.request.headers['Referer']
+        self._deleteuser(user)
+        raise cherrypy.HTTPRedirect(referer)
 
     @cherrypy.expose
     def modify(self, user=None, **params):
