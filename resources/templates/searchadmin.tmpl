@@ -59,7 +59,7 @@
                                 <td>
 
                                     <a href="/delete?user=${user}">
-                                    <button type="submit" class="btn btn-xs red">
+                                    <button type="submit" class="btn btn-xs red" data-toggle='confirmation-delete'>
                                     <span class="glyphicon glyphicon-remove-sign"></span> Delete</button>
                                     </a>
 
@@ -72,4 +72,11 @@
         </div>
     </div>
     %endif
+    <script>
+    // Full featured example
+    $("[data-toggle='confirmation-delete']").popConfirm({
+        content: "Delete this user?",
+        placement: "right" // (top, right, bottom, left)
+    });
+    </script>
 </%block>
