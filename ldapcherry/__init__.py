@@ -590,6 +590,8 @@ class LdapCherry(object):
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Modify')</script>"
             self._modify(params)
+            referer = cherrypy.request.headers['Referer']
+            raise cherrypy.HTTPRedirect(referer)
         else:
             notification = ''
 
