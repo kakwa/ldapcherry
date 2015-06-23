@@ -8,15 +8,14 @@
         for (var i = 0; i < len; i++) {
             var role = parentRoles[i];
             var DnParentRole = roles[role];
-            var checked = document.getElementById(role).checked;
-            $('input[name=' + role +']').bootstrapSwitch('state', true, true);
+            var checked = document.getElementById('role.'+ role).checked;
+            $('input[name="role.' + role +'"]').bootstrapSwitch('state', true, true);
             if ( ! checked){
                 $.notify("Enable Role '" + DnParentRole + "' (Parent Role of '" + DnRole  +"')",
                     {   
                         type: 'info',
                         delay: 6500, 
                     }
-
                 );
             }
         }
@@ -28,8 +27,8 @@
         for (var i = 0; i < len; i++) {
             var role = parentRoles[i];
             var DnParentRole = roles[role];
-            var checked = document.getElementById(role).checked;
-            $('input[name=' + role +']').bootstrapSwitch('state', false, true);
+            var checked = document.getElementById('role.'+role).checked;
+            $('input[name="role.' + role +'"]').bootstrapSwitch('state', false, true);
             if (checked){
                 $.notify("Disable Role '" + DnParentRole + "' (Sub Role of '" + DnRole  +"')",
                     {   
@@ -86,9 +85,9 @@
             <td>
                 <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" 
                        data-off-text="Disabled" data-handle-width="75" type="checkbox" 
-                       name="${role}" data-size="mini" id="${role}" ${checked}>
-                <script>$("[name='${role}']").bootstrapSwitch();
-                    $('input[name="${role}"]').on('switchChange.bootstrapSwitch', function(event, state) {
+                       name="role.${role}" data-size="mini" id="role.${role}" ${checked}>
+                <script>$("[name='role.${role}']").bootstrapSwitch();
+                    $('input[name="role.${role}"]').on('switchChange.bootstrapSwitch', function(event, state) {
                         if (state) {
                             enableParentRoles('${role}');
                         }

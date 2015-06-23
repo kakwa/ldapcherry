@@ -37,25 +37,25 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
 
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
     % if attr['type'] == 'string':
-  <input type="text"   name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
+  <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
     % elif attr['type'] == 'email':
-  <input type="email"  name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">
+  <input type="email"  name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">
     % elif attr['type'] == 'int':
-  <input type="number" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
+  <input type="number" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
     % elif attr['type'] == 'fix':
-  <input type="hidden" name="${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} value="${attr['value']}">
+  <input type="hidden" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} value="${attr['value']}">
   <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
-  <select class="form-control" name="${a}">
+  <select class="form-control" name="attr.${a}">
         ${value2}
         %for val in attr['values']:
         <option>${val}</option>
         %endfor
   </select>
     % elif attr['type'] == 'password':
-      <input type="password" class="form-control" name="${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
+      <input type="password" class="form-control" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
       <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
-      <input type="password" class="form-control" name="${a}2" id="#${a}2" data-match="#${a}1" placeholder="Confirm" ${required}>
+      <input type="password" class="form-control" name="attr.${a}2" id="#${a}2" data-match="#${a}1" placeholder="Confirm" ${required}>
     % endif
 </div>
 </div>

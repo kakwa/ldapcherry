@@ -362,7 +362,17 @@ class LdapCherry(object):
                         ret[attrid] = tmp[attr]
         return ret
 
-
+    def _parse_params(self, params):
+        ret = {'attrs': {}, 'roles': {}, 'groups': {}}
+        for p in params:
+            p_type, sep, param = p.partition('.')
+            if p_type == 'attr':
+                ret['attrs'][param] = params[p]
+            elif p_type == 'role':
+                ret['roles'][param] = params[p]
+            elif p_type == 'group':
+                ret['groups'][param] = params[p]
+        return ret
 
     def _check_admin(self):
         if self.auth_mode == 'none':
@@ -391,25 +401,26 @@ class LdapCherry(object):
             raise cherrypy.HTTPRedirect("/signin")
 
     def _adduser(self, params):
+        params = self._parse_params(params)
         badd = {}
         for attr in self.attributes.get_attributes():
             if self.attributes.attributes[attr]['type'] == 'password':
                 pwd1 = attr + '1'
                 pwd2 = attr + '2'
-                if params[pwd1] != params[pwd2]:
+                if params['attrs'][pwd1] != params['attrs'][pwd2]:
                     raise Exception()
-                params[attr] = params[pwd1]
-            if attr in params:
+                params['attrs'][attr] = params['attrs'][pwd1]
+            if attr in params['attrs']:
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
                     if not b in badd:
                         badd[b] = {}
-                    badd[b][backends[b]] = params[attr]
+                    badd[b][backends[b]] = params['attrs'][attr]
         for b in badd:
             self.backends[b].add_user(badd[b])
 
         key = self.attributes.get_key()
-        username = params[key]
+        username = params['attrs'][key]
         sess = cherrypy.session
         admin = str(sess.get(SESSION_KEY, None))
 
@@ -425,7 +436,7 @@ class LdapCherry(object):
 
         roles = []
         for r in self.roles.get_allroles():
-            if r in params:
+            if r in params['roles']:
                 roles.append(r)
         groups = self.roles.get_groups(roles)
         for b in groups:
@@ -442,6 +453,7 @@ class LdapCherry(object):
         )
 
     def _modify(self, params):
+        params = self._parse_params(params)
         pass
 
     def _deleteuser(self, username):

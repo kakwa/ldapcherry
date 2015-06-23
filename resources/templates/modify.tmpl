@@ -39,8 +39,8 @@
                     <td>
                     <input data-on-color="success" data-off-color="danger" data-on-text="Enabled" 
                            data-off-text="Disabled" data-handle-width="75" type="checkbox" 
-                           name="${group}" data-size="mini" id="${group}" checked>
-                    <script>$("[name='${group}']").bootstrapSwitch();</script>
+                           name="group.${backend}.${group}" data-size="mini" id="group.${backend}.${group}" checked>
+                    <script>$("[name='group.${backend}.${group}']").bootstrapSwitch();</script>
                     </td>
                   </tr>
                   % endfor
