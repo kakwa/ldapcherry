@@ -53,7 +53,7 @@ class LdapCherry(object):
             )
         else:
             cherrypy.log.error(
-                msg = "Unkwon exception '%(e)s'" % { 'e' : str(e) },
+                msg = "unkwon exception '%(e)s'" % { 'e' : str(e) },
                 severity = logging.ERROR
             )
         # log the traceback as 'debug'
@@ -402,7 +402,7 @@ class LdapCherry(object):
 
     def _adduser(self, params):
         cherrypy.log.error(
-            msg = "Add user form attributes: " + str(params),
+            msg = "add user form attributes: " + str(params),
             severity = logging.DEBUG
         )
         params = self._parse_params(params)
@@ -430,12 +430,12 @@ class LdapCherry(object):
         admin = str(sess.get(SESSION_KEY, None))
 
         cherrypy.log.error(
-            msg = "User '" + username + "' added by '" + admin + "'",
+            msg = "user '" + username + "' added by '" + admin + "'",
             severity = logging.INFO
         )
 
         cherrypy.log.error(
-            msg = "User '" + username + "' attributes: " + str(badd),
+            msg = "user '" + username + "' attributes: " + str(badd),
             severity = logging.DEBUG
         )
 
@@ -448,7 +448,7 @@ class LdapCherry(object):
             self.backends[b].add_to_groups(username, Set(groups[b]))
 
         cherrypy.log.error(
-            msg = "User '" + username + "' made member of " + str(roles)+ " by '" + admin + "'",
+            msg = "user '" + username + "' made member of " + str(roles)+ " by '" + admin + "'",
             severity = logging.INFO
         )
 
@@ -465,7 +465,7 @@ class LdapCherry(object):
         for b in self.backends:
             self.backends[b].del_user(username)
             cherrypy.log.error(
-                msg = "User '" + username + "' deleted from backend '" + b + "'",
+                msg = "user '" + username + "' deleted from backend '" + b + "'",
                 severity = logging.DEBUG
             )
         cherrypy.log.error(
