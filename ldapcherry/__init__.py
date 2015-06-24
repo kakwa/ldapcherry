@@ -35,13 +35,25 @@ SESSION_KEY = '_cp_username'
 # of cherrypy
 def syslog_error(msg='', context='',
         severity=logging.INFO, traceback=False):
-    if traceback:
-        msg += cherrypy._cperror.format_exc()
+
+    if traceback and msg == '':
+        msg = 'python exception'
     if context == '':
         cherrypy.log.error_log.log(severity, msg)
     else:
         cherrypy.log.error_log.log(severity,
                 ' '.join((context, msg)))
+    if traceback:
+        try:
+            exc = sys.exc_info()
+            if exc == (None, None, None):
+                cherrypy.log.error_log.log(severity, msg)
+            import traceback
+            # log each line of the exception
+            for l in traceback.format_exception(*exc):
+                cherrypy.log.error_log.log(severity, l)
+        finally:
+            del exc
 
 class LdapCherry(object):
 
@@ -53,7 +65,7 @@ class LdapCherry(object):
             )
         else:
             cherrypy.log.error(
-                msg = "unkwon exception '%(e)s'" % { 'e' : str(e) },
+                msg = "unkwon exception: '%(e)s'" % { 'e' : str(e) },
                 severity = logging.ERROR
             )
         # log the traceback as 'debug'
