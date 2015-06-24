@@ -383,7 +383,10 @@ class LdapCherry(object):
             elif p_type == 'role':
                 ret['roles'][param] = params[p]
             elif p_type == 'group':
-                ret['groups'][param] = params[p]
+                backend, sep, value = param.partition('.')
+                if not backend in ret['groups']:
+                    ret['groups'][backend] = []
+                ret['groups'][backend].append(value)
         return ret
 
     def _check_admin(self):
@@ -465,13 +468,120 @@ class LdapCherry(object):
         )
 
         cherrypy.log.error(
-            msg = "User '" + username + "' groups: " + str(groups),
+            msg = "user '" + username + "' groups: " + str(groups),
             severity = logging.DEBUG
         )
 
     def _modify(self, params):
+        cherrypy.log.error(
+            msg = "add user form attributes: " + str(params),
+            severity = logging.DEBUG
+        )
         params = self._parse_params(params)
-        pass
+        badd = {}
+        key = self.attributes.get_key()
+        username = params['attrs'][key]
+
+        for attr in self.attributes.get_attributes():
+            if self.attributes.attributes[attr]['type'] == 'password':
+                pwd1 = attr + '1'
+                pwd2 = attr + '2'
+                if params['attrs'][pwd1] != params['attrs'][pwd2]:
+                    raise Exception()
+                params['attrs'][attr] = params['attrs'][pwd1]
+            if attr in params['attrs']:
+                backends = self.attributes.get_backends_attributes(attr)
+                for b in backends:
+                    if not b in badd:
+                        badd[b] = {}
+                    if params['attrs'][attr] != '':
+                        badd[b][backends[b]] = params['attrs'][attr]
+        for b in badd:
+            self.backends[b].set_attrs(username, badd[b])
+
+        sess = cherrypy.session
+        admin = str(sess.get(SESSION_KEY, None))
+
+        cherrypy.log.error(
+            msg = "user '" + username + "' modified by '" + admin + "'",
+            severity = logging.INFO
+        )
+
+        cherrypy.log.error(
+            msg = "user '" + username + "' attributes: " + str(badd),
+            severity = logging.DEBUG
+        )
+
+        tmp = self._get_roles(username)
+        roles_current = tmp['roles']
+        lonely_groups = tmp['unusedgroups']
+        roles_member = []
+        roles_not_member = []
+
+        groups_keep = {}
+        groups_remove = {}
+
+        for b in lonely_groups:
+            for g in lonely_groups[b]:
+                if b in  params['groups'] and g in params['groups'][b]:
+                    if not b in groups_keep:
+                        groups_keep[b] = []
+                    groups_keep[b].append(g)
+
+                else:
+                    if not b in groups_remove:
+                        groups_remove[b] = []
+                    groups_remove[b].append(g)
+
+        for r in self.roles.get_allroles():
+            if r in params['roles']:
+                roles_member.append(r)
+            else:
+                roles_not_member.append(r)
+
+        groups_current = self.roles.get_groups(roles_current)
+        groups_rm = self.roles.get_groups(roles_not_member)
+        groups_add = self.roles.get_groups(roles_member)
+
+        for b in groups_add:
+            if not b in groups_add:
+                groups_add[b] = []
+            if not b in groups_keep:
+                groups_keep[b] = []
+            if not b in groups_current:
+                groups_current[b] = []
+            if not b in lonely_groups:
+                lonely_groups[b] = []
+            tmp = Set(groups_add[b]) - Set(groups_keep[b]) - Set(groups_current[b]) - Set(lonely_groups[b])
+            cherrypy.log.error(
+                msg = "user '" + username + "' added to groups: " + str(list(tmp))+ " in backend '" + b + "'",
+                severity = logging.DEBUG
+            )
+            self.backends[b].add_to_groups(username, tmp)
+        for b in groups_rm:
+            if not b in groups_remove:
+                groups_remove[b] = []
+            if not b in groups_rm:
+                groups_rm[b] = []
+            if not b in groups_add:
+                groups_add[b] = []
+            if not b in groups_keep:
+                groups_keep[b] = []
+            if not b in groups_current:
+                groups_current[b] = []
+            if not b in lonely_groups:
+                lonely_groups[b] = []
+            tmp = ((Set(groups_rm[b]) | Set(groups_remove[b])) - (Set(groups_keep[b]) |  Set(groups_add[b]))) & (Set(groups_current[b]) | Set(lonely_groups[b]))
+            cherrypy.log.error(
+                msg = "user '" + username + "' removed from groups: " + str(list(tmp))+ " in backend '" + b + "'",
+                severity = logging.DEBUG
+            )
+            self.backends[b].del_from_groups(username, tmp)
+
+        cherrypy.log.error(
+            msg = "user '" + username + "' made member of " + str(roles_member) + " by '" + admin + "'",
+            severity = logging.INFO
+        )
 
     def _deleteuser(self, username):
         for b in self.backends:
