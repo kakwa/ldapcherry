@@ -401,8 +401,13 @@ class LdapCherry(object):
             raise cherrypy.HTTPRedirect("/signin")
 
     def _adduser(self, params):
+        cherrypy.log.error(
+            msg = "Add user form attributes: " + str(params),
+            severity = logging.DEBUG
+        )
         params = self._parse_params(params)
         badd = {}
+
         for attr in self.attributes.get_attributes():
             if self.attributes.attributes[attr]['type'] == 'password':
                 pwd1 = attr + '1'
