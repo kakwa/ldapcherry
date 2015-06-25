@@ -690,6 +690,10 @@ class LdapCherry(object):
         """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
+        if is_admin:
+            raise cherrypy.HTTPRedirect('selfmodify')
+        else:
+            raise cherrypy.HTTPRedirect('selfmodify')
         return self.temp_index.render(is_admin=is_admin)
 
     @cherrypy.expose
