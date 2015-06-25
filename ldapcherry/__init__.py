@@ -472,9 +472,40 @@ class LdapCherry(object):
             severity = logging.DEBUG
         )
 
+    def _selfmodify(self, params):
+        cherrypy.log.error(
+            msg = "modify user form attributes: " + str(params),
+            severity = logging.DEBUG
+        )
+        params = self._parse_params(params)
+        badd = {}
+        sess = cherrypy.session
+        username = str(sess.get(SESSION_KEY, None))
+
+        for attr in self.attributes.get_selfattributes():
+            if self.attributes.attributes[attr]['type'] == 'password':
+                pwd1 = attr + '1'
+                pwd2 = attr + '2'
+                if params['attrs'][pwd1] != params['attrs'][pwd2]:
+                    raise Exception()
+                params['attrs'][attr] = params['attrs'][pwd1]
+            if attr in params['attrs']:
+                backends = self.attributes.get_backends_attributes(attr)
+                for b in backends:
+                    if not b in badd:
+                        badd[b] = {}
+                    if params['attrs'][attr] != '':
+                        badd[b][backends[b]] = params['attrs'][attr]
+        for b in badd:
+            self.backends[b].set_attrs(username, badd[b])
+        cherrypy.log.error(
+            msg = "user '" + username + "' modified its attributes",
+            severity = logging.INFO
+        )
+
     def _modify(self, params):
         cherrypy.log.error(
-            msg = "add user form attributes: " + str(params),
+            msg = "modify user form attributes: " + str(params),
             severity = logging.DEBUG
         )
         params = self._parse_params(params)
@@ -758,5 +789,10 @@ class LdapCherry(object):
         """ self modify user page """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=None, modify=True)
+        if cherrypy.request.method.upper() == 'POST':
+            self._selfmodify(params)
+        sess = cherrypy.session
+        user = str(sess.get(SESSION_KEY, None))
+        user_attrs = self._get_user(user)
+        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True)
         return self.temp_selfmodify.render(form=form, is_admin=is_admin)
