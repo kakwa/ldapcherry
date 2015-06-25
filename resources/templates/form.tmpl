@@ -36,7 +36,10 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
   %>
 
   <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
-    % if attr['type'] == 'string':
+    % if modify and a == keyattr:
+  <input type="hidden" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
+  <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${tmp}</span>
+    % elif attr['type'] == 'string':
   <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
     % elif attr['type'] == 'email':
   <input type="email"  name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">

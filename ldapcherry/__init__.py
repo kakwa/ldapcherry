@@ -748,7 +748,8 @@ class LdapCherry(object):
         user_roles = tmp['roles']
         user_lonely_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',',':'))
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True)
+        key = self.attributes.get_key()
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True, keyattr=key)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=user_roles)
         return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification, standalone_groups=user_lonely_groups)
 
