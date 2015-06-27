@@ -372,6 +372,11 @@ class LdapCherry(object):
                     attrid = self.attributes.backend_attributes[b][attr]
                     if not attr in ret:
                         ret[attrid] = tmp[attr]
+
+        cherrypy.log.error(
+            msg = "user '" + username + "' attributes " + str(ret), 
+            severity = logging.DEBUG
+        )
         return ret
 
     def _parse_params(self, params):

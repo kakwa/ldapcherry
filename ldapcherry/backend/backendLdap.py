@@ -163,10 +163,10 @@ class Backend(ldapcherry.backend.Backend):
         return dn_entry
 
     def _str(self, s):
-            try:
-                return str(s)
-            except UnicodeEncodeError:
-                return unicode(s).encode('unicode_escape')
+        return s.encode('utf-8')
+
+    def _uni(self, s):
+        return s.decode('utf-8')
 
     def auth(self, username, password):
 
@@ -303,9 +303,9 @@ class Backend(ldapcherry.backend.Backend):
             for attr in attrs_tmp:
                 value_tmp = attrs_tmp[attr]
                 if len(value_tmp) == 1:
-                    attrs[attr] = value_tmp[0]
+                    attrs[attr] = self._uni(value_tmp[0])
                 else:
-                    attrs[attr] = value_tmp
+                    attrs[attr] = map(self._uni, value_tmp)
 
             if self.key in attrs:
                 ret[attrs[self.key]] = attrs
@@ -317,9 +317,9 @@ class Backend(ldapcherry.backend.Backend):
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
-                ret[attr] = value_tmp[0]
+                ret[attr] = self._uni(value_tmp[0]) 
             else:
-                ret[attr] = value_tmp
+                ret[attr] = map(self._uni, value_tmp)
         return ret
 
     def get_groups(self, username):
@@ -333,5 +333,5 @@ class Backend(ldapcherry.backend.Backend):
         groups = self._search(searchfilter, NO_ATTR, self.groupdn)
         ret = []
         for entry in groups:
-            ret.append(entry[0])
+            ret.append(self._uni(entry[0]))
         return ret
