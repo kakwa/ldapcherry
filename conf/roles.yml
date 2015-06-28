@@ -3,14 +3,14 @@ admin-lv3:
     description: Super administrators of the system
     backends_groups:
         ldap:
-            - cn=dns admins,ou=group,dc=example,dc=com
-            - cn=nagios admins,ou=group,dc=example,dc=com
-            - cn=puppet admins,ou=group,dc=example,dc=com
-            - cn=users,ou=group,dc=example,dc=com
-        ad:
-            - Domain Users
-            - Administrators
-            - Domain Controllers 
+            - cn=dns admins,ou=Group,dc=example,dc=org
+            - cn=nagios admins,ou=Group,dc=example,dc=org
+            - cn=puppet admins,ou=Group,dc=example,dc=org
+            - cn=users,ou=Group,dc=example,dc=org
+#        ad:
+#            - Administrators
+#            - Domain Controllers
+#            - Domain Users
 
 admin-lv2:
     display_name: Administrators Level 2
@@ -18,26 +18,25 @@ admin-lv2:
     LC_admins: True
     backends_groups:
         ldap:
-            - cn=nagios admins,ou=group,dc=example,dc=com
-            - cn=users,ou=group,dc=example,dc=com
-        ad:
-            - Domain Users
+            - cn=nagios admins,ou=Group,dc=example,dc=org
+            - cn=users,ou=Group,dc=example,dc=org
+#        ad:
+#            - Domain Users
+#            - Domain Controllers
 
 developpers:
     display_name: Developpers
     description: Developpers of the system
     backends_groups:
         ldap:
-            - cn=developpers,ou=group,dc=example,dc=com
-            - cn=users,ou=group,dc=example,dc=com
-        ad:
-            - Domain Users
+            - cn=developpers,ou=Group,dc=example,dc=org
+            - cn=users,ou=Group,dc=example,dc=org
 
 users:
     display_name: Simple Users
     description: Basic users of the system
     backends_groups:
         ldap:
-            - cn=users,ou=group,dc=example,dc=com
-        ad:
-            - Domain Users
+            - cn=users,ou=Group,dc=example,dc=org
+#        ad:
+#            - Domain Users

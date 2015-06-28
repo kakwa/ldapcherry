@@ -2,7 +2,6 @@ cn:
     description: "First Name and Display Name"
     display_name: "Display Name"
     type: string
-    search_displayed: True
     weight: 30
     autofill: 
         function: cn
@@ -11,8 +10,7 @@ cn:
             - $name
     backends:
         ldap: cn
-        ad: CN
-
+#        ad: CN
 first-name:
     description: "First name of the user"
     display_name: "First Name"
@@ -21,7 +19,7 @@ first-name:
     weight: 20
     backends:
         ldap: givenName
-        ad: givenName
+#        ad: givenName
 name:
     description: "Family name of the user"
     display_name: "Name"
@@ -30,10 +28,11 @@ name:
     type: string
     backends:
         ldap: sn
-        ad: sn
+#        ad: sn
 email:
     description: "Email of the user"
     display_name: "Email"
+    search_displayed: True
     type: email
     weight: 40
     autofill: 
@@ -43,8 +42,8 @@ email:
             - $last-name
             - '@example.com'
     backends:
-        ldap: email
-        ad: EMAIL
+        ldap: mail
+#        ad: mail
 uid:
     description: "UID of the user"
     display_name: "UID"
@@ -59,7 +58,7 @@ uid:
             - $last-name
     backends:
         ldap: uid
-        ad: UID
+#        ad: uid
 uidNumber:
     description: "User ID Number of the user"
     display_name: "UID Number"
@@ -72,7 +71,7 @@ uidNumber:
             - $last-name
     backends:
         ldap: uidNumber
-        ad: UIDNumber
+#        ad: UIDNumber
 gidNumber:
     description: "Group ID Number of the user"
     display_name: "GID Number"
@@ -81,7 +80,7 @@ gidNumber:
     default: 10000
     backends:
         ldap: gidNumber
-        ad: GIDNumber
+#        ad: GIDNumber
 shell:
     description: "Shell of the user"
     display_name: "Shell"
@@ -93,8 +92,8 @@ shell:
         - /bin/zsh
         - /bin/sh
     backends:
-        ldap: shell
-        ad: SHELL
+        ldap: loginShell
+#        ad: LOGINSHEL
 home:
     description: "Home user path"
     display_name: "Home"
@@ -107,9 +106,8 @@ home:
             - $last-name
             - /home/
     backends:
-        ldap: home
-        ad: Home
-
+        ldap: homeDirectory
+#        ad: HOMEDIRECTORY
 password:
     description: "Password of the user"
     display_name: "Password"
@@ -118,12 +116,4 @@ password:
     type: password
     backends:
         ldap: userPassword
-        ad: userPassword
-logscript:
-    description: "Windows login script"
-    display_name: "Login script"
-    weight: 100
-    type: fix
-    value: login1.bat
-    backends:
-        ad: logonScript
+#        ad: PASSWORD
