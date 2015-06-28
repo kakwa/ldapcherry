@@ -542,9 +542,10 @@ class LdapCherry(object):
             if self.attributes.attributes[attr]['type'] == 'password':
                 pwd1 = attr + '1'
                 pwd2 = attr + '2'
-                if params['attrs'][pwd1] != params['attrs'][pwd2]:
-                    raise Exception()
-                params['attrs'][attr] = params['attrs'][pwd1]
+                if pwd1 in params['attrs']:
+                    if params['attrs'][pwd1] != params['attrs'][pwd2]:
+                        raise Exception()
+                    params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs']:
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
