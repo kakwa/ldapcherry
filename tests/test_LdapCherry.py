@@ -124,6 +124,36 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testSearch(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        expected = {u'ssmith': {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'name': u'smith', 'uid': u'ssmith'}, u'jsmith': {'password': u'passwordsmith', 'cn': u'John Smith', 'name': u'Smith', 'uid': u'jsmith'}}
+        ret = app._search('smith')
+        assert expected == ret
+
+    def testGetUser(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        expected = {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'uid': u'ssmith', 'name': u'smith'} 
+        ret = app._get_user('ssmith')
+        assert expected == ret
+
+    def testAddUser(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        form = {'groups': {}, 'attrs': {'password1': u'password☭', 'password2': u'password☭', 'cn': u'Test ☭ Test', 'name': u'Test ☭', 'uidNumber': u'1000', 'gidNumber': u'1000', 'home': u'/home/test', 'first-name': u'Test ☭', 'email': u'test@test.fr', 'uid': u'test'}, 'roles': {'admin-lv3': u'on', 'admin-lv2': u'on', 'users': u'on'}}
+        app._adduser(form)
+        app._deleteuser('test')
+
+    def testModifUser(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        form = {'groups': {}, 'attrs': {'password1': u'password☭', 'password2': u'password☭', 'cn': u'Test ☭ Test', 'name': u'Test ☭', 'uidNumber': u'1000', 'gidNumber': u'1000', 'home': u'/home/test', 'first-name': u'Test ☭', 'email': u'test@test.fr', 'uid': u'test'}, 'roles': {'admin-lv3': u'on', 'admin-lv2': u'on', 'users': u'on'}}
+        app._adduser(form)
+        modify_form = { 'attrs': {'first-name': u'Test42 ☭', 'uid': u'test'}, 'roles': { 'admin-lv3': u'on'}}
+        app._modify(modify_form)
+        app._deleteuser('test')
+
     def testLogger(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)

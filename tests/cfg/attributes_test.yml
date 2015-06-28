@@ -1,0 +1,111 @@
+cn:
+    description: "First Name and Display Name"
+    display_name: "Display Name"
+    type: string
+    weight: 30
+    autofill: 
+        function: cn
+        args:
+            - $first-name
+            - $name
+    backends:
+        ldap: cn
+
+first-name:
+    description: "First name of the user"
+    display_name: "First Name"
+    search_displayed: True
+    type: string
+    weight: 20
+    backends:
+        ldap: givenName
+name:
+    description: "Family name of the user"
+    display_name: "Name"
+    search_displayed: True
+    weight: 10
+    type: string
+    backends:
+        ldap: sn
+email:
+    description: "Email of the user"
+    display_name: "Email"
+    search_displayed: True
+    type: email
+    weight: 40
+    autofill: 
+        function: email
+        args:
+            - $first-name
+            - $last-name
+            - '@example.com'
+    backends:
+        ldap: mail
+uid:
+    description: "UID of the user"
+    display_name: "UID"
+    search_displayed: True
+    key: True
+    type: string
+    weight: 50
+    autofill: 
+        function: uid
+        args:
+            - $first-name
+            - $last-name
+    backends:
+        ldap: uid
+uidNumber:
+    description: "User ID Number of the user"
+    display_name: "UID Number"
+    weight: 60
+    type: int
+    autofill: 
+        function: uidNumber
+        args:
+            - $first-name
+            - $last-name
+    backends:
+        ldap: uidNumber
+gidNumber:
+    description: "Group ID Number of the user"
+    display_name: "GID Number"
+    weight: 70
+    type: int
+    default: 10000
+    backends:
+        ldap: gidNumber
+shell:
+    description: "Shell of the user"
+    display_name: "Shell"
+    weight: 80
+    self: True
+    type: stringlist
+    values:
+        - /bin/bash
+        - /bin/zsh
+        - /bin/sh
+    backends:
+        ldap: loginShell
+home:
+    description: "Home user path"
+    display_name: "Home"
+    weight: 90
+    type: string
+    autofill: 
+        function: home
+        args:
+            - $first-name
+            - $last-name
+            - /home/
+    backends:
+        ldap: homeDirectory
+
+password:
+    description: "Password of the user"
+    display_name: "Password"
+    weight: 31
+    self: True
+    type: password
+    backends:
+        ldap: userPassword
