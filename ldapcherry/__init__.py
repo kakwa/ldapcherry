@@ -695,10 +695,6 @@ class LdapCherry(object):
         """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        if is_admin:
-            raise cherrypy.HTTPRedirect('selfmodify')
-        else:
-            raise cherrypy.HTTPRedirect('selfmodify')
         return self.temp_index.render(is_admin=is_admin)
 
     @cherrypy.expose
@@ -798,10 +794,12 @@ class LdapCherry(object):
         """ self modify user page """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        if cherrypy.request.method.upper() == 'POST':
-            self._selfmodify(params)
         sess = cherrypy.session
         user = str(sess.get(SESSION_KEY, None))
+        if self.auth_mode == 'none':
+            return "not available without authentication disabled"
+        if cherrypy.request.method.upper() == 'POST':
+            self._selfmodify(params)
         user_attrs = self._get_user(user)
         form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True)
         return self.temp_selfmodify.render(form=form, is_admin=is_admin)
