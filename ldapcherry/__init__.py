@@ -479,6 +479,7 @@ class LdapCherry(object):
         else:
             raise cherrypy.HTTPRedirect("/signin")
 
+
     def _adduser(self, params):
         cherrypy.log.error(
             msg = "add user form attributes: " + str(params),
@@ -535,17 +536,10 @@ class LdapCherry(object):
             severity = logging.DEBUG
         )
 
-    def _selfmodify(self, params):
-        cherrypy.log.error(
-            msg = "modify user form attributes: " + str(params),
-            severity = logging.DEBUG
-        )
-        params = self._parse_params(params)
-        badd = {}
-        sess = cherrypy.session
-        username = str(sess.get(SESSION_KEY, None))
 
-        for attr in self.attributes.get_selfattributes():
+    def _modify_attrs(self, params, attr_list, username):
+        badd = {}
+        for attr in attr_list:
             if self.attributes.attributes[attr]['type'] == 'password':
                 pwd1 = attr + '1'
                 pwd2 = attr + '2'
@@ -561,9 +555,24 @@ class LdapCherry(object):
                         badd[b][backends[b]] = params['attrs'][attr]
         for b in badd:
             self.backends[b].set_attrs(username, badd[b])
+        return badd
+
+    def _selfmodify(self, params):
+        cherrypy.log.error(
+            msg = "modify user form attributes: " + str(params),
+            severity = logging.DEBUG
+        )
+        params = self._parse_params(params)
+        sess = cherrypy.session
+        username = str(sess.get(SESSION_KEY, None))
+        badd = self._modify_attrs(params, self.attributes.get_selfattributes(), username)
         cherrypy.log.error(
             msg = "user '" + username + "' modified its attributes",
             severity = logging.INFO
+        )
+        cherrypy.log.error(
+            msg = "user '" + username + "' attributes: " + str(badd),
+            severity = logging.DEBUG
         )
 
     def _modify(self, params):
@@ -572,26 +581,10 @@ class LdapCherry(object):
             severity = logging.DEBUG
         )
         params = self._parse_params(params)
-        badd = {}
         key = self.attributes.get_key()
         username = params['attrs'][key]
 
-        for attr in self.attributes.get_attributes():
-            if self.attributes.attributes[attr]['type'] == 'password':
-                pwd1 = attr + '1'
-                pwd2 = attr + '2'
-                if params['attrs'][pwd1] != params['attrs'][pwd2]:
-                    raise Exception()
-                params['attrs'][attr] = params['attrs'][pwd1]
-            if attr in params['attrs']:
-                backends = self.attributes.get_backends_attributes(attr)
-                for b in backends:
-                    if not b in badd:
-                        badd[b] = {}
-                    if params['attrs'][attr] != '':
-                        badd[b][backends[b]] = params['attrs'][attr]
-        for b in badd:
-            self.backends[b].set_attrs(username, badd[b])
+        badd = self._modify_attrs(params, self.attributes.get_attributes(), username)
 
         sess = cherrypy.session
         admin = str(sess.get(SESSION_KEY, None))
@@ -739,7 +732,7 @@ class LdapCherry(object):
             cherrypy.request.login = None
 
         cherrypy.log.error(
-            msg = "user '%(user)s' logout" % { 'user': username }
+            msg = "user '%(user)s' logout" % { 'user': username },
             severity = logging.INFO
         )
         raise cherrypy.HTTPRedirect("/signin")
