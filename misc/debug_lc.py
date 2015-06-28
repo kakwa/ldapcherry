@@ -39,3 +39,9 @@ def loadconf(configfile, instance):
 
 app = LdapCherry()
 loadconf('./tests/cfg/ldapcherry.ini', app)
+ret = app._get_user('ssmith')
+print ret
+
+}
+
+form = {'groups': {}, 'attrs': {'password1': u'password☭', 'password2': u'password☭', 'shell': u'/bin/zsh', 'cn': u'Test ☭ Test', 'name': u'Test ☭', 'uidNumber': u'1000', 'gidNumber': u'1000', 'home': u'/home/test', 'first-name': u'Test ☭', 'email': u'test@test.fr', 'uid': u'test'}, 'roles': {'admin-lv3': u'on', 'admin-lv2': u'on', 'users': u'on'}}
