@@ -22,7 +22,6 @@ DISPLAYED_ATTRS = 1
 LISTED_ATTRS = 2
 ALL_ATTRS = 3
 
-
 class Backend(ldapcherry.backend.Backend):
 
     def __init__(self, config, logger, name, attrslist, key):
@@ -56,6 +55,61 @@ class Backend(ldapcherry.backend.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
+    def _exception_handler(self, e):
+        et = type(e)
+        if et is ldap.OPERATIONS_ERROR:
+           self._logger(
+               severity = logging.ERROR,
+               msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
+           )
+        elif et is ldap.INVALID_CREDENTIALS:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
+                )
+        elif et is ldap.SERVER_DOWN:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
+                )
+        elif et is ldap.FILTER_ERROR:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
+                )
+        elif et is ldap.NO_SUCH_OBJECT:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Search DN '" + basedn \
+                            + "' doesn't exist, check '" \
+                            + self.backend_name + ".userdn' or '" \
+                            + self.backend_name + ".groupdn'",
+                )
+        elif et is ldap.OBJECT_CLASS_VIOLATION:
+            info = e[0]['info']
+            desc = e[0]['desc']
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Configuration error, " + desc + ", " + info,
+                )
+        elif et is ldap.INSUFFICIENT_ACCESS:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "Access error on '" + self.backend_name +  "' backend, please check your acls in this backend",
+                )
+        elif et is ldap.ALREADY_EXISTS:
+            desc = e[0]['desc']
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "adding user failed, " + desc,
+                )
+        else:
+            self._logger(
+                    severity = logging.ERROR,
+                    msg = "unknow ldap exception in ldap backend",
+                )
+        raise e
+
     def _connect(self):
         ldap_client = ldap.initialize(self.uri)
         ldap_client.set_option(ldap.OPT_REFERRALS, 0)
@@ -75,33 +129,17 @@ class Backend(ldapcherry.backend.Backend):
         if self.starttls == 'on':
             try:
                 ldap_client.start_tls_s()
-            except ldap.OPERATIONS_ERROR as e:
-                self._logger(
-                    severity = logging.ERROR,
-                    msg = "cannot use starttls with ldaps:// uri (uri: " + self.uri + ")",
-                )
-                raise e
-                #raise cherrypy.HTTPError("500", "Configuration Error, contact administrator")
+            except Exception as e:
+                self._exception_handler(e)
         return ldap_client
 
     def _bind(self):
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
-        except ldap.INVALID_CREDENTIALS as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Configuration error, wrong credentials, unable to connect to ldap with '" + self.binddn + "'",
-                )
+        except Exception as e:
             ldap_client.unbind_s()
-            raise e
-        except ldap.SERVER_DOWN as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Unable to contact ldap server '" + self.uri + "', check 'auth.ldap.uri' and ssl/tls configuration",
-                )
-            ldap_client.unbind_s()
-            raise e
+            self._exception_handler(e)
         return ldap_client
 
     def _search(self, searchfilter, attrs, basedn):
@@ -124,23 +162,9 @@ class Backend(ldapcherry.backend.Backend):
                     searchfilter,
                     attrlist=attrlist
             )
-        except ldap.FILTER_ERROR as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Bad search filter, check '" + self.backend_name + ".*_filter_tmpl' params",
-                )
+        except Exception as e:
             ldap_client.unbind_s()
-            raise e
-        except ldap.NO_SUCH_OBJECT as e:
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Search DN '" + basedn \
-                            + "' doesn't exist, check '" \
-                            + self.backend_name + ".userdn' or '" \
-                            + self.backend_name + ".groupdn'",
-                )
-            ldap_client.unbind_s()
-            raise e
+            self._exception_handler(e)
 
         ldap_client.unbind_s()
         return r
@@ -193,32 +217,9 @@ class Backend(ldapcherry.backend.Backend):
         ldif = modlist.addModlist(attrs_str)
         try:
             ldap_client.add_s(dn,ldif)
-        except ldap.OBJECT_CLASS_VIOLATION as e:
-            info = e[0]['info']
-            desc = e[0]['desc']
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Configuration error, " + desc + ", " + info,
-                )
+        except Exception as e:
             ldap_client.unbind_s()
-            raise e
-        except ldap.INSUFFICIENT_ACCESS as e:
-            info = e[0]['info']
-            desc = e[0]['desc']
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "Access error, " + desc + ", " + info,
-                )
-            ldap_client.unbind_s()
-            raise e
-        except ldap.ALREADY_EXISTS as e:
-            desc = e[0]['desc']
-            self._logger(
-                    severity = logging.ERROR,
-                    msg = "adding user failed, " + desc,
-                )
-            ldap_client.unbind_s()
-            raise e
+            self._exception_handler(e)
         ldap_client.unbind_s()
 
     def del_user(self, username):
@@ -244,7 +245,11 @@ class Backend(ldapcherry.backend.Backend):
             else:
                 old = {}
             ldif = modlist.modifyModlist(old, new)
-            ldap_client.modify_s(dn, ldif)
+            try:
+                ldap_client.modify_s(dn, ldif)
+            except Exception as e:
+                ldap_client.unbind_s()
+                self._exception_handler(e)
 
         ldap_client.unbind_s()
 
@@ -272,6 +277,9 @@ class Backend(ldapcherry.backend.Backend):
                         msg = "%(backend)s: user '%(user)s' already member of group '%(group)s' (attribute '%(attr)s')"  % \
                                 { 'user': username, 'group': group, 'attr': attr, 'backend': self.backend_name}
                     )
+                except Exception as e:
+                    ldap_client.unbind_s()
+                    self._exception_handler(e)
         ldap_client.unbind_s()
             
     def del_from_groups(self, username, groups):
@@ -288,7 +296,14 @@ class Backend(ldapcherry.backend.Backend):
                 try:
                     ldap_client.modify_s(group, ldif)
                 except ldap.NO_SUCH_ATTRIBUTE as e:
-                    pass
+                    self._logger(
+                        severity = logging.INFO,
+                        msg = "%(backend)s: user '%(user)s' wasn't member of group '%(group)s' (attribute '%(attr)s')"  % \
+                                { 'user': username, 'group': group, 'attr': attr, 'backend': self.backend_name}
+                    )
+                except Exception as e:
+                    ldap_client.unbind_s()
+                    self._exception_handler(e)
         ldap_client.unbind_s()
 
     def search(self, searchstring):
