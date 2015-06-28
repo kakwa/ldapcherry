@@ -5,7 +5,7 @@ olcDatabase: {1}hdb
 olcDbDirectory: /var/lib/ldap
 olcSuffix: dc=example,dc=org
 olcAccess: {0}to attrs=userPassword,shadowLastChange by self write by anonymou
- s auth by dn="cn=admin,dc=example,dc=org" write by * none
+ s auth by dn="cn=admin,dc=example,dc=org" write by dn="cn=ldapcherry,dc=example,dc=org" write by dn="cn=dnscherry,dc=example,dc=org" write by * none
 olcAccess: {1}to dn.base="" by * read
 olcAccess: {2}to * by self write by dn="cn=dnscherry,dc=example,dc=org" write by * read
 olcAccess: {3}to * by self write by dn="cn=ldapcherry,dc=example,dc=org" write by * read
