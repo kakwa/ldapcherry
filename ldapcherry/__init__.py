@@ -485,7 +485,6 @@ class LdapCherry(object):
             msg = "add user form attributes: " + str(params),
             severity = logging.DEBUG
         )
-        params = self._parse_params(params)
         badd = {}
 
         for attr in self.attributes.get_attributes():
@@ -562,7 +561,6 @@ class LdapCherry(object):
             msg = "modify user form attributes: " + str(params),
             severity = logging.DEBUG
         )
-        params = self._parse_params(params)
         sess = cherrypy.session
         username = str(sess.get(SESSION_KEY, None))
         badd = self._modify_attrs(params, self.attributes.get_selfattributes(), username)
@@ -580,7 +578,6 @@ class LdapCherry(object):
             msg = "modify user form attributes: " + str(params),
             severity = logging.DEBUG
         )
-        params = self._parse_params(params)
         key = self.attributes.get_key()
         username = params['attrs'][key]
 
@@ -777,6 +774,7 @@ class LdapCherry(object):
 
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Added')</script>"
+            params = self._parse_params(params)
             self._adduser(params)
         else:
             notification = ''
@@ -812,6 +810,7 @@ class LdapCherry(object):
 
         if cherrypy.request.method.upper() == 'POST':
             notification = "<script type=\"text/javascript\">$.notify('User Modify')</script>"
+            params = self._parse_params(params)
             self._modify(params)
             referer = cherrypy.request.headers['Referer']
             raise cherrypy.HTTPRedirect(referer)
@@ -847,6 +846,7 @@ class LdapCherry(object):
         if self.auth_mode == 'none':
             return "not available without authentication disabled"
         if cherrypy.request.method.upper() == 'POST':
+            params = self._parse_params(params)
             self._selfmodify(params)
         user_attrs = self._get_user(user)
         form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True)
