@@ -378,6 +378,8 @@ class LdapCherry(object):
                 severity = logging.INFO
             )
 
+            self.ppolicy = None
+
         except Exception as e:
             self._handle_exception(e)
             cherrypy.log.error(
@@ -680,6 +682,13 @@ class LdapCherry(object):
             severity = logging.INFO
         )
 
+    def _checkppolicy(self, password):
+        if self.ppolicy is None:
+            ret = { 'match': True, 'reason': 'No password Policy'}
+        else:
+            ret = self.ppolicy.check(password)
+        return ret
+
     @cherrypy.expose
     def signin(self):
         """simple signin page
@@ -754,6 +763,14 @@ class LdapCherry(object):
             res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list, is_admin=is_admin)
+
+    @cherrypy.expose
+    def checkppolicy(self, password):
+        """ search user page """
+        self._check_auth(must_admin=False)
+        is_admin = self._check_admin()
+        ret = self._checkppolicy(password)
+        return json.dumps(ret, separators=(',',':'))
 
     @cherrypy.expose
     def searchadmin(self, searchstring=None):
