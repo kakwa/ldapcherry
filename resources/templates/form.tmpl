@@ -43,7 +43,7 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
     % elif attr['type'] == 'string':
   <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
     % elif attr['type'] == 'email':
-  <input type="email"  name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">
+  <input type="email"  name="attr.${a}" class="form-control" delay="2000" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">
     % elif attr['type'] == 'int':
   <input type="number" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
     % elif attr['type'] == 'fix':
@@ -59,9 +59,10 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
     % elif attr['type'] == 'password':
       <input type="password" class="form-control" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
       <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
-      <input type="password" class="form-control" name="attr.${a}2" id="#${a}2" data-match="#${a}1" placeholder="Confirm" ${required}>
+      <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" placeholder="Confirm" ${required}>
     % endif
 </div>
+<div class="help-block with-errors"></div>
 </div>
 % endfor
 </%def>
