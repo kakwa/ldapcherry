@@ -5,7 +5,9 @@
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
-class Ppolicy:
+from ldapcherry.exceptions import MissingParameter
+
+class PPolicy:
 
     def __init__(self, config, logger):
         pass
@@ -15,3 +17,11 @@ class Ppolicy:
 
     def info(self):
         ret = "There is no password policy configured"
+
+    def get_param(self, param, default=None):
+        if param in self.config:
+            return self.config[param]
+        elif not default is None:
+            return default
+        else:
+           raise MissingParameter('ppolicy', param)

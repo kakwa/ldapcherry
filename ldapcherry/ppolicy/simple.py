@@ -5,3 +5,32 @@
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
+import ldapcherry.ppolicy
+import re
+
+class PPolicy(ldapcherry.ppolicy.PPolicy):
+
+    def __init__(self, config, logger):
+        self.config = config
+        self.min_length = get_param('min_length')
+        self.min_upper = get_param('min_upper')
+        self.min_digit = get_param('min_digit')
+
+    def check(self, password):
+        if len(password) < self.min_length:
+            return {'match': False, 'reason': 'password too short'}
+        if len(re.findall(r'[A-Z]', password)) < self.min_upper:
+            return {'match': False, 'reason': 'not enough upper case characters'}
+        if len(re.findall(r'[0-9]', password)) < self.min_digit:
+            return {'match': False, 'reason': 'not enough digits'}
+        return {'match': True, 'reason': 'password ok'}
+
+    def info(self):
+        return \
+"* Minimum length: %(len)n\n\
+* Minimum number of uppercase characters: %(upper)n\n\
+* Minimum number of digits: %(digit)n" % { 'upper': self.min_upper,
+        'len': self.min_length,
+        'digit' self.min_digit,
+    }
+
