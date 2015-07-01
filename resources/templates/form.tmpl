@@ -57,7 +57,7 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
         %endfor
   </select>
     % elif attr['type'] == 'password':
-      <input type="password" class="form-control" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
+      <input type="password" class="form-control" data-error="Don't meet password policy" data-remote="/checkppolicy" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
       <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
       <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" placeholder="Confirm" ${required}>
     % endif

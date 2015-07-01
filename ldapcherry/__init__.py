@@ -765,11 +765,20 @@ class LdapCherry(object):
         return self.temp_searchuser.render(searchresult = res, attrs_list = attrs_list, is_admin=is_admin)
 
     @cherrypy.expose
-    def checkppolicy(self, password):
+    def checkppolicy(self, **params):
         """ search user page """
+        keys = params.keys()
+        if len(keys) != 1:
+            cherrypy.response.status = 403
+            return "bad argument"
+        password = params[keys[0]]
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
         ret = self._checkppolicy(password)
+        if ret['match']:
+            cherrypy.response.status = 200
+        else:
+            cherrypy.response.status = 400
         return json.dumps(ret, separators=(',',':'))
 
     @cherrypy.expose
