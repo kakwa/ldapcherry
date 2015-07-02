@@ -177,7 +177,11 @@ class LdapCherry(object):
             pp = __import__(module, globals(), locals(), ['PPolicy'], -1)
         except:
             raise BackendModuleLoadingFail(module)
-        self.ppolicy = pp.PPolicy(config['ppolicy'], cherrypy.log)
+        if 'ppolicy' in config:
+            ppcfg = config['ppolicy']
+        else:
+            ppcfg = {}
+        self.ppolicy = pp.PPolicy(ppcfg, cherrypy.log)
 
     def _init_auth(self, config):
         """ Init authentication
