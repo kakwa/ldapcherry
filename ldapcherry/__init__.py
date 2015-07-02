@@ -171,6 +171,14 @@ class LdapCherry(object):
             except:
                 raise BackendModuleInitFail(module)
 
+    def _init_ppolicy(self, config):
+        module = self._get_param('ppolicy', 'ppolicy.module', config, 'ldapcherry.ppolicy')
+        try:
+            pp = __import__(module, globals(), locals(), ['PPolicy'], -1)
+        except:
+            raise BackendModuleLoadingFail(module)
+        self.ppolicy = pp.PPolicy(config['ppolicy'], cherrypy.log)
+
     def _init_auth(self, config):
         """ Init authentication
         @dict: configuration of ldapcherry 
@@ -378,7 +386,8 @@ class LdapCherry(object):
                 severity = logging.INFO
             )
 
-            self.ppolicy = None
+            # loading the ppolicy
+            self._init_ppolicy(config)
 
         except Exception as e:
             self._handle_exception(e)
@@ -683,10 +692,7 @@ class LdapCherry(object):
         )
 
     def _checkppolicy(self, password):
-        if self.ppolicy is None:
-            ret = { 'match': True, 'reason': 'No password Policy'}
-        else:
-            ret = self.ppolicy.check(password)
+        ret = self.ppolicy.check(password)
         return ret
 
     @cherrypy.expose

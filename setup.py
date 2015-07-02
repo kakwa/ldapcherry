@@ -90,7 +90,7 @@ setup(
     version          = '0.0.1',
     author           = 'Pierre-Francois Carpentier',
     author_email     = 'carpentier.pf@gmail.com',
-    packages         = ['ldapcherry', 'ldapcherry.backend'],
+    packages         = ['ldapcherry', 'ldapcherry.backend', 'ldapcherry.ppolicy'],
     data_files       = resources_files,
     scripts          = ['scripts/ldapcherryd'],
     url              = 'https://github.com/kakwa/ldapcherry',

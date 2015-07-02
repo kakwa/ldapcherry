@@ -12,9 +12,9 @@ class PPolicy(ldapcherry.ppolicy.PPolicy):
 
     def __init__(self, config, logger):
         self.config = config
-        self.min_length = get_param('min_length')
-        self.min_upper = get_param('min_upper')
-        self.min_digit = get_param('min_digit')
+        self.min_length = self.get_param('min_length')
+        self.min_upper = self.get_param('min_upper')
+        self.min_digit = self.get_param('min_digit')
 
     def check(self, password):
         if len(password) < self.min_length:
@@ -31,6 +31,6 @@ class PPolicy(ldapcherry.ppolicy.PPolicy):
 * Minimum number of uppercase characters: %(upper)n\n\
 * Minimum number of digits: %(digit)n" % { 'upper': self.min_upper,
         'len': self.min_length,
-        'digit' self.min_digit,
+        'digit': self.min_digit,
     }
 
