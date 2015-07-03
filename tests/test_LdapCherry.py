@@ -87,6 +87,13 @@ class TestError(object):
             app._set_access_log(cfg, logging.DEBUG)
             app._set_error_log(cfg, logging.DEBUG)
         
+    def testPPolicy(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry.ini', app)
+        wrong = app._checkppolicy('password')['match']
+        good = app._checkppolicy('Passw0rd.')['match']
+        assert wrong == False and good == True
+
     def testMissingBackend(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
