@@ -6,6 +6,10 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
+import subprocess
+from tempfile import NamedTemporaryFile as tempfile
+import re
+
 from sets import Set
 from ldapcherry import LdapCherry
 from ldapcherry.exceptions import *
@@ -45,6 +49,24 @@ def loadconf(configfile, instance):
     app = cherrypy.tree.mount(instance, '/', configfile)
     cherrypy.config.update(configfile)
     instance.reload(app.config)
+
+class HtmlValidationFailed(Exception):
+    def __init__(self, out):
+        self.errors = out
+
+def htmlvalidator(page):
+    f = tempfile()
+    stdout = tempfile()
+    f.write(page.encode("utf-8"))
+    f.seek(0)
+    ret = subprocess.call(['./tests/html_validator.py', '-h', f.name], stdout=stdout)
+    stdout.seek(0)
+    out = stdout.read()
+    f.close()
+    stdout.close()
+    print(out)
+    if not re.search(r'Error:.*', out) is None:
+        raise HtmlValidationFailed(out)
 
 class BadModule():
     pass
@@ -160,6 +182,15 @@ class TestError(object):
         modify_form = { 'attrs': {'first-name': u'Test42 ☭', 'uid': u'test'}, 'roles': { 'admin-lv3': u'on'}}
         app._modify(modify_form)
         app._deleteuser('test')
+
+    def testHtml(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        pages = [
+            app.signin(),
+        ]
+        for page in pages:
+            htmlvalidator(page)
 
     def testLogger(self):
         app = LdapCherry()
