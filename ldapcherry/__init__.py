@@ -881,7 +881,10 @@ class LdapCherry(object):
         sess = cherrypy.session
         user = str(sess.get(SESSION_KEY, None))
         if self.auth_mode == 'none':
-            return "not available without authentication disabled"
+            return self.temp_error.render(is_admin=is_admin,
+                    alert = 'warning',
+                    message="Not accessible with authentication disabled."
+                    )
         if cherrypy.request.method.upper() == 'POST':
             params = self._parse_params(params)
             self._selfmodify(params)
