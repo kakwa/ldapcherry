@@ -139,7 +139,7 @@ class Backend(ldapcherry.backend.Backend):
         else:
             # this is even darker magic
             ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
-            # it doesn't make sense to set it to never (don't check certifate) 
+            # it doesn't make sense to set it to never (don't check certifate)
             # but it only works with this option... and it checks the certificat
             # (I've lost my sanity over this)
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
@@ -252,8 +252,8 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
-        old_attrs = tmp[1] 
-        for attr in attrs: 
+        old_attrs = tmp[1]
+        for attr in attrs:
             content = self._str(attrs[attr])
             attr = self._str(attr)
             new = { attr : content }
@@ -274,7 +274,7 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
-        attrs = tmp[1] 
+        attrs = tmp[1]
         attrs['dn'] = dn
         for group in groups:
             group = self._str(group)
@@ -298,12 +298,12 @@ class Backend(ldapcherry.backend.Backend):
                     ldap_client.unbind_s()
                     self._exception_handler(e)
         ldap_client.unbind_s()
-            
+
     def del_from_groups(self, username, groups):
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
-        attrs = tmp[1] 
+        attrs = tmp[1]
         attrs['dn'] = dn
         for group in groups:
             group = self._str(group)
@@ -349,7 +349,7 @@ class Backend(ldapcherry.backend.Backend):
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
-                ret[attr] = self._uni(value_tmp[0]) 
+                ret[attr] = self._uni(value_tmp[0])
             else:
                 ret[attr] = map(self._uni, value_tmp)
         return ret

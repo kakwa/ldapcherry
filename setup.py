@@ -35,7 +35,7 @@ try:
     f.close()
 except IOError:
     description = small_description
-    
+
 try:
     license = open('LICENSE').read()
 except IOError:
@@ -74,7 +74,7 @@ def get_list_files(basedir, targetdir):
     return return_list
 
 # add static files and templates in the list of thing to deploy
-resources_files = get_list_files('resources', 
+resources_files = get_list_files('resources',
     os.path.join(datarootdir, 'share', 'ldapcherry'))
 
 # add the configuration files if they don't exist
@@ -95,7 +95,7 @@ setup(
     scripts          = ['scripts/ldapcherryd'],
     url              = 'https://github.com/kakwa/ldapcherry',
     license          = license,
-    description      = small_description, 
+    description      = small_description,
     long_description = description,
     install_requires = install_requires,
     tests_require    = ['pytest'],

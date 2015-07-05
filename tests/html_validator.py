@@ -2,22 +2,22 @@
 
 # Copyright (c) 2007-2008 Mozilla Foundation
 #
-# Permission is hereby granted, free of charge, to any person obtaining a 
-# copy of this software and associated documentation files (the "Software"), 
-# to deal in the Software without restriction, including without limitation 
-# the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-# and/or sell copies of the Software, and to permit persons to whom the 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in 
+# The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
 from __future__ import print_function, with_statement
@@ -105,7 +105,7 @@ for arg in argv:
         errorsOnly = True
       else:
         sys.stderr.write('Unknown argument %s.\n' % arg)
-        sys.exit(3)                     
+        sys.exit(3)
   else:
     if fileName:
       sys.stderr.write('Cannot have more than one input file.\n')
@@ -130,7 +130,7 @@ elif fileName:
   m = extPat.match(fileName)
   if m:
     ext = m.group(1)
-    ext = ext.translate(maketrans(string.ascii_uppercase, string.ascii_lowercase))    
+    ext = ext.translate(maketrans(string.ascii_uppercase, string.ascii_lowercase))
     if ext in extDict:
       contentType = extDict[ext]
     else:
@@ -138,7 +138,7 @@ elif fileName:
       sys.exit(3)
   else:
     sys.stderr.write('Could not extract a filename extension. Please force the type.\n')
-    sys.exit(6)    
+    sys.exit(6)
 else:
   sys.stderr.write('Need to force HTML or XHTML when reading from stdin.\n')
   sys.exit(4)
@@ -172,7 +172,7 @@ if gnu:
   url = url + '?out=gnu'
 else:
   url = url + '?out=text'
-  
+
 if errorsOnly:
   url = url + '&level=error'
 
@@ -188,19 +188,19 @@ while status in (302,301,307) and redirectCount < 10:
   if redirectCount > 0:
     url = response.getheader('Location')
   parsed = urlparse.urlsplit(url)
-  
+
   if redirectCount > 0:
     connection.close() # previous connection
     print('Redirecting to %s' % url)
     print('Please press enter to continue or type \'stop\' followed by enter to stop.')
     if raw_input() != '':
       sys.exit(0)
-  
+
   if parsed.scheme == 'https':
     connection = httplib.HTTPSConnection(parsed[1])
   else:
     connection = httplib.HTTPConnection(parsed[1])
-  
+
   headers = {
     'Accept-Encoding': 'gzip',
     'Content-Type': contentType,
@@ -208,13 +208,13 @@ while status in (302,301,307) and redirectCount < 10:
     'Content-Length': len(gzippeddata),
   }
   urlSuffix = '%s?%s' % (parsed[2], parsed[3])
-  
+
   connection.connect()
   connection.request('POST', urlSuffix, body=gzippeddata, headers=headers)
-  
+
   response = connection.getresponse()
   status = response.status
-  
+
   redirectCount += 1
 
 #
@@ -226,7 +226,7 @@ if status != 200:
 
 if response.getheader('Content-Encoding', 'identity').lower() == 'gzip':
   response = gzip.GzipFile(fileobj=BytesIO(response.read()))
-  
+
 if fileName and gnu:
   quotedName = '"%s"' % fileName.replace("'", '\\042')
   for line in response.read().split('\n'):

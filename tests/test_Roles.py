@@ -78,7 +78,7 @@ class TestError(object):
 
     def testNested(self):
         inv = Roles('./tests/cfg/nested.yml')
-        expected = {'developpers': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=developpers,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Developpers', 'description': 'description'}, 'admin-lv3': {'backends_groups': {'ad': ['Domain Users', 'Administrators', 'Domain Controllers'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 3', 'description': 'description'}, 'admin-lv2': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 2', 'description': 'description', 'LC_admins': True}, 'users': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Simple Users', 'description': 'description'}} 
+        expected = {'developpers': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=developpers,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Developpers', 'description': 'description'}, 'admin-lv3': {'backends_groups': {'ad': ['Domain Users', 'Administrators', 'Domain Controllers'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 3', 'description': 'description'}, 'admin-lv2': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Administrators Level 2', 'description': 'description', 'LC_admins': True}, 'users': {'backends_groups': {'ad': ['Domain Users'], 'ldap': ['cn=users,ou=group,dc=example,dc=com']}, 'display_name': 'Simple Users', 'description': 'description'}}
         assert expected == inv.flatten
 
     def testGetGroupMissingRole(self):
@@ -147,5 +147,5 @@ class TestError(object):
             ],
         'toto': ['not a group'],
         }
-        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2', 'users'])} 
+        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2', 'users'])}
         assert inv.get_roles(groups) == expected

@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.backend.backendLdap import Backend, DelUserDontExists, CaFileDontExist
-from ldapcherry.exceptions import * 
+from ldapcherry.exceptions import *
 from disable import travis_disabled
 import cherrypy
 import logging
@@ -77,7 +77,7 @@ class TestError(object):
             ldapc = inv._connect()
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
         except ldap.SERVER_DOWN as e:
-            return 
+            return
         else:
             raise AssertionError("expected an exception")
 
@@ -166,7 +166,7 @@ class TestError(object):
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.search('smith')
-        expected = {'ssmith': {'sn': 'smith', 'uid': 'ssmith', 'cn': 'Sheri Smith', 'userPassword': 'passwordsmith'}, 'jsmith': {'sn': 'Smith', 'uid': 'jsmith', 'cn': 'John Smith', 'userPassword': 'passwordsmith'}} 
+        expected = {'ssmith': {'sn': 'smith', 'uid': 'ssmith', 'cn': 'Sheri Smith', 'userPassword': 'passwordsmith'}, 'jsmith': {'sn': 'Smith', 'uid': 'jsmith', 'cn': 'John Smith', 'userPassword': 'passwordsmith'}}
         assert ret == expected
 
     def testAddUser(self):
@@ -232,7 +232,7 @@ class TestError(object):
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_user('jwatson')
-        expected = {'uid': 'jwatson', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'watson', 'mail': 'j.watson@example.com', 'homePhone': '555-111-2225', 'cn': 'John Watson', 'userPassword': u'passwordwatson'} 
+        expected = {'uid': 'jwatson', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'watson', 'mail': 'j.watson@example.com', 'homePhone': '555-111-2225', 'cn': 'John Watson', 'userPassword': u'passwordwatson'}
         assert ret == expected
 
     def testAddUserMissingMustattribute(self):

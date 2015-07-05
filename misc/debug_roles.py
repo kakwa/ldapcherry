@@ -16,7 +16,7 @@ class CustomDumper(yaml.SafeDumper):
         return True
 
 inv = Roles('./conf/roles.yml')
-print 
+print
 print inv.dump_nest()
 
 groups = {

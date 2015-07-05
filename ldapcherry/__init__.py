@@ -92,8 +92,8 @@ class LdapCherry(object):
 
     def _get_groups(self, username):
         """ Get groups of a user
-        @str username: name of the user 
-        @rtype: dict, format { '<backend>': [<list of groups>] } 
+        @str username: name of the user
+        @rtype: dict, format { '<backend>': [<list of groups>] }
         """
         ret = {}
         for b in self.backends:
@@ -106,9 +106,9 @@ class LdapCherry(object):
 
     def _get_roles(self, username):
         """ Get roles of a user
-        @str username: name of the user 
-        @rtype: dict, format { 'roles': [<list of roles>], 
-            'unusedgroups': [<list of groups not matching roles>] } 
+        @str username: name of the user
+        @rtype: dict, format { 'roles': [<list of roles>],
+            'unusedgroups': [<list of groups not matching roles>] }
         """
         groups = self._get_groups(username)
         user_roles = self.roles.get_roles(groups)
@@ -116,7 +116,7 @@ class LdapCherry(object):
             msg = "user '" + username +"' roles: " + str(user_roles),
             severity = logging.DEBUG,
         )
-        return user_roles 
+        return user_roles
 
     def _is_admin(self, username):
         """ Check if a user is an ldapcherry administrator
@@ -127,8 +127,8 @@ class LdapCherry(object):
         return self.roles.is_admin(roles['roles'])
 
     def _check_backends(self):
-        """ Check that every backend in roles and attributes 
-        is declared in main configuration 
+        """ Check that every backend in roles and attributes
+        is declared in main configuration
         """
         backends = self.backends_params.keys()
         for b in self.roles.get_backends():
@@ -139,8 +139,8 @@ class LdapCherry(object):
                 raise MissingBackend(b)
 
     def _init_backends(self, config):
-        """ Init all backends 
-        @dict: configuration of ldapcherry 
+        """ Init all backends
+        @dict: configuration of ldapcherry
         """
         self.backends_params = {}
         self.backends = {}
@@ -185,7 +185,7 @@ class LdapCherry(object):
 
     def _init_auth(self, config):
         """ Init authentication
-        @dict: configuration of ldapcherry 
+        @dict: configuration of ldapcherry
         """
         self.auth_mode = self._get_param('auth', 'auth.mode', config)
         if self.auth_mode in ['and', 'or', 'none']:
@@ -277,8 +277,8 @@ class LdapCherry(object):
         """ return logging level object
         corresponding to a given level passed as
         a string
-        @str level: name of a syslog log level 
-        @rtype: logging, logging level from logging module 
+        @str level: name of a syslog log level
+        @rtype: logging, logging level from logging module
         """
         if level == 'debug':
             return logging.DEBUG
@@ -300,10 +300,10 @@ class LdapCherry(object):
             return logging.INFO
 
     def _auth(self, user, password):
-        """ authenticate a user 
+        """ authenticate a user
         @str user: login of the user
-        @str password: password of the user 
-        @rtype: dict, {'connected': <boolean, True if connection succeded>, 
+        @str password: password of the user
+        @rtype: dict, {'connected': <boolean, True if connection succeded>,
             'isadmin': <True if user is ldapcherry administrator>}
         """
         if self.auth_mode == 'none':
@@ -327,8 +327,8 @@ class LdapCherry(object):
             return {'connected': True, 'isadmin': isadmin}
 
     def _load_templates(self, config):
-        """ load templates 
-        @dict: configuration of ldapcherry 
+        """ load templates
+        @dict: configuration of ldapcherry
         """
         # definition of the template directory
         self.template_dir = self._get_param('resources', 'templates.dir', config)
@@ -361,8 +361,8 @@ class LdapCherry(object):
         )
 
     def reload(self, config = None):
-        """ load/reload configuration 
-        @dict: configuration of ldapcherry 
+        """ load/reload configuration
+        @dict: configuration of ldapcherry
         """
         try:
             # log configuration handling
@@ -403,7 +403,7 @@ class LdapCherry(object):
 
     def _search(self, searchstring):
         """ search users
-        @str searchstring: search string 
+        @str searchstring: search string
         @rtype: dict, {<user>: {<attr>: <value>}}
         """
         if searchstring is None:
@@ -423,7 +423,7 @@ class LdapCherry(object):
 
     def _get_user(self, username):
         """ get user attributes
-        @str username: user to get 
+        @str username: user to get
         @rtype: dict, {<attr>: <value>}
         """
         if username is None:
@@ -438,7 +438,7 @@ class LdapCherry(object):
                         ret[attrid] = tmp[attr]
 
         cherrypy.log.error(
-            msg = "user '" + username + "' attributes " + str(ret), 
+            msg = "user '" + username + "' attributes " + str(ret),
             severity = logging.DEBUG
         )
         return ret
@@ -458,7 +458,7 @@ class LdapCherry(object):
             elif p_type == 'role':
                 ret['roles'][param] = params[p]
             elif p_type == 'group':
-                # with groups there is a second prefix 
+                # with groups there is a second prefix
                 # corresponding to the backend
                 backend, sep, value = param.partition('.')
                 if not backend in ret['groups']:

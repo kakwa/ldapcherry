@@ -108,7 +108,7 @@ class TestError(object):
             cfg['global']['log.error_handler']=t
             app._set_access_log(cfg, logging.DEBUG)
             app._set_error_log(cfg, logging.DEBUG)
-        
+
     def testPPolicy(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
@@ -163,7 +163,7 @@ class TestError(object):
     def testGetUser(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
-        expected = {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'uid': u'ssmith', 'name': u'smith'} 
+        expected = {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'uid': u'ssmith', 'name': u'smith'}
         ret = app._get_user('ssmith')
         assert expected == ret
 
