@@ -174,7 +174,6 @@ class TestError(object):
         app._adduser(form)
         app._deleteuser('test')
 
-
     def testParse(self):
         app = LdapCherry()
         form = {'attr.val': 'val', 'role.id': 'id', 'group.ldap.id': 'id'}
