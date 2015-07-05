@@ -200,6 +200,7 @@ class TestError(object):
                 'searchadmin':app.searchadmin('smit'),
                 'adduser': app.adduser(),
                 'modify':app.modify('jsmith'),
+                'selfmodify':app.selfmodify(),
                 }
         for page in pages:
             print(page)
