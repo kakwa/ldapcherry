@@ -174,6 +174,14 @@ class TestError(object):
         app._adduser(form)
         app._deleteuser('test')
 
+
+    def testParse(self):
+        app = LdapCherry()
+        form = {'attr.val': 'val', 'role.id': 'id', 'group.ldap.id': 'id'}
+        ret = app._parse_params(form)
+        expected = {'attrs': {'val': 'val'}, 'roles': {'id': 'id'}, 'groups': {'ldap': ['id']}}
+        assert expected == ret
+
     def testModifUser(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
