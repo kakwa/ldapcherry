@@ -119,10 +119,6 @@ class TestError(object):
 
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        return True
-
-    def testAuthSuccess(self):
-        inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.auth('jwatson', 'passwordwatson')
         assert ret == True
 
