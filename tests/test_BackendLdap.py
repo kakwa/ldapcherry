@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from sets import Set
-from ldapcherry.backend.backendLdap import Backend, DelUserDontExists
+from ldapcherry.backend.backendLdap import Backend, DelUserDontExists, CaFileDontExist
 from ldapcherry.exceptions import * 
 from disable import travis_disabled
 import cherrypy
@@ -21,7 +21,7 @@ cfg = {
 'binddn'             : 'cn=dnscherry,dc=example,dc=org',
 'password'           : 'password',
 'uri'                : 'ldap://ldap.dnscherry.org:390',
-'ca'                 : './test/cfg/ca.crt',
+'ca'                 : './tests/test_env/etc/ldapcherry/TEST-cacert.pem',
 'starttls'           : 'off',
 'checkcert'          : 'off',
 'user_filter_tmpl'   : '(uid=%(username)s)',
@@ -46,7 +46,6 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         return True
 
-    @travis_disabled
     def testConnectSSLNoCheck(self):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
@@ -61,7 +60,6 @@ class TestError(object):
         ldap.simple_bind_s(inv.binddn, inv.bindpassword)
         return True
 
-    @travis_disabled
     def testConnectSSL(self):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.dnscherry.org:637'
@@ -75,28 +73,40 @@ class TestError(object):
         cfg2['uri'] = 'ldaps://notaldap:637'
         cfg2['checkcert'] = 'on'
         inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
-        ldapc = inv._connect()
         try:
+            ldapc = inv._connect()
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
         except ldap.SERVER_DOWN as e:
             return 
         else:
             raise AssertionError("expected an exception")
 
-    @travis_disabled
+    def testMissingCA(self):
+        cfg2 = cfg.copy()
+        cfg2['uri'] = 'ldaps://ldap.dnscherry.org:637'
+        cfg2['checkcert'] = 'on'
+        cfg2['ca'] = './test/cfg/not_a_ca.crt'
+        try:
+            inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
+            ldapc = inv._connect()
+        except CaFileDontExist as e:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
     def testConnectSSLWrongCA(self):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldaps://ldap.ldapcherry.org:637'
         cfg2['checkcert'] = 'on'
-        cfg2['ca'] = './test/cfg/wrong_ca.crt'
         inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
         except ldap.SERVER_DOWN as e:
             assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
+        else:
+            raise AssertionError("expected an exception")
 
-    @travis_disabled
     def testConnectStartTLS(self):
         cfg2 = cfg.copy()
         cfg2['uri'] = 'ldap://ldap.ldapcherry.org:390'
@@ -105,10 +115,7 @@ class TestError(object):
         cfg2['ca'] = './test/cfg/ca.crt'
         inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
         ldapc = inv._connect()
-        try:
-            ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
-        except ldap.SERVER_DOWN as e:
-            assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
+        ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
 
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')

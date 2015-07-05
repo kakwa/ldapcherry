@@ -10,12 +10,18 @@ import ldap
 import ldap.modlist as modlist
 import logging
 import ldapcherry.backend
+import os
 import re
 
 class DelUserDontExists(Exception):
     def __init__(self, user):
         self.user = user
         self.log = "cannot remove user, user <%(user)s> does not exist" % { 'user' : user}
+
+class CaFileDontExist(Exception):
+    def __init__(self, cafile):
+        self.cafile = cafile
+        self.log = "CA file %(cafile)s don't exist" % { 'cafile': cafile }
 
 NO_ATTR   = 0
 DISPLAYED_ATTRS = 1
@@ -112,20 +118,31 @@ class Backend(ldapcherry.backend.Backend):
 
     def _connect(self):
         ldap_client = ldap.initialize(self.uri)
-        ldap_client.set_option(ldap.OPT_REFERRALS, 0)
-        ldap_client.set_option(ldap.OPT_TIMEOUT, self.timeout)
+        ldap.set_option(ldap.OPT_REFERRALS, 0)
+        ldap.set_option(ldap.OPT_TIMEOUT, self.timeout)
         if self.starttls == 'on':
-            ldap_client.set_option(ldap.OPT_X_TLS_DEMAND, True)
+            ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
         else:
-            ldap_client.set_option(ldap.OPT_X_TLS_DEMAND, False)
+            ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
         if self.ca and self.checkcert == 'on':
-            ldap_client.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+            if os.path.isfile(self.ca):
+                ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
+            else:
+                raise CaFileDontExist(self.ca)
         #else:
-        #    ldap_client.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
+        #    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, '')
         if self.checkcert == 'off':
-            ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+            # this is dark magic
+            # remove any of these two lines and it doesn't work
+            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+            ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         else:
+            # this is even darker magic
             ldap_client.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+            # it doesn't make sense to set it to never (don't check certifate) 
+            # but it only works with this option... and it checks the certificat
+            # (I've lost my sanity over this)
+            ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         if self.starttls == 'on':
             try:
                 ldap_client.start_tls_s()
