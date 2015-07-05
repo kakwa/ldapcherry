@@ -16,6 +16,10 @@
   height: 34px;
 }
 
+.btn.pad {
+   padding: inherit;
+}
+
 .btn.blue {
   background-color: hsl(201, 100%, 30%) !important;
   background-repeat: repeat-x;

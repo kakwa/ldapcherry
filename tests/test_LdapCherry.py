@@ -186,11 +186,17 @@ class TestError(object):
     def testHtml(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
-        pages = [
-            app.signin(),
-        ]
+        pages = {
+                'signin': app.signin(),
+                'index': app.index(),
+                'searchuser': app.searchuser('smit'),
+                'searchadmin':app.searchadmin('smit'),
+                'adduser': app.adduser(),
+                'modify':app.modify('jsmith'),
+                }
         for page in pages:
-            htmlvalidator(page)
+            print(page)
+            htmlvalidator(pages[page])
 
     def testLogger(self):
         app = LdapCherry()

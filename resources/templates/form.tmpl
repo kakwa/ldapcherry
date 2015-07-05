@@ -36,19 +36,19 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
         value2 = ''
   %>
 
-  <span class="input-group-addon" id="basic-addon1">${attr['display_name']}</span>
+  <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
     % if modify and a == keyattr:
-  <input type="hidden" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
-  <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${tmp}</span>
+  <input type="hidden" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <span class="form-control" aria-describedby="basic-addon-${a}">${tmp}</span>
     % elif attr['type'] == 'string':
-  <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
+  <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
     % elif attr['type'] == 'email':
-  <input type="email"  name="attr.${a}" class="form-control" delay="2000" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value} data-error="email address is invalid">
+  <input type="email"  name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid">
     % elif attr['type'] == 'int':
-  <input type="number" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} ${value}>
+  <input type="number" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
     % elif attr['type'] == 'fix':
-  <input type="hidden" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1" ${required} value="${attr['value']}">
-  <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon1">${attr['value']}</span>
+  <input type="hidden" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}">
+  <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" name="attr.${a}">
         ${value2}
@@ -58,7 +58,7 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
   </select>
     % elif attr['type'] == 'password':
       <input type="password" class="form-control" data-error="Don't meet password policy" data-remote="/checkppolicy" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
-      <span class="input-group-addon" id="basic-addon1">Retype ${attr['display_name']}</span>
+      <span class="input-group-addon" id="basic-addon-${a}2">Retype ${attr['display_name']}</span>
       <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" placeholder="Confirm" ${required}>
     % endif
 </div>

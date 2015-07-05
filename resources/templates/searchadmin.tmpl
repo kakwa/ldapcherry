@@ -6,11 +6,11 @@
             <form method='get' action='/searchadmin' role="form" class="form-inline">
                 <div class="form-group">
                      <label for="searchstring">Search user to modify/delete</label>
-                     <input type="text" class="form-control" name="searchstring" placeholder="Search User">
+                     <input type="text" class="form-control" id="searchstring" name="searchstring" placeholder="Search User">
                 </div>
                 <div class="form-group">
                     <label for="submit">Submit</label>
-                    <button type="submit" class="form-control btn btn-default green">
+                    <button type="submit" id="submit" class="form-control btn btn-default green">
                     <span class="glyphicon glyphicon-search"></span> Search</button>
                 </div>
             </form>
@@ -52,18 +52,10 @@
                                 </td>
                             % endfor
                                 <td>
-                                    <a href="/modify?user=${user}">
-                                    <button type="submit" class="btn btn-xs blue">
-                                    <span class="glyphicon glyphicon-cog"></span> Modify</button>
-                                    </a>
+                                    <a href="/modify?user=${user}" class="btn btn-xs blue pad" ><span class="glyphicon glyphicon-cog"></span> Modify</a>
                                 </td>
                                 <td>
-
-                                    <a href="/delete?user=${user}"  data-toggle='confirmation-delete'>
-                                    <button type="submit" class="btn btn-xs red">
-                                    <span class="glyphicon glyphicon-remove-sign"></span> Delete</button>
-                                    </a>
-
+                                    <a href="/delete?user=${user}" data-toggle='confirmation-delete' class="btn btn-xs red pad"><span class="glyphicon glyphicon-remove-sign"></span> Delete</a>
                                 </td>
                             </tr>
                             % endfor
