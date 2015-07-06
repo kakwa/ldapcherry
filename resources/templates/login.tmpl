@@ -4,7 +4,13 @@
     <div class="row clearfix" style="margin-top:30px">
         <div class="col-md-4 column"></div>
         <div class="col-md-4 column well">
-            <form method='POST' action='/login' role="form" class="form-signin">
+<%
+if url is None:
+    qs=''
+else:
+    qs='?url=' + url
+%>
+            <form method='POST' action='/login${qs}' role="form" class="form-signin">
               <div class="form-group">
               <h2 class="form-signin-heading">Please sign in</h2>
                 <div class="input-group">

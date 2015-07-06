@@ -15,6 +15,7 @@ import logging
 import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
+import base64
 
 from exceptions import *
 from ldapcherry.roles import Roles
@@ -475,12 +476,18 @@ class LdapCherry(object):
         if self.auth_mode == 'none':
             return 'anonymous'
         username = cherrypy.session.get(SESSION_KEY)
+
+        if cherrypy.request.query_string == '':
+            qs = ''
+        else:
+            qs =  '?' + cherrypy.request.query_string
+        b64requrl = base64.b64encode(cherrypy.url() + qs)
         if not username:
-           raise cherrypy.HTTPRedirect("/signin")
+            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
 
         if not 'connected' in cherrypy.session \
             or not cherrypy.session['connected']:
-            raise cherrypy.HTTPRedirect("/signin")
+            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
         if cherrypy.session['connected'] and \
                 not cherrypy.session['isadmin']:
             if must_admin:
@@ -492,8 +499,7 @@ class LdapCherry(object):
                 cherrypy.session['isadmin']:
             return username
         else:
-            raise cherrypy.HTTPRedirect("/signin")
-
+            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
 
     def _adduser(self, params):
         cherrypy.log.error(
@@ -700,13 +706,13 @@ class LdapCherry(object):
         return ret
 
     @cherrypy.expose
-    def signin(self):
+    def signin(self, url=None):
         """simple signin page
         """
-        return self.temp_login.render()
+        return self.temp_login.render(url=url)
 
     @cherrypy.expose
-    def login(self, login, password):
+    def login(self, login, password, url=None):
         """login page
         """
         auth = self._auth(login, password)
@@ -727,7 +733,11 @@ class LdapCherry(object):
                 severity = logging.INFO
             )
             cherrypy.session[SESSION_KEY] = cherrypy.request.login = login
-            raise cherrypy.HTTPRedirect("/")
+            if url is None:
+                redirect = "/"
+            else:
+                redirect = base64.b64decode(url)
+            raise cherrypy.HTTPRedirect(redirect)
         else:
             message = "login failed for user '%(user)s'" % {
                 'user': login
@@ -736,7 +746,11 @@ class LdapCherry(object):
                 msg = message,
                 severity = logging.WARNING
             )
-            raise cherrypy.HTTPRedirect("/signin")
+            if url is None:
+                qs = ''
+            else:
+                qs = '?url=' + url
+            raise cherrypy.HTTPRedirect("/signin" + qs)
 
     @cherrypy.expose
     def logout(self):
