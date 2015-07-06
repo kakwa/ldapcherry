@@ -48,7 +48,7 @@ few configuration files, extensive debug logs.
   Screenshot
 **************
 
-`Screenshots directory <https://github.com/kakwa/ldapcherry/docs/assets/sc/>`_
+`Screenshots directory <https://github.com/kakwa/ldapcherry/tree/master/docs/assets/sc>`_
 
 ***********
   License
