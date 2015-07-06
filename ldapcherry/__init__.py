@@ -587,7 +587,7 @@ class LdapCherry(object):
         username = str(sess.get(SESSION_KEY, None))
         badd = self._modify_attrs(params, self.attributes.get_selfattributes(), username)
         cherrypy.log.error(
-            msg = "user '" + username + "' modified its attributes",
+            msg = "user '" + username + "' modified his attributes",
             severity = logging.INFO
         )
         cherrypy.log.error(
