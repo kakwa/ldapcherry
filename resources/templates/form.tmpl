@@ -38,19 +38,19 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
 
   <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
     % if modify and a == keyattr:
-  <input type="hidden" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} ${value}>
   <span class="form-control" aria-describedby="basic-addon-${a}">${tmp}</span>
     % elif attr['type'] == 'string':
-  <input type="text"   name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
     % elif attr['type'] == 'email':
-  <input type="email"  name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid">
+  <input type="email"  id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid">
     % elif attr['type'] == 'int':
-  <input type="number" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="number" id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
     % elif attr['type'] == 'fix':
-  <input type="hidden" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}">
+  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}">
   <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
-  <select class="form-control" name="attr.${a}">
+  <select class="form-control" id="attr.${a}" name="attr.${a}">
         ${value2}
         %for val in attr['values']:
         <option>${val}</option>
@@ -74,3 +74,47 @@ ${form_col(lc1)}
 ${form_col(lc2)}
 </div>
 </div>
+<%
+from sets import Set
+attr_set = Set([])
+attr_events = {}
+functions = {}
+for attrid in attributes:
+    attr = attributes[attrid]
+    field = 'attr.' + attrid
+    attr_set.add(field)
+    if 'autofill' in attr:
+        function = attr['autofill']['function']
+        tuple = (field, function)
+        if not tuple in functions:
+            functions[tuple] = []
+        for arg in attr['autofill']['args']:
+            if arg[0] == '$':
+                field_arg = 'attr.' + arg[1:]
+                attr_set.add(field_arg)
+                functions[tuple].append("fields['" + field_arg + "'].value")
+                if not field_arg in attr_events:
+                    attr_events[field_arg] = []
+                attr_events[field_arg].append(tuple) 
+            else:
+                value = arg
+                functions[tuple].append("'" + value + "'")
+%>
+<script>
+var fields = new Object();
+% for attr in attr_set:
+fields['${attr}'] = document.getElementById('${attr}');
+% endfor
+
+% for attrid in attr_events:
+if (fields['${attrid}'] != null) {
+    fields['${attrid}'].onkeyup = function () {
+    % for tuple in attr_events[attrid]:
+        if (typeof(${tuple[1]}) == "function") {
+            fields['${tuple[0]}'].value = ${tuple[1]}(${', '.join(functions[tuple])});
+        }
+    % endfor
+    };
+};
+% endfor
+</script>
