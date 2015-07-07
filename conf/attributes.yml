@@ -4,7 +4,7 @@ cn:
     type: string
     weight: 30
     autofill: 
-        function: cn
+        function: lcDisplayName
         args:
             - $first-name
             - $name
@@ -36,10 +36,10 @@ email:
     type: email
     weight: 40
     autofill: 
-        function: email
+        function: lcMail
         args:
             - $first-name
-            - $last-name
+            - $name
             - '@example.com'
     backends:
         ldap: mail
@@ -52,10 +52,10 @@ uid:
     type: string
     weight: 50
     autofill: 
-        function: uid
+        function: lcUid
         args:
             - $first-name
-            - $last-name
+            - $name
     backends:
         ldap: uid
 #        ad: uid
@@ -65,10 +65,10 @@ uidNumber:
     weight: 60
     type: int
     autofill: 
-        function: uidNumber
+        function: lcUidNumber
         args:
             - $first-name
-            - $last-name
+            - $name
     backends:
         ldap: uidNumber
 #        ad: UIDNumber
@@ -100,10 +100,10 @@ home:
     weight: 90
     type: string
     autofill: 
-        function: home
+        function: lcHomeDir
         args:
             - $first-name
-            - $last-name
+            - $name
             - /home/
     backends:
         ldap: homeDirectory
