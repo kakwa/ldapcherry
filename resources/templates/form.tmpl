@@ -108,7 +108,7 @@ fields['${attr}'] = document.getElementById('${attr}');
 
 % for attrid in attr_events:
 if (fields['${attrid}'] != null) {
-    fields['${attrid}'].onkeyup = function () {
+    fields['${attrid}'].onchange = function () {
     % for tuple in attr_events[attrid]:
         if (typeof(${tuple[1]}) == "function") {
             fields['${tuple[0]}'].value = ${tuple[1]}(${', '.join(functions[tuple])});
