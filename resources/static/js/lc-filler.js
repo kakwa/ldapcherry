@@ -12,7 +12,7 @@ function lcUid(firstname, lastname){
 }
 
 function lcDisplayName(firstname, lastname){
-    return 'test';
+    return firstname+' '+lastname;
 }
 
 function lcMail(firstname, lastname, domain){
