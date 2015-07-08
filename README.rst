@@ -40,9 +40,7 @@ It can handle multiple user back-ends in a unified way, check password policy.
 LdapCherry is also highly modular, with the possibility to implement your own plugins for
 the user back-ends, the authentication and the password policy.
 
-LdapCherry also aims to be as simple as possible to deploy: no crazy dependencies, 
-
-few configuration files, extensive debug logs.
+LdapCherry also aims to be as simple as possible to deploy: no crazy dependencies, few configuration files and extensive debug logs.
 
 **************
   Screenshot
