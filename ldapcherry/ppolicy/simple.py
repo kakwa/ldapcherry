@@ -8,6 +8,7 @@
 import ldapcherry.ppolicy
 import re
 
+
 class PPolicy(ldapcherry.ppolicy.PPolicy):
 
     def __init__(self, config, logger):
@@ -20,17 +21,20 @@ class PPolicy(ldapcherry.ppolicy.PPolicy):
         if len(password) < self.min_length:
             return {'match': False, 'reason': 'password too short'}
         if len(re.findall(r'[A-Z]', password)) < self.min_upper:
-            return {'match': False, 'reason': 'not enough upper case characters'}
+            return {
+                'match': False,
+                'reason': 'not enough upper case characters'
+                }
         if len(re.findall(r'[0-9]', password)) < self.min_digit:
             return {'match': False, 'reason': 'not enough digits'}
         return {'match': True, 'reason': 'password ok'}
 
     def info(self):
         return \
-"* Minimum length: %(len)n\n\
-* Minimum number of uppercase characters: %(upper)n\n\
-* Minimum number of digits: %(digit)n" % { 'upper': self.min_upper,
-        'len': self.min_length,
-        'digit': self.min_digit,
-    }
-
+            "* Minimum length: %(len)n\n"\
+            "* Minimum number of uppercase characters: %(upper)n\n"\
+            "* Minimum number of digits: %(digit)n" % {
+                'upper': self.min_upper,
+                'len': self.min_length,
+                'digit': self.min_digit
+                }
