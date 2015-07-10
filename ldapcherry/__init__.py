@@ -840,7 +840,7 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',',':'))
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=None, modify=False)
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=None, modify=False, autofill=True)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=None)
         return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
 
@@ -883,7 +883,7 @@ class LdapCherry(object):
         user_lonely_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',',':'))
         key = self.attributes.get_key()
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True, keyattr=key)
+        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True, keyattr=key, autofill=False)
         roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=user_roles)
         return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification, standalone_groups=user_lonely_groups)
 
@@ -903,5 +903,5 @@ class LdapCherry(object):
             params = self._parse_params(params)
             self._selfmodify(params)
         user_attrs = self._get_user(user)
-        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True)
+        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True, autofill=False)
         return self.temp_selfmodify.render(form=form, is_admin=is_admin)

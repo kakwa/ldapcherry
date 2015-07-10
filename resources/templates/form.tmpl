@@ -74,6 +74,7 @@ ${form_col(lc1)}
 ${form_col(lc2)}
 </div>
 </div>
+% if autofill:
 <%
 from sets import Set
 attr_set = Set([])
@@ -118,3 +119,4 @@ if (fields['${attrid}'] != null) {
 };
 % endfor
 </script>
+% endif
