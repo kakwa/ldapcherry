@@ -15,11 +15,13 @@ from ldapcherry.pyyamlwrapper import DumplicatedKey
 from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
 import yaml
 
+
 class CustomDumper(yaml.SafeDumper):
     "A custom YAML dumper that never emits aliases"
 
     def ignore_aliases(self, _data):
         return True
+
 
 class Roles:
 
@@ -141,7 +143,7 @@ class Roles:
                         self.group2roles[b][g] = Set([])
                     self.group2roles[b][g].add(roleid)
 
-            parent_roles[roleid]=[]
+            parent_roles[roleid] = []
             for roleid2 in self.flatten:
                 role2 = copy.deepcopy(self.flatten[roleid2])
                 if self._is_parent(roleid, roleid2):

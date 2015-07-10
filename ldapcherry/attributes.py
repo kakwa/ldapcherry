@@ -16,6 +16,7 @@ import yaml
 
 types = ['string', 'email', 'int', 'stringlist', 'fix', 'password']
 
+
 class Attributes:
 
     def __init__(self, attributes_file):

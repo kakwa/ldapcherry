@@ -7,6 +7,7 @@
 
 import ldapcherry.backend
 
+
 class Backend(ldapcherry.backend.Backend):
 
     def __init__(self, config, logger, name, attrslist, key):

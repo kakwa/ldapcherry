@@ -7,6 +7,7 @@
 
 from ldapcherry.exceptions import MissingParameter
 
+
 class Backend:
 
     def __init__(self, config, logger, name, attrslist, key):
@@ -45,5 +46,4 @@ class Backend:
         elif not default is None:
             return default
         else:
-            raise MissingParameter('backends', self.backend_name+'.'+param)
-
+            raise MissingParameter('backends', self.backend_name + '.' + param)

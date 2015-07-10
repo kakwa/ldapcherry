@@ -14,20 +14,22 @@ from yaml.resolver import *
 
 class RelationError(Exception):
     def __init__(self, key, value):
-        self.key   = key
+        self.key = key
         self.value = value
+
 
 class DumplicatedKey(Exception):
     def __init__(self, host, key):
-        self.host   = host
-        self.key    = key
+        self.host = host
+        self.key = key
 
 import yaml
 
 try:
-        from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
-        from yaml import Loader, Dumper
+    from yaml import Loader, Dumper
+
 
 # PyYaml wrapper that loads yaml files throwing an exception
 #if a key is dumplicated
