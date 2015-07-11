@@ -6,7 +6,7 @@
 # ldapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
-#generic imports
+# Generic imports
 import sys
 import re
 import traceback
@@ -21,11 +21,11 @@ from exceptions import *
 from ldapcherry.roles import Roles
 from ldapcherry.attributes import Attributes
 
-#cherrypy http framework imports
+# Cherrypy http framework imports
 import cherrypy
 from cherrypy.lib.httputil import parse_query_string
 
-#mako template engines imports
+# Nako template engines imports
 from mako.template import Template
 from mako import lookup
 from sets import Set
@@ -35,16 +35,22 @@ SESSION_KEY = '_cp_username'
 
 # Custom log function to overrige weird error.log function
 # of cherrypy
-def syslog_error(msg='', context='',
-        severity=logging.INFO, traceback=False):
+def syslog_error(
+        msg='',
+        context='',
+        severity=logging.INFO,
+        traceback=False
+        ):
 
     if traceback and msg == '':
         msg = 'python exception'
     if context == '':
         cherrypy.log.error_log.log(severity, msg)
     else:
-        cherrypy.log.error_log.log(severity,
-                ' '.join((context, msg)))
+        cherrypy.log.error_log.log(
+            severity,
+            ' '.join((context, msg))
+            )
     import traceback
     if traceback:
         try:
@@ -74,10 +80,10 @@ class LdapCherry(object):
             )
         # log the traceback as 'debug'
         cherrypy.log.error(
-                msg='',
-                severity=logging.DEBUG,
-                traceback=True
-                )
+            msg='',
+            severity=logging.DEBUG,
+            traceback=True
+            )
 
     def _get_param(self, section, key, config, default=None):
         """ Get configuration parameter "key" from config
@@ -89,7 +95,7 @@ class LdapCherry(object):
         """
         if section in config and key in config[section]:
             return config[section][key]
-        if not default is None:
+        if default is not None:
             return default
         else:
             raise MissingParameter(section, key)
@@ -136,10 +142,10 @@ class LdapCherry(object):
         """
         backends = self.backends_params.keys()
         for b in self.roles.get_backends():
-            if not b in backends:
+            if b not in backends:
                 raise MissingBackend(b)
         for b in self.roles.get_backends():
-            if not b in backends:
+            if b not in backends:
                 raise MissingBackend(b)
 
     def _init_backends(self, config):
@@ -152,7 +158,7 @@ class LdapCherry(object):
             # split at the first dot
             backend, sep, param = entry.partition('.')
             value = config['backends'][entry]
-            if not backend in self.backends_params:
+            if backend not in self.backends_params:
                 self.backends_params[backend] = {}
             self.backends_params[backend][param] = value
         for backend in self.backends_params:
@@ -169,14 +175,25 @@ class LdapCherry(object):
             try:
                 attrslist = self.attributes.get_backend_attributes(backend)
                 key = self.attributes.get_backend_key(backend)
-                self.backends[backend] = bc.Backend(params, cherrypy.log, backend, attrslist, key)
+                self.backends[backend] = bc.Backend(
+                    params,
+                    cherrypy.log,
+                    backend,
+                    attrslist,
+                    key,
+                    )
             except MissingParameter as e:
                 raise e
             except:
                 raise BackendModuleInitFail(module)
 
     def _init_ppolicy(self, config):
-        module = self._get_param('ppolicy', 'ppolicy.module', config, 'ldapcherry.ppolicy')
+        module = self._get_param(
+            'ppolicy',
+            'ppolicy.module',
+            config,
+            'ldapcherry.ppolicy'
+        )
         try:
             pp = __import__(module, globals(), locals(), ['PPolicy'], -1)
         except:
@@ -200,7 +217,11 @@ class LdapCherry(object):
             auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
             self.auth = auth.Auth(config['auth'], cherrypy.log)
         else:
-            raise WrongParamValue('auth.mode', 'auth', ['and', 'or', 'none', 'custom'])
+            raise WrongParamValue(
+                'auth.mode',
+                'auth',
+                ['and', 'or', 'none', 'custom'],
+                )
 
         self.roles_file = self._get_param('roles', 'roles.file', config)
         cherrypy.log.error(
@@ -212,17 +233,25 @@ class LdapCherry(object):
     def _set_access_log(self, config, level):
         """ Configure access logs
         """
-        access_handler = self._get_param('global', 'log.access_handler', config, 'syslog')
+        access_handler = self._get_param(
+            'global',
+            'log.access_handler',
+            config,
+            'syslog',
+            )
 
         # log format for syslog
         syslog_formatter = logging.Formatter(
-                "ldapcherry[%(process)d]: %(message)s")
+            "ldapcherry[%(process)d]: %(message)s"
+            )
 
         # replace access log handler by a syslog handler
         if access_handler == 'syslog':
             cherrypy.log.access_log.handlers = []
-            handler = logging.handlers.SysLogHandler(address='/dev/log',
-                    facility='user')
+            handler = logging.handlers.SysLogHandler(
+                address='/dev/log',
+                facility='user',
+                )
             handler.setFormatter(syslog_formatter)
             cherrypy.log.access_log.addHandler(handler)
 
@@ -242,11 +271,17 @@ class LdapCherry(object):
     def _set_error_log(self, config, level):
         """ Configure error logs
         """
-        error_handler = self._get_param('global', 'log.error_handler', config, 'syslog')
+        error_handler = self._get_param(
+            'global',
+            'log.error_handler',
+            config,
+            'syslog'
+            )
 
         # log format for syslog
         syslog_formatter = logging.Formatter(
-                "ldapcherry[%(process)d]: %(message)s")
+            "ldapcherry[%(process)d]: %(message)s",
+            )
 
         # replacing the error handler by a syslog handler
         if error_handler == 'syslog':
@@ -258,8 +293,10 @@ class LdapCherry(object):
             # (by the way, what's the use of "context"?)
             cherrypy.log.error = syslog_error
 
-            handler = logging.handlers.SysLogHandler(address='/dev/log',
-                    facility='user')
+            handler = logging.handlers.SysLogHandler(
+                address='/dev/log',
+                facility='user',
+                )
             handler.setFormatter(syslog_formatter)
             cherrypy.log.error_log.addHandler(handler)
 
@@ -334,32 +371,50 @@ class LdapCherry(object):
         @dict: configuration of ldapcherry
         """
         # definition of the template directory
-        self.template_dir = self._get_param('resources', 'templates.dir', config)
+        self.template_dir = self._get_param(
+            'resources',
+            'templates.dir',
+            config
+            )
         cherrypy.log.error(
-            msg="loading templates from dir '%(dir)s'" % {'dir': self.template_dir},
+            msg="loading templates from dir '%(dir)s'" %
+                {'dir': self.template_dir},
             severity=logging.DEBUG
         )
         # preload templates
         self.temp_lookup = lookup.TemplateLookup(
-                directories=self.template_dir, input_encoding='utf-8'
-                )
-        self.temp_index = self.temp_lookup.get_template('index.tmpl')
-        self.temp_error = self.temp_lookup.get_template('error.tmpl')
-        self.temp_login = self.temp_lookup.get_template('login.tmpl')
-        self.temp_searchadmin = self.temp_lookup.get_template('searchadmin.tmpl')
-        self.temp_searchuser = self.temp_lookup.get_template('searchuser.tmpl')
-        self.temp_adduser = self.temp_lookup.get_template('adduser.tmpl')
-        self.temp_roles = self.temp_lookup.get_template('roles.tmpl')
-        self.temp_groups = self.temp_lookup.get_template('groups.tmpl')
-        self.temp_form = self.temp_lookup.get_template('form.tmpl')
-        self.temp_selfmodify = self.temp_lookup.get_template('selfmodify.tmpl')
-        self.temp_modify = self.temp_lookup.get_template('modify.tmpl')
+            directories=self.template_dir, input_encoding='utf-8'
+            )
+        self.temp_index = \
+            self.temp_lookup.get_template('index.tmpl')
+        self.temp_error = \
+            self.temp_lookup.get_template('error.tmpl')
+        self.temp_login = \
+            self.temp_lookup.get_template('login.tmpl')
+        self.temp_searchadmin = \
+            self.temp_lookup.get_template('searchadmin.tmpl')
+        self.temp_searchuser = \
+            self.temp_lookup.get_template('searchuser.tmpl')
+        self.temp_adduser = \
+            self.temp_lookup.get_template('adduser.tmpl')
+        self.temp_roles = \
+            self.temp_lookup.get_template('roles.tmpl')
+        self.temp_groups = \
+            self.temp_lookup.get_template('groups.tmpl')
+        self.temp_form = \
+            self.temp_lookup.get_template('form.tmpl')
+        self.temp_selfmodify = \
+            self.temp_lookup.get_template('selfmodify.tmpl')
+        self.temp_modify = \
+            self.temp_lookup.get_template('modify.tmpl')
 
         self._init_auth(config)
 
-        self.attributes_file = self._get_param('attributes', 'attributes.file', config)
+        self.attributes_file = \
+            self._get_param('attributes', 'attributes.file', config)
         cherrypy.log.error(
-            msg="loading attributes file '%(file)s'" % {'file': self.attributes_file},
+            msg="loading attributes file '%(file)s'" %
+                {'file': self.attributes_file},
             severity=logging.DEBUG
         )
 
@@ -371,7 +426,14 @@ class LdapCherry(object):
             # log configuration handling
             # get log level
             # (if not in configuration file, log level is set to debug)
-            level = self._get_loglevel(self._get_param('global', 'log.level', config, 'debug'))
+            level = self._get_loglevel(
+                self._get_param(
+                    'global',
+                    'log.level',
+                    config,
+                    'debug',
+                    )
+                )
             # configure access log
             self._set_access_log(config, level)
             # configure error log
@@ -415,12 +477,12 @@ class LdapCherry(object):
         for b in self.backends:
             tmp = self.backends[b].search(searchstring)
             for u in tmp:
-                if not u in ret:
+                if u not in ret:
                     ret[u] = {}
                 for attr in tmp[u]:
                     if attr in self.attributes.backend_attributes[b]:
                         attrid = self.attributes.backend_attributes[b][attr]
-                        if not attr in ret[u]:
+                        if attr not in ret[u]:
                             ret[u][attrid] = tmp[u][attr]
         return ret
 
@@ -437,7 +499,7 @@ class LdapCherry(object):
             for attr in tmp:
                 if attr in self.attributes.backend_attributes[b]:
                     attrid = self.attributes.backend_attributes[b][attr]
-                    if not attr in ret:
+                    if attr not in ret:
                         ret[attrid] = tmp[attr]
 
         cherrypy.log.error(
@@ -464,7 +526,7 @@ class LdapCherry(object):
                 # with groups there is a second prefix
                 # corresponding to the backend
                 backend, sep, value = param.partition('.')
-                if not backend in ret['groups']:
+                if backend not in ret['groups']:
                     ret['groups'][backend] = []
                 ret['groups'][backend].append(value)
         return ret
@@ -485,23 +547,31 @@ class LdapCherry(object):
             qs = '?' + cherrypy.request.query_string
         b64requrl = base64.b64encode(cherrypy.url() + qs)
         if not username:
-            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
+            raise cherrypy.HTTPRedirect(
+                "/signin?url=%(url)s" % {'url': b64requrl},
+                )
 
-        if not 'connected' in cherrypy.session \
-            or not cherrypy.session['connected']:
-            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
+        if 'connected' not in cherrypy.session \
+                or not cherrypy.session['connected']:
+            raise cherrypy.HTTPRedirect(
+                "/signin?url=%(url)s" % {'url': b64requrl},
+                )
         if cherrypy.session['connected'] and \
                 not cherrypy.session['isadmin']:
             if must_admin:
-                raise cherrypy.HTTPError("403 Forbidden",
-                        "You are not allowed to access this resource.")
+                raise cherrypy.HTTPError(
+                    "403 Forbidden",
+                    "You are not allowed to access this resource.",
+                    )
             else:
                 return username
         if cherrypy.session['connected'] and \
                 cherrypy.session['isadmin']:
             return username
         else:
-            raise cherrypy.HTTPRedirect("/signin?url=%(url)s" % {'url': b64requrl})
+            raise cherrypy.HTTPRedirect(
+                "/signin?url=%(url)s" % {'url': b64requrl},
+                )
 
     def _adduser(self, params):
         cherrypy.log.error(
@@ -520,7 +590,7 @@ class LdapCherry(object):
             if attr in params['attrs']:
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
-                    if not b in badd:
+                    if b not in badd:
                         badd[b] = {}
                     badd[b][backends[b]] = params['attrs'][attr]
         for b in badd:
@@ -549,8 +619,8 @@ class LdapCherry(object):
             self.backends[b].add_to_groups(username, Set(groups[b]))
 
         cherrypy.log.error(
-            msg="user '" + username + "' made member of " \
-                    + str(roles) + " by '" + admin + "'",
+            msg="user '" + username + "' made member of " +
+                str(roles) + " by '" + admin + "'",
             severity=logging.INFO
         )
         cherrypy.log.error(
@@ -571,7 +641,7 @@ class LdapCherry(object):
             if attr in params['attrs']:
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
-                    if not b in badd:
+                    if b not in badd:
                         badd[b] = {}
                     if params['attrs'][attr] != '':
                         badd[b][backends[b]] = params['attrs'][attr]
@@ -586,7 +656,11 @@ class LdapCherry(object):
         )
         sess = cherrypy.session
         username = str(sess.get(SESSION_KEY, None))
-        badd = self._modify_attrs(params, self.attributes.get_selfattributes(), username)
+        badd = self._modify_attrs(
+            params,
+            self.attributes.get_selfattributes(),
+            username,
+            )
         cherrypy.log.error(
             msg="user '" + username + "' modified his attributes",
             severity=logging.INFO
@@ -604,7 +678,11 @@ class LdapCherry(object):
         key = self.attributes.get_key()
         username = params['attrs'][key]
 
-        badd = self._modify_attrs(params, self.attributes.get_attributes(), username)
+        badd = self._modify_attrs(
+            params,
+            self.attributes.get_attributes(),
+            username
+            )
 
         sess = cherrypy.session
         admin = str(sess.get(SESSION_KEY, None))
@@ -629,13 +707,13 @@ class LdapCherry(object):
 
         for b in lonely_groups:
             for g in lonely_groups[b]:
-                if b in  params['groups'] and g in params['groups'][b]:
-                    if not b in groups_keep:
+                if b in params['groups'] and g in params['groups'][b]:
+                    if b not in groups_keep:
                         groups_keep[b] = []
                     groups_keep[b].append(g)
 
                 else:
-                    if not b in groups_remove:
+                    if b not in groups_remove:
                         groups_remove[b] = []
                     groups_remove[b].append(g)
 
@@ -650,42 +728,56 @@ class LdapCherry(object):
         groups_add = self.roles.get_groups(roles_member)
 
         for b in groups_add:
-            if not b in groups_add:
+            if b not in groups_add:
                 groups_add[b] = []
-            if not b in groups_keep:
+            if b not in groups_keep:
                 groups_keep[b] = []
-            if not b in groups_current:
+            if b not in groups_current:
                 groups_current[b] = []
-            if not b in lonely_groups:
+            if b not in lonely_groups:
                 lonely_groups[b] = []
-            tmp = Set(groups_add[b]) - Set(groups_keep[b]) - Set(groups_current[b]) - Set(lonely_groups[b])
+            tmp = \
+                Set(groups_add[b]) - \
+                Set(groups_keep[b]) - \
+                Set(groups_current[b]) - \
+                Set(lonely_groups[b])
             cherrypy.log.error(
-                msg="user '" + username + "' added to groups: " + str(list(tmp)) + " in backend '" + b + "'",
+                msg="user '" + username + "' added to groups: " +
+                    str(list(tmp)) + " in backend '" + b + "'",
                 severity=logging.DEBUG
             )
             self.backends[b].add_to_groups(username, tmp)
         for b in groups_rm:
-            if not b in groups_remove:
+            if b not in groups_remove:
                 groups_remove[b] = []
-            if not b in groups_rm:
+            if b not in groups_rm:
                 groups_rm[b] = []
-            if not b in groups_add:
+            if b not in groups_add:
                 groups_add[b] = []
-            if not b in groups_keep:
+            if b not in groups_keep:
                 groups_keep[b] = []
-            if not b in groups_current:
+            if b not in groups_current:
                 groups_current[b] = []
-            if not b in lonely_groups:
+            if b not in lonely_groups:
                 lonely_groups[b] = []
-            tmp = ((Set(groups_rm[b]) | Set(groups_remove[b])) - (Set(groups_keep[b]) | Set(groups_add[b]))) & (Set(groups_current[b]) | Set(lonely_groups[b]))
+            tmp = \
+                (
+                    (Set(groups_rm[b]) | Set(groups_remove[b])) -
+                    (Set(groups_keep[b]) | Set(groups_add[b]))
+                ) & \
+                (
+                    Set(groups_current[b]) | Set(lonely_groups[b])
+                )
             cherrypy.log.error(
-                msg="user '" + username + "' removed from groups: " + str(list(tmp)) + " in backend '" + b + "'",
+                msg="user '" + username + "' removed from groups: " +
+                    str(list(tmp)) + " in backend '" + b + "'",
                 severity=logging.DEBUG
             )
             self.backends[b].del_from_groups(username, tmp)
 
         cherrypy.log.error(
-            msg="user '" + username + "' made member of " + str(roles_member) + " by '" + admin + "'",
+            msg="user '" + username + "' made member of " +
+                str(roles_member) + " by '" + admin + "'",
             severity=logging.INFO
         )
 
@@ -722,13 +814,15 @@ class LdapCherry(object):
 
         if auth['connected']:
             if auth['isadmin']:
-                message = "login success for user '%(user)s' as administrator" % {
-                    'user': login
-                }
+                message = \
+                    "login success for user '%(user)s' as administrator" % {
+                        'user': login
+                    }
             else:
-                message = "login success for user '%(user)s' as normal user" % {
-                    'user': login
-                }
+                message = \
+                    "login success for user '%(user)s' as normal user" % {
+                        'user': login
+                    }
             cherrypy.log.error(
                 msg=message,
                 severity=logging.INFO
@@ -782,12 +876,16 @@ class LdapCherry(object):
         """ search user page """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        if not searchstring is None:
+        if searchstring is not None:
             res = self._search(searchstring)
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchuser.render(searchresult=res, attrs_list=attrs_list, is_admin=is_admin)
+        return self.temp_searchuser.render(
+            searchresult=res,
+            attrs_list=attrs_list,
+            is_admin=is_admin
+            )
 
     @cherrypy.expose
     def checkppolicy(self, **params):
@@ -811,12 +909,16 @@ class LdapCherry(object):
         """ search user page """
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
-        if not searchstring is None:
+        if searchstring is not None:
             res = self._search(searchstring)
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchadmin.render(searchresult=res, attrs_list=attrs_list, is_admin=is_admin)
+        return self.temp_searchadmin.render(
+            searchresult=res,
+            attrs_list=attrs_list,
+            is_admin=is_admin
+            )
 
     @cherrypy.expose
     def adduser(self, **params):
@@ -825,7 +927,9 @@ class LdapCherry(object):
         is_admin = self._check_admin()
 
         if cherrypy.request.method.upper() == 'POST':
-            notification = "<script type=\"text/javascript\">$.notify('User Added')</script>"
+            notification = "<script type=\"text/javascript\">" \
+                "$.notify('User Added')" \
+                "</script>"
             params = self._parse_params(params)
             self._adduser(params)
         else:
@@ -841,9 +945,25 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',', ':'))
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=None, modify=False, autofill=True)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=None)
-        return self.temp_adduser.render(form=form, roles=roles, is_admin=is_admin, notification=notification)
+        form = self.temp_form.render(
+            attributes=self.attributes.attributes,
+            values=None,
+            modify=False,
+            autofill=True
+            )
+        roles = self.temp_roles.render(
+            roles=self.roles.flatten,
+            graph=self.roles.graph,
+            graph_js=graph_js,
+            roles_js=roles_js,
+            current_roles=None
+            )
+        return self.temp_adduser.render(
+            form=form,
+            roles=roles,
+            is_admin=is_admin,
+            notification=notification
+            )
 
     @cherrypy.expose
     def delete(self, user):
@@ -861,7 +981,9 @@ class LdapCherry(object):
         is_admin = self._check_admin()
 
         if cherrypy.request.method.upper() == 'POST':
-            notification = "<script type=\"text/javascript\">$.notify('User Modify')</script>"
+            notification = "<script type=\"text/javascript\">" \
+                "$.notify('User Modify')" \
+                "</script>"
             params = self._parse_params(params)
             self._modify(params)
             referer = cherrypy.request.headers['Referer']
@@ -884,9 +1006,27 @@ class LdapCherry(object):
         user_lonely_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',', ':'))
         key = self.attributes.get_key()
-        form = self.temp_form.render(attributes=self.attributes.attributes, values=user_attrs, modify=True, keyattr=key, autofill=False)
-        roles = self.temp_roles.render(roles=self.roles.flatten, graph=self.roles.graph, graph_js=graph_js, roles_js=roles_js, current_roles=user_roles)
-        return self.temp_modify.render(form=form, roles=roles, is_admin=is_admin, notification=notification, standalone_groups=user_lonely_groups)
+        form = self.temp_form.render(
+            attributes=self.attributes.attributes,
+            values=user_attrs,
+            modify=True,
+            keyattr=key,
+            autofill=False
+            )
+        roles = self.temp_roles.render(
+            roles=self.roles.flatten,
+            graph=self.roles.graph,
+            graph_js=graph_js,
+            roles_js=roles_js,
+            current_roles=user_roles
+            )
+        return self.temp_modify.render(
+            form=form,
+            roles=roles,
+            is_admin=is_admin,
+            notification=notification,
+            standalone_groups=user_lonely_groups
+            )
 
     @cherrypy.expose
     def selfmodify(self, **params):
@@ -896,13 +1036,19 @@ class LdapCherry(object):
         sess = cherrypy.session
         user = str(sess.get(SESSION_KEY, None))
         if self.auth_mode == 'none':
-            return self.temp_error.render(is_admin=is_admin,
-                    alert='warning',
-                    message="Not accessible with authentication disabled."
-                    )
+            return self.temp_error.render(
+                is_admin=is_admin,
+                alert='warning',
+                message="Not accessible with authentication disabled."
+                )
         if cherrypy.request.method.upper() == 'POST':
             params = self._parse_params(params)
             self._selfmodify(params)
         user_attrs = self._get_user(user)
-        form = self.temp_form.render(attributes=self.attributes.get_selfattributes(), values=user_attrs, modify=True, autofill=False)
+        form = self.temp_form.render(
+            attributes=self.attributes.get_selfattributes(),
+            values=user_attrs,
+            modify=True,
+            autofill=False
+            )
         return self.temp_selfmodify.render(form=form, is_admin=is_admin)
