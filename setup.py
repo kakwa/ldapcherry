@@ -58,7 +58,9 @@ try:
             sys.exit(errno)
 except ImportError:
     from distutils.core import setup
-    PyTest = lambda x: x
+
+    def PyTest(x):
+        x
 
 
 # just a small function to easily install a complete directory
