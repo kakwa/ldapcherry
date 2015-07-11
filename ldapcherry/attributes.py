@@ -10,7 +10,7 @@ import sys
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend, DumplicateUserKey, MissingUserKey
+from ldapcherry.exceptions import *
 from sets import Set
 import yaml
 
@@ -43,7 +43,7 @@ class Attributes:
             if 'self' in attr and attr['self']:
                 self.self_attributes[attrid] = attr
             if 'key' in attr and attr['key']:
-                if not self.key is None:
+                if self.key is not None:
                     raise DumplicateUserKey(attrid, self.key)
                 self.key = attrid
             for b in attr['backends']:

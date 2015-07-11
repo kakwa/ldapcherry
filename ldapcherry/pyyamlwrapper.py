@@ -32,7 +32,7 @@ except ImportError:
 
 
 # PyYaml wrapper that loads yaml files throwing an exception
-#if a key is dumplicated
+# if a key is dumplicated
 class MyLoader(Reader, Scanner, Parser, Composer, Constructor, Resolver):
 
     def __init__(self, stream):
@@ -46,17 +46,23 @@ class MyLoader(Reader, Scanner, Parser, Composer, Constructor, Resolver):
     def construct_mapping(self, node, deep=False):
         exc = sys.exc_info()[1]
         if not isinstance(node, MappingNode):
-            raise ConstructorError(None, None,
-                    "expected a mapping node, but found %s" % node.id,
-                    node.start_mark)
+            raise ConstructorError(
+                None,
+                None,
+                "expected a mapping node, but found %s" % node.id,
+                node.start_mark
+                )
         mapping = {}
         for key_node, value_node in node.value:
             key = self.construct_object(key_node, deep=deep)
             try:
                 hash(key)
             except TypeError:
-                raise ConstructorError("while constructing a mapping", node.start_mark,
-                        "found unacceptable key (%s)" % exc, key_node.start_mark)
+                raise ConstructorError(
+                    "while constructing a mapping",
+                    node.start_mark,
+                    "found unacceptable key (%s)" % exc, key_node.start_mark
+                    )
             value = self.construct_object(value_node, deep=deep)
             if key in mapping:
                 raise DumplicatedKey(key, '')

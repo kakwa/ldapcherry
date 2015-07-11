@@ -12,7 +12,7 @@ import copy
 from sets import Set
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
-from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
+from ldapcherry.exceptions import *
 import yaml
 
 
@@ -50,7 +50,7 @@ class Roles:
         ret = {}
         for backends in backends_list:
             for b in backends:
-                if not b in ret:
+                if b not in ret:
                     ret[b] = Set([])
                 for group in backends[b]:
                     ret[b].add(group)
@@ -66,11 +66,15 @@ class Roles:
             roles_in = roles
         for roleid in roles_in:
             role = roles_in[roleid]
-            if not groups is None:
-                role['backends_groups'] = self._merge_groups([role['backends_groups'], groups])
+            if groups is not None:
+                role['backends_groups'] = self._merge_groups(
+                    [role['backends_groups'], groups],
+                    )
             if 'subroles' in role:
-                self._flatten(role['subroles'],
-                        role['backends_groups'])
+                self._flatten(
+                    role['subroles'],
+                    role['backends_groups'],
+                    )
                 del role['subroles']
 
             self.flatten[roleid] = role
@@ -91,18 +95,18 @@ class Roles:
 
         # Check if role1 is contained by role2
         for b1 in role1['backends_groups']:
-            if not b1 in role2['backends_groups']:
+            if b1 not in role2['backends_groups']:
                 return False
             for group in role1['backends_groups'][b1]:
-                if not group in role2['backends_groups'][b1]:
+                if group not in role2['backends_groups'][b1]:
                     return False
 
         # If role2 is inside role1, roles are equal, throw exception
         for b2 in role2['backends_groups']:
-            if not b2 in role1['backends_groups']:
+            if b2 not in role1['backends_groups']:
                 return True
             for group in role2['backends_groups'][b2]:
-                if not group in role1['backends_groups'][b2]:
+                if group not in role1['backends_groups'][b2]:
                     return True
         raise DumplicateRoleContent(roleid1, roleid2)
 
@@ -114,22 +118,25 @@ class Roles:
             role = copy.deepcopy(self.flatten[roleid])
 
             # Display name is mandatory
-            if not 'display_name' in role:
+            if 'display_name' not in role:
                 raise MissingKey('display_name', role, self.role_file)
 
-            if not 'description' in role:
+            if 'description' not in role:
                 raise MissingKey('description', role, self.role_file)
 
             # Backend is mandatory
-            if not 'backends_groups' in role:
+            if 'backends_groups' not in role:
                 raise MissingKey('backends_groups', role, self.role_file)
 
             # Create the list of backends
             for backend in role['backends_groups']:
                 self.backends.add(backend)
 
-            if not roleid in self.graph:
-                self.graph[roleid] = {'parent_roles': Set([]), 'sub_roles': Set([])}
+            if roleid not in self.graph:
+                self.graph[roleid] = {
+                    'parent_roles': Set([]),
+                    'sub_roles': Set([])
+                    }
 
         # Create the nested groups
         for roleid in self.flatten:
@@ -137,9 +144,9 @@ class Roles:
             # create reverse groups 2 roles
             for b in role['backends_groups']:
                 for g in role['backends_groups'][b]:
-                    if not b in self.group2roles:
+                    if b not in self.group2roles:
                         self.group2roles[b] = {}
-                    if not g in self.group2roles[b]:
+                    if g not in self.group2roles[b]:
                         self.group2roles[b][g] = Set([])
                     self.group2roles[b][g].add(roleid)
 
@@ -190,7 +197,9 @@ class Roles:
         """dump the nested role hierarchy"""
         return yaml.dump(self.flatten, Dumper=CustomDumper)
 
-    def _check_member(self, role, groups, notroles, roles, parentroles, usedgroups):
+    def _check_member(
+            self, role, groups, notroles,
+            roles, parentroles, usedgroups):
 
         # if we have already calculate user is not member of role
         # return False
@@ -207,13 +216,13 @@ class Roles:
                     if b not in groups:
                         notroles.add(role)
                         return False
-                    if not g in groups[b]:
+                    if g not in groups[b]:
                         notroles.add(role)
                         return False
 
         # add groups of the role to usedgroups
         for b in self.roles[role]['backends_groups']:
-            if not b in usedgroups:
+            if b not in usedgroups:
                 usedgroups[b] = Set([])
             for g in self.roles[role]['backends_groups'][b]:
                 usedgroups[b].add(g)
@@ -221,7 +230,15 @@ class Roles:
         flag = True
         # recursively determine if user is member of any subrole
         for subrole in self.roles[role]['subroles']:
-            flag = flag and not self._check_member(subrole, groups, notroles, roles, parentroles, usedgroups)
+            flag = flag and not \
+                self._check_member(
+                    subrole,
+                    groups,
+                    notroles,
+                    roles,
+                    parentroles,
+                    usedgroups,
+                    )
         # if not, add role to the list of roles
         if flag:
             roles.add(role)
@@ -234,7 +251,9 @@ class Roles:
         return True
 
     def get_groups_to_remove(self, current_roles, roles_to_remove):
-        """get groups to remove from list of roles to remove and current roles"""
+        """get groups to remove from list of
+        roles to remove and current roles
+        """
         current_roles = Set(current_roles)
 
         ret = {}
@@ -244,7 +263,7 @@ class Roles:
         # if we remove a role, there is no reason to keep the sub roles
         for r in roles_to_remove:
             for sr in self._get_subroles(r):
-                if not sr in roles_to_remove and sr in current_roles:
+                if sr not in roles_to_remove and sr in current_roles:
                     tmp.add(sr)
 
         roles_to_remove = roles_to_remove.union(tmp)
@@ -288,12 +307,14 @@ class Roles:
         ret = {}
         # determine roles membership
         for role in self.roles:
-            if self._check_member(role, groups, notroles, tmp, parentroles, usedgroups):
+            if self._check_member(
+                    role, groups, notroles,
+                    tmp, parentroles, usedgroups):
                 roles.add(role)
         # determine standalone groups not matching any roles
         for b in groups:
             for g in groups[b]:
-                if not b in usedgroups or not g in usedgroups[b]:
+                if b not in usedgroups or g not in usedgroups[b]:
                     if b not in unusedgroups:
                         unusedgroups[b] = Set([])
                     unusedgroups[b].add(g)
@@ -308,7 +329,7 @@ class Roles:
 
     def get_display_name(self, role):
         """get the display name of a role"""
-        if not role in self.flatten:
+        if role not in self.flatten:
             raise MissingRole(role)
         return self.flatten[role]['display_name']
 
@@ -316,7 +337,7 @@ class Roles:
         """get the list of groups from role"""
         ret = {}
         for role in roles:
-            if not role in self.flatten:
+            if role not in self.flatten:
                 raise MissingRole(role)
             for b in self.flatten[role]['backends_groups']:
                 if b not in ret:
