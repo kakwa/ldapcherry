@@ -2,6 +2,7 @@
 
 import os
 import sys
+import yaml
 from yaml.error import *
 from yaml.nodes import *
 from yaml.reader import *
@@ -23,7 +24,6 @@ class DumplicatedKey(Exception):
         self.host = host
         self.key = key
 
-import yaml
 
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
