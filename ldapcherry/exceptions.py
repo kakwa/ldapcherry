@@ -12,7 +12,9 @@ class MissingParameter(Exception):
     def __init__(self, section, key):
         self.section = section
         self.key = key
-        self.log = "missing parameter '%(key)s' in section '%(section)s'" % {'key': key, 'section': section}
+        self.log = \
+            "missing parameter '%(key)s' in section '%(section)s'" % \
+            {'key': key, 'section': section}
 
 
 class MissingKey(Exception):
@@ -20,68 +22,91 @@ class MissingKey(Exception):
         self.key = key
         self.section = section
         self.ymlfile = ymlfile
-        self.log = "missing key '%(key)s' in section '%(section)s' inside file '%(ymlfile)s'" % {'key': key, 'section': section, 'ymlfile': ymlfile}
+        self.log = \
+            "missing key '%(key)s' in section '%(section)s'" \
+            " inside file '%(ymlfile)s'" % \
+            {'key': key, 'section': section, 'ymlfile': ymlfile}
 
 
 class DumplicateRoleKey(Exception):
     def __init__(self, role):
         self.role = role
-        self.log = "duplicate role key '%(role)s' in role file" % {'role': role}
+        self.log = \
+            "duplicate role key '%(role)s' in role file" % \
+            {'role': role}
 
 
 class MissingRole(Exception):
     def __init__(self, role):
         self.role = role
-        self.log = "role '%(role)s' does not exist in role file" % {'role': role}
+        self.log = \
+            "role '%(role)s' does not exist in role file" % \
+            {'role': role}
 
 
 class MissingBackend(Exception):
     def __init__(self, backend):
         self.backend = backend
-        self.log = "backend '%(backend)s' does not exist in main config file" % {'backend': backend}
+        self.log = \
+            "backend '%(backend)s' does not exist in main config file" % \
+            {'backend': backend}
 
 
 class WrongBackend(Exception):
     def __init__(self, backend):
         self.backend = backend
-        self.log = "backend '%(backend)s' does not exist" % {'backend': backend}
+        self.log = \
+            "backend '%(backend)s' does not exist" % \
+            {'backend': backend}
 
 
 class DumplicateRoleContent(Exception):
     def __init__(self, role1, role2):
         self.role1 = role1
         self.role2 = role2
-        self.log = "role '%(role1)s' and '%(role2)s' are identical" % {'role1': role1, 'role2': role2}
+        self.log = \
+            "role '%(role1)s' and '%(role2)s' are identical" % \
+            {'role1': role1, 'role2': role2}
 
 
 class MissingRolesFile(Exception):
     def __init__(self, rolefile):
         self.rolefile = rolefile
-        self.log = "fail to open role file '%(rolefile)s'" % {'rolefile': rolefile}
+        self.log = \
+            "fail to open role file '%(rolefile)s'" % \
+            {'rolefile': rolefile}
 
 
 class MissingMainFile(Exception):
     def __init__(self, config):
         self.rolefile = rolefile
-        self.log = "fail to open main file '%(config)s'" % {'rolefile': rolefile}
+        self.log = \
+            "fail to open main file '%(config)s'" % \
+            {'rolefile': rolefile}
 
 
 class MissingAttributesFile(Exception):
     def __init__(self, attributesfile):
         self.attributesfile = attributesfile
-        self.log = "fail to open attributes file '%(attributesfile)s'" % {'attributesfile': attributesfile}
+        self.log = \
+            "fail to open attributes file '%(attributesfile)s'" % \
+            {'attributesfile': attributesfile}
 
 
 class BackendModuleLoadingFail(Exception):
     def __init__(self, module):
         self.module = module
-        self.log = "module '%(module)s' not in python path" % {'module': module}
+        self.log = \
+            "module '%(module)s' not in python path" % \
+            {'module': module}
 
 
 class BackendModuleInitFail(Exception):
     def __init__(self, module):
         self.module = module
-        self.log = "fail to init module '%(module)s'" % {'module': module}
+        self.log = \
+            "fail to init module '%(module)s'" % \
+            {'module': module}
 
 
 class WrongParamValue(Exception):
@@ -90,14 +115,23 @@ class WrongParamValue(Exception):
         self.section = section
         self.param = param
         possible_values_str = string.join(possible_values, ', ')
-        self.log = "wrong value for param '%(param)s' in section '%(section)s', possible values are [%(values)s]" % {'param': param, 'section': section, 'values': possible_values_str}
+        self.log = \
+            "wrong value for param '%(param)s' in section '%(section)s'"\
+            ", possible values are [%(values)s]" % \
+            {
+                'param': param,
+                'section': section,
+                'values': possible_values_str
+            }
 
 
 class DumplicateUserKey(Exception):
     def __init__(self, attrid1, attrid2):
         self.attrid1 = attrid1
         self.attrid2 = attrid2
-        self.log = "duplicate key in '%(attrid1)s' and '%(attrid2)s'" % {'attrid1': attrid1, 'attrid2': attrid2}
+        self.log = \
+            "duplicate key in '%(attrid1)s' and '%(attrid2)s'" % \
+            {'attrid1': attrid1, 'attrid2': attrid2}
 
 
 class MissingUserKey(Exception):
@@ -110,4 +144,8 @@ class WrongAttributeType(Exception):
         self.key = key
         self.section = section
         self.ymlfile = ymlfile
-        self.log = "wrong attribute type '%(key)s' in section '%(section)s' inside file '%(ymlfile)s'" % {'key': key, 'section': section, 'ymlfile': ymlfile}
+        self.log = \
+            "wrong attribute type '%(key)s'" \
+            " in section '%(section)s'" \
+            " inside file '%(ymlfile)s'" % \
+            {'key': key, 'section': section, 'ymlfile': ymlfile}
