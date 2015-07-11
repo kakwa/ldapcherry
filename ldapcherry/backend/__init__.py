@@ -43,7 +43,7 @@ class Backend:
     def get_param(self, param, default=None):
         if param in self.config:
             return self.config[param]
-        elif not default is None:
+        elif default is not None:
             return default
         else:
             raise MissingParameter('backends', self.backend_name + '.' + param)
