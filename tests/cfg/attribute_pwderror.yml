@@ -1,0 +1,32 @@
+uid:
+    description: "UID of the user"
+    display_name: "UID"
+    search_displayed: True
+    key: True
+    type: string
+    weight: 50
+    autofill: 
+        function: uid
+        args:
+            - $first-name
+            - $last-name
+    backends:
+        ldap: uid
+        ad: UID
+password1:
+    description: "Home user path"
+    display_name: "Home"
+    weight: 90
+    type: string
+    backends:
+        ldap: home
+        ad: Home
+password:
+    description: "Password of the user"
+    display_name: "Password"
+    weight: 31
+    self: True
+    type: password
+    backends:
+        ldap: userPassword
+        ad: userPassword

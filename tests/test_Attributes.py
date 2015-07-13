@@ -8,7 +8,7 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.attributes import Attributes
-from ldapcherry.exceptions import MissingAttributesFile, MissingKey, WrongAttributeType, WrongBackend
+from ldapcherry.exceptions import *
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
 
 class TestError(object):
@@ -77,6 +77,14 @@ class TestError(object):
         try:
             inv = Attributes('./tests/cfg/attributes_wrong_type.yml')
         except WrongAttributeType:
+            return
+        else:
+            raise AssertionError("expected an exception")
+
+    def testDuplicatePassword(self):
+        try:
+            inv = Attributes('./tests/cfg/attribute_pwderror.yml')
+        except PasswordAttributesCollision:
             return
         else:
             raise AssertionError("expected an exception")

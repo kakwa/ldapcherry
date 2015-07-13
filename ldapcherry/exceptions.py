@@ -149,3 +149,12 @@ class WrongAttributeType(Exception):
             " in section '%(section)s'" \
             " inside file '%(ymlfile)s'" % \
             {'key': key, 'section': section, 'ymlfile': ymlfile}
+
+
+class PasswordAttributesCollision(Exception):
+    def __init__(self, key):
+        self.key = key
+        self.log = \
+            "key '" + key + "' type is password," \
+            " keys '" + key + "1' and '" + key + "2'"\
+            " are reserved and cannot be used"

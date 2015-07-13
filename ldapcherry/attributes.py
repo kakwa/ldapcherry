@@ -39,7 +39,15 @@ class Attributes:
             self._mandatory_check(attrid)
             attr = self.attributes[attrid]
             if not attr['type'] in types:
-                raise WrongAttributeType(attr['type'], attrid, attributes_file)
+                raise WrongAttributeType(
+                    attr['type'],
+                    attrid,
+                    attributes_file
+                    )
+            if attr['type'] == 'password':
+                if attrid + '1' in self.attributes or \
+                        attrid + '2' in self.attributes:
+                    raise PasswordAttributesCollision(attrid)
             if 'self' in attr and attr['self']:
                 self.self_attributes[attrid] = attr
             if 'key' in attr and attr['key']:
