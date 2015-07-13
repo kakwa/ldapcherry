@@ -25,7 +25,7 @@ from ldapcherry.attributes import Attributes
 import cherrypy
 from cherrypy.lib.httputil import parse_query_string
 
-# Nako template engines imports
+# Mako template engines imports
 from mako.template import Template
 from mako import lookup
 from sets import Set
