@@ -746,14 +746,10 @@ class LdapCherry(object):
         groups_add = self.roles.get_groups(roles_member)
 
         for b in groups_add:
-            if b not in groups_add:
-                groups_add[b] = []
-            if b not in groups_keep:
-                groups_keep[b] = []
-            if b not in groups_current:
-                groups_current[b] = []
-            if b not in lonely_groups:
-                lonely_groups[b] = []
+            for g in [groups_add, groups_keep,
+                      groups_current, lonely_groups]:
+                if b not in g:
+                    g[b] = []
             tmp = \
                 Set(groups_add[b]) - \
                 Set(groups_keep[b]) - \
@@ -766,18 +762,10 @@ class LdapCherry(object):
             )
             self.backends[b].add_to_groups(username, tmp)
         for b in groups_rm:
-            if b not in groups_remove:
-                groups_remove[b] = []
-            if b not in groups_rm:
-                groups_rm[b] = []
-            if b not in groups_add:
-                groups_add[b] = []
-            if b not in groups_keep:
-                groups_keep[b] = []
-            if b not in groups_current:
-                groups_current[b] = []
-            if b not in lonely_groups:
-                lonely_groups[b] = []
+            for g in [groups_remove, groups_rm, groups_add,
+                      groups_keep, groups_current, lonely_groups]:
+                if b not in g:
+                    g[b] = []
             tmp = \
                 (
                     (Set(groups_rm[b]) | Set(groups_remove[b])) -
