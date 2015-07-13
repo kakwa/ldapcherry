@@ -112,7 +112,8 @@ if __name__ == '__main__':
     p.add_option('-e', '--environment', dest='environment', default=None,
                  help="apply the given config environment")
     p.add_option('-f', action="store_true", dest='fastcgi',
-                 help="start a fastcgi server instead of the default HTTP server")
+                 help="start a fastcgi server instead"
+                 " of the default HTTP server")
     p.add_option('-s', action="store_true", dest='scgi',
                  help="start a scgi server instead of the default HTTP server")
     p.add_option('-x', action="store_true", dest='cgi',
@@ -132,10 +133,9 @@ if __name__ == '__main__':
         exit(1)
 
     if not os.path.isfile(options.config):
-        print('configuration file "'+ options.config + '" doesn\'t exist' )
+        print('configuration file "' + options.config + '" doesn\'t exist')
         exit(1)
 
     start(options.config, options.daemonize,
           options.environment, options.fastcgi, options.scgi,
           options.pidfile, options.cgi)
-
