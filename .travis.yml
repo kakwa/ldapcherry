@@ -25,7 +25,7 @@ install:
 script: 
   - coverage run --source=ldapcherry setup.py test
   - "if [[ $TEST_HIREDIS == '1' ]]; then pip install hiredis; fi"
-script: "if [[ $TEST_PEP8 == '1' ]]; then pep8 --repeat --show-source --exclude=.venv,.tox,dist,docs,build,*.egg,tests,misc .; else coverage run --source=ldapcherry setup.py test; fi"
+script: "if [[ $TEST_PEP8 == '1' ]]; then pep8 --repeat --show-source --exclude=.venv,.tox,dist,docs,build,*.egg,tests,misc . scripts/ldapcherryd; else coverage run --source=ldapcherry setup.py test; fi"
 matrix:
   include:
     - python: "2.7"
