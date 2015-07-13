@@ -408,16 +408,6 @@ class LdapCherry(object):
         self.temp_modify = \
             self.temp_lookup.get_template('modify.tmpl')
 
-        self._init_auth(config)
-
-        self.attributes_file = \
-            self._get_param('attributes', 'attributes.file', config)
-        cherrypy.log.error(
-            msg="loading attributes file '%(file)s'" %
-                {'file': self.attributes_file},
-            severity=logging.DEBUG
-        )
-
     def reload(self, config=None):
         """ load/reload configuration
         @dict: configuration of ldapcherry
@@ -442,6 +432,18 @@ class LdapCherry(object):
             # load template files
             self._load_templates(config)
 
+            # loading the auth configuration
+            self._init_auth(config)
+
+            # Loading the attributes
+            self.attributes_file = \
+                self._get_param('attributes', 'attributes.file', config)
+            cherrypy.log.error(
+                msg="loading attributes file '%(file)s'" %
+                    {'file': self.attributes_file},
+                severity=logging.DEBUG
+            )
+
             self.attributes = Attributes(self.attributes_file)
 
             cherrypy.log.error(
@@ -450,13 +452,14 @@ class LdapCherry(object):
             )
             self._init_backends(config)
             self._check_backends()
+
+            # loading the ppolicy
+            self._init_ppolicy(config)
+
             cherrypy.log.error(
                 msg="application started",
                 severity=logging.INFO
             )
-
-            # loading the ppolicy
-            self._init_ppolicy(config)
 
         except Exception as e:
             self._handle_exception(e)
@@ -532,11 +535,23 @@ class LdapCherry(object):
         return ret
 
     def _check_admin(self):
+        """ check in the session database if current user
+        is an ldapcherry administrator
+        @rtype: boolean, True if administrator, False otherwise
+        """
         if self.auth_mode == 'none':
             return True
         return cherrypy.session['isadmin']
 
     def _check_auth(self, must_admin):
+        """ check if a user is autheticated and, optionnaly an administrator
+        if user not authentifaced -> redirection to login page (with base64
+            of the originaly requested page (redirection after login)
+        if user authenticated, not admin and must_admin enabled -> 403 error
+        @boolean must_admin: flag "user must be an administrator to access
+            this page"
+        @rtype str: login of the user
+        """
         if self.auth_mode == 'none':
             return 'anonymous'
         username = cherrypy.session.get(SESSION_KEY)
@@ -545,8 +560,10 @@ class LdapCherry(object):
             qs = ''
         else:
             qs = '?' + cherrypy.request.query_string
+        # base64 of the requested URL
         b64requrl = base64.b64encode(cherrypy.url() + qs)
         if not username:
+            # return to login page (with base64 of the url in query string
             raise cherrypy.HTTPRedirect(
                 "/signin?url=%(url)s" % {'url': b64requrl},
                 )
@@ -559,6 +576,7 @@ class LdapCherry(object):
         if cherrypy.session['connected'] and \
                 not cherrypy.session['isadmin']:
             if must_admin:
+                # user is not an administrator, so he gets 403 Forbidden
                 raise cherrypy.HTTPError(
                     "403 Forbidden",
                     "You are not allowed to access this resource.",
