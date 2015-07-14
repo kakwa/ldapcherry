@@ -603,9 +603,12 @@ class LdapCherry(object):
                 pwd1 = attr + '1'
                 pwd2 = attr + '2'
                 if params['attrs'][pwd1] != params['attrs'][pwd2]:
-                    raise Exception()
+                    raise PasswordMissMatch()
+                if not self._checkppolicy(params['attrs'][pwd1])['match']:
+                    raise PPolicyError()
                 params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs']:
+                self.attributes.check_attr(attr, params['attrs'][attr])
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
                     if b not in badd:
@@ -654,9 +657,12 @@ class LdapCherry(object):
                 pwd2 = attr + '2'
                 if pwd1 in params['attrs']:
                     if params['attrs'][pwd1] != params['attrs'][pwd2]:
-                        raise Exception()
+                        raise PasswordMissMatch()
+                    if not self._checkppolicy(params['attrs'][pwd1])['match']:
+                        raise PPolicyError()
                     params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs']:
+                self.attributes.check_attr(attr, params['attrs'][attr])
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
                     if b not in badd:
@@ -801,8 +807,7 @@ class LdapCherry(object):
         )
 
     def _checkppolicy(self, password):
-        ret = self.ppolicy.check(password)
-        return ret
+        return self.ppolicy.check(password)
 
     @cherrypy.expose
     def signin(self, url=None):
