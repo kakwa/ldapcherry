@@ -43,7 +43,7 @@ def syslog_error(
         ):
 
     if traceback and msg == '':
-        msg = 'python exception'
+        msg = 'Python Exception:'
     if context == '':
         cherrypy.log.error_log.log(severity, msg)
     else:
@@ -51,8 +51,8 @@ def syslog_error(
             severity,
             ' '.join((context, msg))
             )
-    import traceback
     if traceback:
+        import traceback
         try:
             exc = sys.exc_info()
             if exc == (None, None, None):
@@ -65,6 +65,28 @@ def syslog_error(
             del exc
 
 
+def exception_decorator(func):
+    def ret(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except cherrypy.HTTPRedirect as e:
+            raise e
+        except cherrypy.HTTPError as e:
+            raise e
+        except Exception as e:
+            self._handle_exception(e)
+            username = self._check_session()
+            if not username:
+                return self.temp_service_unavailable.render()
+            is_admin = self._check_admin()
+            return self.temp_error.render(
+                is_admin=is_admin,
+                alert='danger',
+                message="An error occured, please check logs for details"
+                )
+    return ret
+
+
 class LdapCherry(object):
 
     def _handle_exception(self, e):
@@ -75,7 +97,7 @@ class LdapCherry(object):
             )
         else:
             cherrypy.log.error(
-                msg="unkwon exception: '%(e)s'" % {'e': str(e)},
+                msg="uncatched exception: [%(e)s]" % {'e': str(e)},
                 severity=logging.ERROR
             )
         # log the traceback as 'debug'
@@ -407,6 +429,8 @@ class LdapCherry(object):
             self.temp_lookup.get_template('selfmodify.tmpl')
         self.temp_modify = \
             self.temp_lookup.get_template('modify.tmpl')
+        self.temp_service_unavailable = \
+            self.temp_lookup.get_template('service_unavailable.tmpl')
 
     def reload(self, config=None):
         """ load/reload configuration
@@ -543,6 +567,11 @@ class LdapCherry(object):
             return True
         return cherrypy.session['isadmin']
 
+    def _check_session(self):
+        if self.auth_mode == 'none':
+            return 'anonymous'
+        username = cherrypy.session.get(SESSION_KEY)
+
     def _check_auth(self, must_admin):
         """ check if a user is autheticated and, optionnaly an administrator
         if user not authentifaced -> redirection to login page (with base64
@@ -554,7 +583,7 @@ class LdapCherry(object):
         """
         if self.auth_mode == 'none':
             return 'anonymous'
-        username = cherrypy.session.get(SESSION_KEY)
+        username = self._check_session() 
 
         if cherrypy.request.query_string == '':
             qs = ''
@@ -812,12 +841,14 @@ class LdapCherry(object):
         return self.ppolicy.check(password)
 
     @cherrypy.expose
+    @exception_decorator
     def signin(self, url=None):
         """simple signin page
         """
         return self.temp_login.render(url=url)
 
     @cherrypy.expose
+    @exception_decorator
     def login(self, login, password, url=None):
         """login page
         """
@@ -861,6 +892,7 @@ class LdapCherry(object):
             raise cherrypy.HTTPRedirect("/signin" + qs)
 
     @cherrypy.expose
+    @exception_decorator
     def logout(self):
         """ logout page
         """
@@ -877,6 +909,7 @@ class LdapCherry(object):
         raise cherrypy.HTTPRedirect("/signin")
 
     @cherrypy.expose
+    @exception_decorator
     def index(self):
         """main page rendering
         """
@@ -885,6 +918,7 @@ class LdapCherry(object):
         return self.temp_index.render(is_admin=is_admin)
 
     @cherrypy.expose
+    @exception_decorator
     def searchuser(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=False)
@@ -901,6 +935,7 @@ class LdapCherry(object):
             )
 
     @cherrypy.expose
+    @exception_decorator
     def checkppolicy(self, **params):
         """ search user page """
         keys = params.keys()
@@ -918,6 +953,7 @@ class LdapCherry(object):
         return json.dumps(ret, separators=(',', ':'))
 
     @cherrypy.expose
+    @exception_decorator
     def searchadmin(self, searchstring=None):
         """ search user page """
         self._check_auth(must_admin=True)
@@ -934,6 +970,7 @@ class LdapCherry(object):
             )
 
     @cherrypy.expose
+    @exception_decorator
     def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
@@ -979,6 +1016,7 @@ class LdapCherry(object):
             )
 
     @cherrypy.expose
+    @exception_decorator
     def delete(self, user):
         """ remove user page """
         self._check_auth(must_admin=True)
@@ -988,6 +1026,7 @@ class LdapCherry(object):
         raise cherrypy.HTTPRedirect(referer)
 
     @cherrypy.expose
+    @exception_decorator
     def modify(self, user=None, **params):
         """ modify user page """
         self._check_auth(must_admin=True)
@@ -1042,6 +1081,7 @@ class LdapCherry(object):
             )
 
     @cherrypy.expose
+    @exception_decorator
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)

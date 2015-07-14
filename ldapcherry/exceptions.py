@@ -184,3 +184,23 @@ class AttrNotDefined(Exception):
         self.attr = attr
         self.log = \
             "attribute '" + attr + "' is not defined in configuration"
+
+
+class UserDoesntExist(Exception):
+    def __init__(self, user, backend):
+        self.user = user
+        self.bakend = backend
+        self.log = \
+            "user '" + user + "'" \
+            " does not exist" \
+            " in backend '" + backend + "'"
+
+
+class GroupDoesntExist(Exception):
+    def __init__(self, group, backend):
+        self.group = group
+        self.bakend = backend
+        self.log = \
+            "group '" + group + "'" \
+            " does not exist" \
+            " in backend '" + backend + "'"
