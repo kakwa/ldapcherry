@@ -77,6 +77,16 @@ class MissingRolesFile(Exception):
             {'rolefile': rolefile}
 
 
+class PasswordMissMatch(Exception):
+    def __init__(self):
+        self.log = "password missmatch"
+
+
+class PPolicyError(Exception):
+    def __init__(self):
+        self.log = "password doesn't match ppolicy"
+
+
 class MissingMainFile(Exception):
     def __init__(self, config):
         self.rolefile = rolefile
