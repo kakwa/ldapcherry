@@ -25,6 +25,7 @@ class PPolicy:
             and 'reason', an explaination string
         """
         ret = {'match': True, 'reason': 'no password policy'}
+        return ret
 
     def info(self):
         """ gives information about the ppolicy
