@@ -583,7 +583,7 @@ class LdapCherry(object):
         """
         if self.auth_mode == 'none':
             return 'anonymous'
-        username = self._check_session() 
+        username = self._check_session()
 
         if cherrypy.request.query_string == '':
             qs = ''
