@@ -658,17 +658,17 @@ class LdapCherry(object):
                 if pwd1 in params['attrs']:
                     if params['attrs'][pwd1] != params['attrs'][pwd2]:
                         raise PasswordMissMatch()
-                    if not self._checkppolicy(params['attrs'][pwd1])['match']:
+                    if params['attrs'][pwd1] != '' and \
+                        not self._checkppolicy(params['attrs'][pwd1])['match']:
                         raise PPolicyError()
                     params['attrs'][attr] = params['attrs'][pwd1]
-            if attr in params['attrs']:
+            if attr in params['attrs'] and params['attrs'][attr] != '':
                 self.attributes.check_attr(attr, params['attrs'][attr])
                 backends = self.attributes.get_backends_attributes(attr)
                 for b in backends:
                     if b not in badd:
                         badd[b] = {}
-                    if params['attrs'][attr] != '':
-                        badd[b][backends[b]] = params['attrs'][attr]
+                    badd[b][backends[b]] = params['attrs'][attr]
         for b in badd:
             self.backends[b].set_attrs(username, badd[b])
         return badd
