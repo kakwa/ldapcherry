@@ -158,3 +158,19 @@ class PasswordAttributesCollision(Exception):
             "key '" + key + "' type is password," \
             " keys '" + key + "1' and '" + key + "2'"\
             " are reserved and cannot be used"
+
+
+class WrongAttrValue(Exception):
+    def __init__(self, attr, attrtype):
+        self.attr = attr
+        self.attrtype = attrtype
+        self.log = \
+            "input for attribute '" + attr + "'" \
+            " doesn't match type '" + attrtype + "'"
+
+
+class AttrNotDefined(Exception):
+    def __init__(self, attr):
+        self.attr = attr
+        self.log = \
+            "attribute '" + attr + "' is not defined in configuration"

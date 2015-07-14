@@ -109,7 +109,6 @@ home:
     backends:
         ldap: home
         ad: Home
-
 password:
     description: "Password of the user"
     display_name: "Password"

@@ -7,6 +7,7 @@
 
 import os
 import sys
+import re
 
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
@@ -14,6 +15,7 @@ from ldapcherry.exceptions import *
 from sets import Set
 import yaml
 
+# List of available types for form
 types = ['string', 'email', 'int', 'stringlist', 'fix', 'password']
 
 
@@ -64,6 +66,42 @@ class Attributes:
 
         if self.key is None:
             raise MissingUserKey()
+
+    def _is_email(self, email):
+        pattern = '[\.\w]{1,}[@]\w+[.]\w+'
+        if re.match(pattern, email):
+            return True
+        else:
+            return False
+
+    def check_attr(self, attr, value):
+        attrid = attr
+        if attrid not in self.attributes:
+            raise AttrNotDefined(attrid)
+        attr_type = self.attributes[attrid]['type']
+        if attr_type == 'string':
+            return
+        elif attr_type == 'email':
+            if self._is_email(value):
+                return
+            else:
+                raise WrongAttrValue(attrid, attr_type)
+        elif attr_type == 'int':
+            try:
+                int(value)
+                return
+            except ValueError:
+                raise WrongAttrValue(attrid, attr_type)
+        elif attr_type == 'stringlist':
+            if value in self.attributes[attrid]['values']:
+                return
+            else:
+                raise WrongAttrValue(attrid, attr_type)
+        elif attr_type == 'fix':
+            if value != self.attributes[attrid]['value']:
+                raise WrongAttrValue(attrid, attr_type)
+        elif attr_type == 'password':
+            return
 
     def get_search_attributes(self):
         return self.displayed_attributes

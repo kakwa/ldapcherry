@@ -89,6 +89,23 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    def testValidate(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        attrs = {'cn': 'test', 'email': 'test@example.org', 'uidNumber': 4242, 'shell': '/bin/bash', 'logscript': 'login1.bat'}
+        for attrid in attrs:
+            inv.check_attr(attrid, attrs[attrid])
+
+    def testValidateError(self):
+        inv = Attributes('./tests/cfg/attributes.yml')
+        attrs = {'email': 'notamail', 'uidNumber': 'not an integer', 'shell': '/bin/not in list', 'logscript': 'not fixed'}
+        for attrid in attrs:
+            try:
+                inv.check_attr(attrid, attrs[attrid])
+            except WrongAttrValue:
+                pass
+            else:
+                raise AssertionError("expected an exception")
+
 #    def testGetDisplayName(self):
 #        inv = Attributes('./tests/cfg/attributes.yml')
 #        res = inv.get_display_name('users')
