@@ -659,7 +659,9 @@ class LdapCherry(object):
                     if params['attrs'][pwd1] != params['attrs'][pwd2]:
                         raise PasswordMissMatch()
                     if params['attrs'][pwd1] != '' and \
-                        not self._checkppolicy(params['attrs'][pwd1])['match']:
+                            not self._checkppolicy(
+                                params['attrs'][pwd1]
+                                )['match']:
                         raise PPolicyError()
                     params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs'] and params['attrs'][attr] != '':
