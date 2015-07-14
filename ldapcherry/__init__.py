@@ -570,7 +570,7 @@ class LdapCherry(object):
     def _check_session(self):
         if self.auth_mode == 'none':
             return 'anonymous'
-        username = cherrypy.session.get(SESSION_KEY)
+        return cherrypy.session.get(SESSION_KEY)
 
     def _check_auth(self, must_admin):
         """ check if a user is autheticated and, optionnaly an administrator
