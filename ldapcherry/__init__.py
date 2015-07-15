@@ -522,7 +522,10 @@ class LdapCherry(object):
             return {}
         ret = {}
         for b in self.backends:
-            tmp = self.backends[b].get_user(username)
+            try:
+                tmp = self.backends[b].get_user(username)
+            except UserDoesntExist as e:
+                break
             for attr in tmp:
                 if attr in self.attributes.backend_attributes[b]:
                     attrid = self.attributes.backend_attributes[b][attr]
@@ -1053,6 +1056,12 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         user_attrs = self._get_user(user)
+        if user_attrs == {}:
+            return self.temp_error.render(
+                is_admin=is_admin,
+                alert='warning',
+                message="User doesn't exist"
+                )
         tmp = self._get_roles(user)
         user_roles = tmp['roles']
         user_lonely_groups = tmp['unusedgroups']
@@ -1098,6 +1107,12 @@ class LdapCherry(object):
             params = self._parse_params(params)
             self._selfmodify(params)
         user_attrs = self._get_user(user)
+        if user_attrs == {}:
+            return self.temp_error.render(
+                is_admin=is_admin,
+                alert='warning',
+                message="User doesn't exist"
+                )
         form = self.temp_form.render(
             attributes=self.attributes.get_selfattributes(),
             values=user_attrs,

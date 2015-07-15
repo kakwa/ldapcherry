@@ -10,6 +10,7 @@ import ldap
 import ldap.modlist as modlist
 import logging
 import ldapcherry.backend
+from ldapcherry.exceptions import UserDoesntExist, GroupDoesntExist
 import os
 import re
 
@@ -97,10 +98,9 @@ class Backend(ldapcherry.backend.Backend):
         elif et is ldap.NO_SUCH_OBJECT:
             self._logger(
                 severity=logging.ERROR,
-                msg="Search DN '" + basedn +
-                    "' doesn't exist, check '" +
+                msg="DN doesn't exist, check '" +
                     self.backend_name +
-                    ".userdn' or '" +
+                    ".userdn'or '" +
                     self.backend_name +
                     ".groupdn'",
                 )
@@ -338,6 +338,8 @@ class Backend(ldapcherry.backend.Backend):
                                 'backend': self.backend_name
                                 }
                     )
+                except ldap.NO_SUCH_OBJECT as e:
+                    raise GroupDoesntExist(group, self.backend_name)
                 except Exception as e:
                     ldap_client.unbind_s()
                     self._exception_handler(e)
@@ -395,7 +397,10 @@ class Backend(ldapcherry.backend.Backend):
 
     def get_user(self, username):
         ret = {}
-        attrs_tmp = self._get_user(username, ALL_ATTRS)[1]
+        tmp = self._get_user(username, ALL_ATTRS)
+        if tmp is None:
+            raise UserDoesntExist(username, self.backend_name)
+        attrs_tmp = tmp[1]
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
