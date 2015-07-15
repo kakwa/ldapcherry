@@ -8,6 +8,7 @@
 import cherrypy
 import ldap
 import ldap.modlist as modlist
+import ldap.filter
 import logging
 import ldapcherry.backend
 from ldapcherry.exceptions import UserDoesntExist, GroupDoesntExist
@@ -213,6 +214,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def _get_user(self, username, attrs=ALL_ATTRS):
 
+        username = ldap.filter.escape_filter_chars(username)
         user_filter = self.user_filter_tmpl % {
             'username': username
         }
@@ -378,6 +380,7 @@ class Backend(ldapcherry.backend.Backend):
     def search(self, searchstring):
         ret = {}
 
+        searchstring = ldap.filter.escape_filter_chars(searchstring)
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
         }
@@ -410,6 +413,8 @@ class Backend(ldapcherry.backend.Backend):
         return ret
 
     def get_groups(self, username):
+
+        username = ldap.filter.escape_filter_chars(username)
         userdn = self._get_user(username, NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {
