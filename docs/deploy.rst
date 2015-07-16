@@ -18,8 +18,105 @@ LdapCherry is launched using the internal cherrypy server:
     # launching ldapcherryd as a daemon
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -p /var/run/ldapcherry/ldapcherry.pid -d
 
+Roles and Attributes Configuration
+----------------------------------
+
 General Configuration
 ---------------------
+
+Webserver
+~~~~~~~~~
+
+LdapCherry uses the embedded http server of CherryPy, however it has some limitations:
+
+* no listening on port 80/443 (unless run as root, which is strongly discourage)
+* no https
+
+The simpler way to properly deploy LdapCherry is to run it listening only on localhost 
+with a port above 1024 and put it behind an http server like nginx, apache or lighttpd 
+acting as a reverse http(s) proxy.
+
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+|      Parameter      | Section |            Description             |           Values         |                Comment                     |
++=====================+=========+====================================+==========================+============================================+
+| server.socket_host  |  global | Listening IP                       | IP on which to listen    | Use '0.0.0.0' to listen on any interfaces. |
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+| server.socket_port  |  global | Listening Port                     | TCP Port                 |                                            |
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+| server.thread_pool  |  global | Number of threads created          | Number of threads        |                                            |
+|                     |         | by the CherryPy server             | threads                  |                                            |
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+| tools.staticdir.on  | /static | Serve static files through         | True, False              | These files could be server directly by an |
+|                     |         | LdapCherry                         |                          | HTTP server for better performance.        |
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+| tools.staticdir.dir | /static | Directory containing LdapCherry    | Path to static resources |                                            |
+|                     |         | static resources (js, css, img...) |                          |                                            |
++---------------------+---------+------------------------------------+--------------------------+--------------------------------------------+
+
+example:
+
+.. sourcecode:: ini
+
+    [global]
+    
+    # listing interface
+    server.socket_host = '127.0.0.1'
+    # port
+    server.socket_port = 8080
+    # number of threads
+    server.thread_pool = 8
+   
+    # enable cherrypy static handling
+    # to comment if static content are handled otherwise
+    [/static]
+    tools.staticdir.on = True
+    tools.staticdir.dir = '/usr/share/ldapcherry/static/'
+
+Authentication and sessions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LdapCherry supports several authentication modes:
+
++------------------------+---------+---------------------+------------------------------------------------+---------------------------------+
+|        Parameter       | Section |     Description     |                  Values                        |             Comment             |
++========================+=========+=====================+================================================+=================================+
+| auth.mode              | auth    | Authentication mode | * 'and' (user must auth on all backends)       |                                 |
+|                        |         |                     | * 'or' (user must auth on one of the backends) |                                 |
+|                        |         |                     | * 'none' (disable auth)                        |                                 |
+|                        |         |                     | * 'custom' (use custom auth module)            |                                 |
++------------------------+---------+---------------------+------------------------------------------------+---------------------------------+
+| auth.module            | auth    | Custom auth module  | python class path to module                    | only used if auth.mode='custom' |
++------------------------+---------+---------------------+------------------------------------------------+---------------------------------+
+| tools.sessions.timeout | global  | Session timeout in  | Number of minutes                              |                                 |
+|                        |         | minutes             |                                                |                                 |
++------------------------+---------+---------------------+------------------------------------------------+---------------------------------+
+
+Different session backends can also be configured (see CherryPy documentation for details)
+
+.. sourcecode:: ini
+
+    [global]
+    # session configuration
+    # activate session
+    tools.sessions.on = True
+    # session timeout in minutes
+    tools.sessions.timeout = 10
+    # file session storage(to use if multiple processes, 
+    # default is in RAM and per process)
+    #tools.sessions.storage_type = "file"
+    # session 
+    #tools.sessions.storage_path = "/var/lib/ldapcherry/sessions"
+
+    [auth]
+    # Auth mode
+    # * and: user must authenticate on all backends
+    # * or:  user must authenticate on one of the backend
+    # * none: disable authentification
+    # * custom: custom authentification module (need auth.module param)
+    auth.mode = 'or'
+
+    # custom auth module to load
+    #auth.module = 'ldapcherry.auth.modNone'
 
 Logging
 ~~~~~~~
@@ -28,7 +125,7 @@ LdapCherry has two loggers, one for errors and applicative actions (login, del/a
 
 Each logger can be configured to log to syslog, file or be desactivated. 
 
-Syslog parameters:
+Logging parameters:
 
 +--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
 |      Parameter     | Section |           Description           |                      Values                     |                 Comment                |
@@ -57,96 +154,18 @@ Example:
     # log level
     log.level = 'info'
 
-Webserver
-~~~~~~~~~
 
-LdapCherry uses the embedded http server of CherryPy, however it has some limitations:
-
-* no listening on port 80/443 (unless run as root, which is strongly discourage)
-* no https
-
-The simpler way to properly deploy LdapCherry is to run it listening only on localhost 
-with a port above 1024 and put it behind an http server like nginx, apache or lighttpd 
-acting as a reverse http(s) proxy.
-
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-|      Parameter      | Section |            Description             |           Values         |                 Comment                      |
-+=====================+=========+====================================+==========================+==============================================+
-| server.socket_host  |  global |            Listening IP            |    IP on which to listen |  Use '0.0.0.0' to listen on any interfaces.  |
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-| server.socket_port  |  global |           Listening Port           |            TCP Port      |                                              |
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-| server.thread_pool  |  global |      Number of threads created     |          Number of       |                                              |
-|                     |         |       by the CherryPy server       |           threads        |                                              |
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-| tools.staticdir.on  | /static |    Serve static files through      |        True, False       |  These files could be server directly by an  |
-|                     |         |            LdapCherry              |                          |     http server for better performance.      |
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-| tools.staticdir.dir | /static |  Directory containing LdapCherry   | Path to static resources |                                              |
-|                     |         | static resources (js, css, img...) |                          |                                              |
-+---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
-
-example:
-
-.. sourcecode:: ini
-
-    [global]
-    
-    # listing interface
-    server.socket_host = '127.0.0.1'
-    # port
-    server.socket_port = 8080
-    # number of threads
-    server.thread_pool = 8
-   
-    # enable cherrypy static handling
-    # to comment if static content are handled otherwise
-    [/static]
-    tools.staticdir.on = True
-    tools.staticdir.dir = '/usr/share/ldapcherry/static/'
-
-Authentication and sessions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Other LdapCherry parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. sourcecode:: ini
 
-    [global]
-    
-    # listing interface
-    server.socket_host = '127.0.0.1'
-    # port
-    server.socket_port = 8080
-    # number of threads
-    server.thread_pool = 8
-    #don't show traceback on error
-    request.show_tracebacks = False
-    
-   
-    # session configuration
-    # activate session
-    tools.sessions.on = True
-    # session timeout
-    tools.sessions.timeout = 10
-    # file session storage(to use if multiple processes, 
-    # default is in RAM and per process)
-    #tools.sessions.storage_type = "file"
-    # session 
-    #tools.sessions.storage_path = "/var/lib/ldapcherry/sessions"
-    
     # resources parameters
     [resources]
     # templates directory
     template_dir = '/usr/share/ldapcherry/templates/'
     
-    # enable cherrypy static handling
-    # to comment if static content are handled otherwise
-    [/static]
-    tools.staticdir.on = True
-    tools.staticdir.dir = '/usr/share/ldapcherry/static/'
-
 LdapCherry full configuration file
 ----------------------------------
 
