@@ -45,7 +45,20 @@ LdapCherry also aims to be as simple as possible to deploy: no crazy dependencie
 **************
   Screenshot
 **************
-
+.. raw:: html
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="http://unslider.com/unslider.min.js"></script>
+  <div class="banner">
+    <ul>
+      <li style="background-image: url('https://raw.githubusercontent.com/kakwa/ldapcherry/master/docs/assets/sc/2015-07-06-093051_1438x1064_scrot.png');">
+      </li>
+    </ul>
+  </div>
+  <script>
+  $(function() {
+    $('.banner').unslider();
+  });
+  </script>
 `Screenshots directory <https://github.com/kakwa/ldapcherry/tree/master/docs/assets/sc>`_
 
 ***********
