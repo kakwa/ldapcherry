@@ -1,8 +1,6 @@
-.. include:: ../README.rst
-
-*************
-  Site Menu
-*************
+********************
+  Table of Content
+********************
 
 .. toctree::
     :maxdepth: 2
@@ -11,3 +9,5 @@
     deploy
     changelog
 
+
+.. include:: ../README.rst

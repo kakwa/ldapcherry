@@ -6,6 +6,7 @@ Nice and simple application to manage user and groups in multiple directory serv
 
 ----
 
+:Doc: `ldapcherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
 :Dev: `ldapcherry code on GitHub <https://github.com/kakwa/ldapcherry>`_
 :PyPI: `ldapcherry package on Pypi <http://pypi.python.org/pypi/ldapcherry>`_
 :License: MIT

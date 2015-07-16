@@ -1,51 +1,50 @@
 Deploy
 ======
 
-Launching LdapCherry
--------------------
+Launch
+------
 
-ldapCherry can be launch using cherrypy internal webserver:
+LdapCherry is launched using the internal cherrypy server:
 
 
 .. sourcecode:: bash
 
     # ldapcherryd help
     $ ldapcherryd -h
-    Usage: ldapcherryd [options]
-    
-    Options:
-      -h, --help            show this help message and exit
-      -c CONFIG, --config=CONFIG
-                            specify config file
-      -d                    run the server as a daemon
-      -e ENVIRONMENT, --environment=ENVIRONMENT
-                            apply the given config environment
-      -f                    start a fastcgi server instead of the default HTTP
-                            server
-      -s                    start a scgi server instead of the default HTTP server
-      -x                    start a cgi server instead of the default HTTP server
-      -p PIDFILE, --pidfile=PIDFILE
-                            store the process id in the given file
-      -P PATH, --Path=PATH  add the given paths to sys.path
 
-    # launching ldapcherryd
+    # launching ldapcherryd in the forground
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini
 
-ldap Configuration
------------------
+    # launching ldapcherryd as a daemon
+    $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -p /var/run/ldapcherry/ldapcherry.pid -d
 
+General Configuration
+---------------------
 
-Logs
-----
+Logging
+~~~~~~~
 
-ldapCherry has two loggers, one for errors and actions (login, del/add, logout...) and one for access logs.
-Each logger can be configured to log to syslog, file or be unactivated. 
+LdapCherry has two loggers, one for errors and applicative actions (login, del/add, logout...) and one for access logs.
 
-.. warning::
+Each logger can be configured to log to syslog, file or be desactivated. 
 
-    you can't set a logger to log both in file and syslog
+Syslog parameters:
 
-Syslog configuration:
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+|      Parameter     | Section |           Description           |                      Values                     |                 Comment                |
++====================+=========+=================================+=================================================+========================================+
+| log.access_handler |  global |    Logger type for access log   |            'syslog', 'file', 'none'             |                                        |
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+|  log.error_handler |  global | Logger type for applicative log |             'syslog', 'file', 'none'            |                                        |
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+|   log.access_file  |  global |     log file for access log     |                 path to log file                | only used if log.access_handler='file' |
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+|   log.error_file   |  global |   log file for applicative log  |                 path to log file                |  only used if log.error_handler='file' |
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+|      log.level     |  global |     log level of LdapCherry     | 'debug', 'info', 'warning', 'error', 'critical' |                                        |
++--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
+
+Example:
 
 .. sourcecode:: ini
 
@@ -55,44 +54,62 @@ Syslog configuration:
     log.access_handler = 'syslog'
     # logger syslog for error and ldapcherry log 
     log.error_handler = 'syslog'
-
-File configuration:
-
-.. sourcecode:: ini
-
-    [global]
-
-    # logger syslog for access log 
-    log.access_handler = 'file'
-    # logger syslog for error and ldapcherry log 
-    log.error_handler = 'file'
-    # access log file
-    log.access_file = '/tmp/ldapcherry_access.log'
-    # error and ldapcherry log file
-    log.error_file = '/tmp/ldapcherry_error.log'
-
-Disable logs:
-
-.. sourcecode:: ini
-
-    [global]
-
-    # logger syslog for access log 
-    log.access_handler = 'none'
-    # logger syslog for error and ldapcherry log 
-    log.error_handler = 'none'
-
-Set log level:
-
-.. sourcecode:: ini
-
-    [global]
-
     # log level
     log.level = 'info'
 
-Other ldapCherry parameters
---------------------------
+Webserver
+~~~~~~~~~
+
+LdapCherry uses the embedded http server of CherryPy, however it has some limitations:
+
+* no listening on port 80/443 (unless run as root, which is strongly discourage)
+* no https
+
+The simpler way to properly deploy LdapCherry is to run it listening only on localhost 
+with a port above 1024 and put it behind an http server like nginx, apache or lighttpd 
+acting as a reverse http(s) proxy.
+
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+|      Parameter      | Section |            Description             |           Values         |                 Comment                      |
++=====================+=========+====================================+==========================+==============================================+
+| server.socket_host  |  global |            Listening IP            |    IP on which to listen |  Use '0.0.0.0' to listen on any interfaces.  |
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+| server.socket_port  |  global |           Listening Port           |            TCP Port      |                                              |
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+| server.thread_pool  |  global |      Number of threads created     |          Number of       |                                              |
+|                     |         |       by the CherryPy server       |           threads        |                                              |
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+| tools.staticdir.on  | /static |    Serve static files through      |        True, False       |  These files could be server directly by an  |
+|                     |         |            LdapCherry              |                          |     http server for better performance.      |
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+| tools.staticdir.dir | /static |  Directory containing LdapCherry   | Path to static resources |                                              |
+|                     |         | static resources (js, css, img...) |                          |                                              |
++---------------------+---------+------------------------------------+--------------------------+----------------------------------------------+
+
+example:
+
+.. sourcecode:: ini
+
+    [global]
+    
+    # listing interface
+    server.socket_host = '127.0.0.1'
+    # port
+    server.socket_port = 8080
+    # number of threads
+    server.thread_pool = 8
+   
+    # enable cherrypy static handling
+    # to comment if static content are handled otherwise
+    [/static]
+    tools.staticdir.on = True
+    tools.staticdir.dir = '/usr/share/ldapcherry/static/'
+
+Authentication and sessions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Other LdapCherry parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. sourcecode:: ini
 
@@ -130,52 +147,12 @@ Other ldapCherry parameters
     tools.staticdir.on = True
     tools.staticdir.dir = '/usr/share/ldapcherry/static/'
 
-WebServer
----------
+LdapCherry full configuration file
+----------------------------------
 
-Idealy, LdapCherry must be deployed behind a proper http server like nginx or apache.
+.. literalinclude:: ../conf/ldapcherry.ini
+   :language: ini
 
-The webserver must be configured to act as a reverse (ssl) proxy to a ldapCherry instance listening on localhost (127.0.0.1).
-
-Cherrypy
-~~~~~~~~
-
-Cherrypy has an embeded web sever which can be used for testing.
-
-It has some severe limitations:
-
-* no SSL/TLS (which is recommanded)
-* no listening on the standard http port 80
-
-To make ldapCherry listens on every IP:
-
-.. sourcecode:: ini
-
-    [global]
-    
-    # listing interface
-    server.socket_host = '0.0.0.0'
-    # port
-    server.socket_port = 8080
- 
-Nginx
-~~~~~
-
-.. literalinclude:: ../goodies/nginx.conf
-   :language: none
-
-
-Apache
-~~~~~~
-
-.. literalinclude:: ../goodies/apache.conf
-   :language: none
-
-Lighttpd
-~~~~~~~~
-
-.. literalinclude:: ../goodies/lighttpd.conf
-   :language: none
 
 Init Script
 -----------
@@ -187,9 +164,4 @@ Sample init script for Debian:
 
 This init script is available in **goodies/init-debian**.
 
-ldapCherry configuration file
-----------------------------
-
-.. literalinclude:: ../conf/ldapcherry.ini
-   :language: ini
 
