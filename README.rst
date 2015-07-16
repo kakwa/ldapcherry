@@ -1,6 +1,6 @@
-==============
+**************
   LdapCherry 
-==============
+**************
 
 Nice and simple application to manage user and groups in multiple directory services.
 
