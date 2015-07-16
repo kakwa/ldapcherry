@@ -112,7 +112,7 @@ LdapCherry also aims to be as simple as possible to deploy: no crazy dependencie
         <a href="#image6">6</a>
     </div>
 
-`Screenshots directory <https://github.com/kakwa/ldapcherry/tree/master/docs/assets/sc>`_
+`Screenshots <http://ldapcherry.readthedocs.org/en/latest/#image1>`_
 
 ***********
   License
