@@ -1,6 +1,13 @@
 Deploy
 ======
 
+LdapCherry aims at being as simple as possible to deploy.
+The Application is constituted of:
+
+* ldapcherryd: the daemon to lauch LdapCherry
+* one ini file (ldapcherry.ini by default): the entry point for the configuration, containing all the "technical" attributes
+* two yaml files (roles.yml and attributes by default): the files containing the roles and attributes definition
+
 Launch
 ------
 
@@ -21,8 +28,27 @@ LdapCherry is launched using the internal cherrypy server:
 Roles and Attributes Configuration
 ----------------------------------
 
-General Configuration
----------------------
+Entry point in main configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The main configuration file (ldapcherry.ini by default) contains two parameters locating the roles and attributes configuration files:
+
++-----------------+------------+-------------------------------+-------------------+---------+
+|      Parameter  |  Section   |            Description        |       Values      | Comment |
++=================+============+===============================+===================+=========+
+| attributes.file | attributes | Attributes configuration file | Path to conf file |         |
++-----------------+------------+-------------------------------+-------------------+---------+
+| roles.file      | roles      | Roles configuration file      | Path to conf file |         |
++-----------------+------------+-------------------------------+-------------------+---------+
+
+Attributes Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Roles Configuration
+~~~~~~~~~~~~~~~~~~~
+
+Main Configuration
+------------------
 
 Webserver
 ~~~~~~~~~
@@ -71,6 +97,9 @@ example:
     [/static]
     tools.staticdir.on = True
     tools.staticdir.dir = '/usr/share/ldapcherry/static/'
+
+Backends
+~~~~~~~~
 
 Authentication and sessions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,5 +211,3 @@ Sample init script for Debian:
    :language: bash
 
 This init script is available in **goodies/init-debian**.
-
-
