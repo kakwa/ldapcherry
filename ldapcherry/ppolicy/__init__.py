@@ -16,7 +16,7 @@ class PPolicy:
         :param config: the configuration of the ppolicy
         :type config: hash {'config key': 'value'}
         :param logger: the cherrypy error logger object
-        "type logger: python logger
+        :type logger: python logger
         """
         pass
 
@@ -48,6 +48,8 @@ class PPolicy:
             if param is not in configuration and default
             is None (which is the default value).
         :type default: string or None
+        :rtype: the value of the parameter or the default value if
+            not set in configuration
         """
         if param in self.config:
             return self.config[param]
