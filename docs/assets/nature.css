@@ -158,9 +158,9 @@ div.body h6 {
 div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 225%; color: #EEEEEE; background-color: #6f8c93;}
 div.body h2 { font-size: 140%; color: #EEEEEE; background-color: #6f8c93; }
 div.body h3 { font-size: 120%; color: #2C001E; background-color: #accbd3; }
-div.body h4 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; }
-div.body h5 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; }
-div.body h6 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; }
+div.body h4 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
+div.body h5 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
+div.body h6 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
  
 a.headerlink {
     color: #333333;
