@@ -33,16 +33,174 @@ Entry point in main configuration
 
 The main configuration file (ldapcherry.ini by default) contains two parameters locating the roles and attributes configuration files:
 
-+-----------------+------------+-------------------------------+-------------------+---------+
-|      Parameter  |  Section   |            Description        |       Values      | Comment |
-+=================+============+===============================+===================+=========+
-| attributes.file | attributes | Attributes configuration file | Path to conf file |         |
-+-----------------+------------+-------------------------------+-------------------+---------+
-| roles.file      | roles      | Roles configuration file      | Path to conf file |         |
-+-----------------+------------+-------------------------------+-------------------+---------+
++-----------------+------------+-------------------------------+-------------------+
+|      Parameter  |  Section   |            Description        |       Values      |
++=================+============+===============================+===================+
+| attributes.file | attributes | Attributes configuration file | Path to conf file |
++-----------------+------------+-------------------------------+-------------------+
+| roles.file      | roles      | Roles configuration file      | Path to conf file |
++-----------------+------------+-------------------------------+-------------------+
 
 Attributes Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
+The attributes configuration is done in a yaml file (attributes.yml by default).
+
+Mandatory parameters
+^^^^^^^^^^^^^^^^^^^^
+
+The mandatory parameters for an attribute, and their format are the following:
+
+.. sourcecode:: yaml
+
+    <attr id>:
+        description: <Human readable description of the attribute>                       # (free text)
+        display_name: <Display name in LdapCherry forms>                                 # (free text)
+        weight: <weight controlling the display order of the attributes, lower is first> # (integer)
+        type: <type of the attributes>                                                   # (in ['int', 'string', 'email', 'stringlist', 'fix'])
+        backends:                                                                        # (list of backend attributes name)
+            - <backend id 1>: <backend 1 attribute name>
+            - <backend id 2>: <backend 2 attribute name>
+
+.. warning::
+
+    <attr id> (the attribute id) must be unique, LdapCherry won't start if it's not.
+
+.. warning::
+
+    <backend id> (the backend id) must be defined in main configuration 
+    (ldapcherry.ini by default). LdapCherry won't start if it's not.
+
+Type stringlist values
+^^^^^^^^^^^^^^^^^^^^^^
+
+If **type** is set to **stringlist** the parameter **values** must be filled with the list of possible values:
+
+.. sourcecode:: yaml
+
+    <attr id>:
+        description: <Human readable description of the attribute>
+        display_name: <Display name in LdapCherry forms>
+        weight: <weight controlling the display order of the attributes)
+
+        type: stringlist
+        values:
+            - value1
+            - value2
+            - value3
+
+        backends:
+            - <backend id>: <backend attribute name>
+
+Authorize self modification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A user can modify some of it's attributes (self modification). 
+In such case, the parameter **self** must set to **True**:
+
+.. sourcecode:: yaml
+
+    <attr id>:
+        description: <Human readable description of the attribute>
+        display_name: <Display name in LdapCherry forms>
+        weight: <weight controlling the display order of the attributes)
+        type: <type of the attributes>
+
+        self: True
+
+        backends:
+            - <backend id 1>: <backend 1 attribute name>
+            - <backend id 2>: <backend 2 attribute name>
+
+Autofill
+^^^^^^^^
+
+LdapCherry has the possibility to autofill fields from other fields, 
+to use this functionnality **autofill** must be set.
+
+Example:
+
+.. sourcecode:: yaml
+
+    gidNumber:
+        description: "Group ID Number of the user"
+        display_name: "GID Number"
+        weight: 70
+        type: int
+    
+        autofill:
+            function: lcUidNumber # name of the function to call
+            args:                 # list of arguments
+                - $first-name     # 
+                - $name
+                - '10000'
+                - '40000'
+    
+        backends:
+            ldap: gidNumber
+
+Arguments of the autofill function work as follow:
+
+* if argument starts with **$**, for example **$my_field**, the value of form input **my_field** will be passed to the function.
+* otherwise, it will be treated as a fixed argument.
+
+Available autofill functions:
+
+* lcUid: generate 8 characters uid from 2 other fields (first letter of the first field, 7 first letters of the second):
+
+.. sourcecode:: yaml
+
+    autofill: 
+        function: lcUid
+        args:
+            - $first-name
+            - $name
+
+
+* lcDisplayName: concatenate two fields
+
+.. sourcecode:: yaml
+
+    autofill: 
+        function: lcDisplayName
+        args:
+            - $first-name
+            - $name
+
+* lcMail: generate an email address from 2 other fields and a domain (<uid>+domain)
+
+.. sourcecode:: yaml
+
+    autofill: 
+        function: lcMail
+        args:
+            - $first-name
+            - $name
+            - '@example.com'
+
+
+* lcUidNumber: generate an uid number from 2 other fields and between a minimum and maximum value
+
+.. sourcecode:: yaml
+
+    autofill: 
+        function: lcUidNumber
+        args:
+            - $first-name
+            - $name
+            - '10000'
+            - '40000'
+
+* lcHomeDir: generate an home directory from 2 other fields and a root (<root>+<uid>)
+
+.. sourcecode:: yaml
+
+    autofill: 
+        function: lcHomeDir
+        args:
+            - $first-name
+            - $name
+            - /home/
 
 Roles Configuration
 ~~~~~~~~~~~~~~~~~~~
