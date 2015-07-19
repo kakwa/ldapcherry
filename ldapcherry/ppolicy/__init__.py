@@ -33,7 +33,7 @@ class PPolicy:
         return ret
 
     def info(self):
-        """ Gives information about the ppolicy
+        """ Give information about the ppolicy
 
         :rtype: a string describing the ppolicy
         """
