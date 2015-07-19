@@ -176,4 +176,5 @@ try:
     MOCK_MODULES = ['cherrypy']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 except Exception as e:
+    print("No Mock of cherrypy")
     pass
