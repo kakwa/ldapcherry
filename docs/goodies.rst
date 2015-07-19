@@ -1,3 +1,8 @@
+Some Goodies
+============
+
+Here are some goodies that might help deploying LdapCherry
+
 Init Script
 -----------
 
