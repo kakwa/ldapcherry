@@ -1,0 +1,93 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:        ldapcherryd
+# Required-Start:    $remote_fs $network $syslog
+# Required-Stop:    $remote_fs $network $syslog
+# Default-Start:    2 3 4 5
+# Default-Stop:        
+# Short-Description:    ldapcherry
+### END INIT INFO
+
+PIDFILE=/var/run/ldapcherryd/ldapcherryd.pid
+CONF=/etc/ldapcherry/ldapcherry.ini
+USER=www-data
+GROUP=www-data
+BIN=/usr/local/bin/ldapcherryd
+OPTS="-d -c $CONF -p $PIDFILE"
+
+. /lib/lsb/init-functions
+
+if [ -f /etc/default/ldapcherryd ]; then
+    . /etc/default/ldapcherryd
+fi
+
+start_ldapcherryd(){
+    log_daemon_msg "Starting ldapcherryd" "ldapcherryd" || true
+    pidofproc -p $PIDFILE $BIN >/dev/null
+    status="$?"
+    if [ $status -eq 0 ]
+    then
+        log_end_msg 1 
+        log_failure_msg \
+        "ldapcherryd already started"
+        return 1
+    fi
+    mkdir -p `dirname $PIDFILE` -m 750
+    chown $USER:$GROUP `dirname $PIDFILE`
+    if start-stop-daemon -c $USER:$GROUP --start \
+        --quiet --pidfile $PIDFILE \
+        --oknodo --exec $BIN -- $OPTS
+    then
+        log_end_msg 0 || true
+        return 0
+    else
+        log_end_msg 1 || true
+        return 1
+    fi
+
+}
+
+stop_ldapcherryd(){
+    log_daemon_msg "Stopping ldapcherryd" "ldapcherryd" || true
+    if start-stop-daemon --stop --quiet \
+        --pidfile $PIDFILE
+    then
+        log_end_msg 0 || true
+        return 0
+    else
+        log_end_msg 1 || true
+        return 1
+    fi
+}
+
+case "$1" in
+  start)
+    start_ldapcherryd
+    exit $?
+    ;;
+  stop)
+    stop_ldapcherryd
+    exit $?
+    ;;
+  restart)
+    stop_ldapcherryd 
+    while pidofproc -p $PIDFILE $BIN >/dev/null
+    do
+        sleep 0.5
+    done
+    start_ldapcherryd
+    exit $?
+    ;;
+  status)
+    status_of_proc -p $PIDFILE $BIN "ldapcherryd" \
+        && exit 0 || exit $?
+    ;;
+  *)
+    log_action_msg \
+    "Usage: /etc/init.d/ldapcherryd {start|stop|restart|status}" \
+    || true
+    exit 1
+esac
+
+exit 0
