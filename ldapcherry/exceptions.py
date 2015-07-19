@@ -196,6 +196,16 @@ class UserDoesntExist(Exception):
             " in backend '" + backend + "'"
 
 
+class UserAlreadyExists(Exception):
+    def __init__(self, user, backend):
+        self.user = user
+        self.bakend = backend
+        self.log = \
+            "user '" + user + "'" \
+            " already exists" \
+            " in backend '" + backend + "'"
+
+
 class GroupDoesntExist(Exception):
     def __init__(self, group, backend):
         self.group = group
