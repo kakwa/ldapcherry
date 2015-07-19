@@ -353,19 +353,3 @@ Other LdapCherry parameters
     # templates directory
     template_dir = '/usr/share/ldapcherry/templates/'
     
-LdapCherry full configuration file
-----------------------------------
-
-.. literalinclude:: ../conf/ldapcherry.ini
-   :language: ini
-
-
-Init Script
------------
-
-Sample init script for Debian:
-
-.. literalinclude:: ../goodies/init-debian
-   :language: bash
-
-This init script is available in **goodies/init-debian**.
