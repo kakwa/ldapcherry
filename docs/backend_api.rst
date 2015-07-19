@@ -2,7 +2,7 @@ Implementing cutom backends
 ===========================
 
 API
-~~~
+---
 
 The backend modules must respect the following API:
 
@@ -12,7 +12,7 @@ The backend modules must respect the following API:
     :show-inheritance:
 
 Configuration
-~~~~~~~~~~~~~
+-------------
 
 Configuration for your backend is declared in the main ini file, inside [backends] section:
 
@@ -52,7 +52,8 @@ by **self.get_param**:
 
 
 Exceptions
-~~~~~~~~~~
+----------
+
 The following exception can be used in your module
 
 .. automodule:: ldapcherry.exceptions
