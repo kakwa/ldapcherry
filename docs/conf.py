@@ -41,7 +41,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'LdapCherry - Performance Test Framework'
+project = u'LdapCherry - Directory Management Interface'
 copyright = u'2014, Pierre-Francois Carpentier'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -165,3 +165,15 @@ html_file_suffix = ".html"
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'LdapCherry-docs'
 
+try:
+    from unittest.mock import MagicMock
+
+    class Mock(MagicMock):
+        @classmethod
+        def __getattr__(cls, name):
+            return Mock()
+
+    MOCK_MODULES = ['cherrypy']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+except Exception as e:
+    pass
