@@ -5,13 +5,16 @@
 import os
 import re
 import sys
-from distutils.core import setup
+from distutils.core import setup, run_setup
 
 # some install path variables
 sysconfdir = os.getenv("SYSCONFDIR", "/etc")
-datarootdir = os.getenv("DATAROOTDIR", sys.prefix)
+datarootdir = os.getenv("DATAROOTDIR", os.path.join(sys.prefix, 'share'))
 
-data_dir = os.path.join(sys.prefix, 'share', 'ldapcherry')
+# path to install data
+data_dir = os.path.join(datarootdir, 'ldapcherry')
+# path to install configuration
+config_dir = os.path.join(sysconfdir, 'ldapcherry')
 small_description = 'A simple web application to manage Ldap entries'
 
 # change requirements according to python version
@@ -63,6 +66,13 @@ except ImportError:
         x
 
 
+def as_option_root():
+    for arg in sys.argv:
+        if re.match(r'--root.*', arg):
+            return True
+    return False
+
+
 # just a small function to easily install a complete directory
 def get_list_files(basedir, targetdir):
     return_list = []
@@ -77,15 +87,16 @@ def get_list_files(basedir, targetdir):
 # add static files and templates in the list of thing to deploy
 resources_files = get_list_files(
     'resources',
-    os.path.join(datarootdir, 'share', 'ldapcherry')
+    data_dir,
     )
 
+as_option_root
 # add the configuration files if they don't exist
-if not os.path.exists(
-        os.path.join(sysconfdir, 'ldapcherry')):
+if as_option_root() or not os.path.exists(
+        config_dir):
             resources_files.append(
                 (
-                    os.path.join(sysconfdir, 'ldapcherry'),
+                    config_dir,
                     [
                         'conf/ldapcherry.ini',
                         'conf/attributes.yml',
@@ -93,6 +104,7 @@ if not os.path.exists(
                     ]
                 )
                 )
+
 
 setup(
     name='ldapcherry',
