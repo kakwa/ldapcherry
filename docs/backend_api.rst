@@ -1,13 +1,13 @@
-Implementing your own backend
-=============================
+Implementing cutom backends
+===========================
 
 API
 ~~~
 
-To create your own backend, you must implement the following API:
+The backend modules must respect the following API:
 
-.. automodule:: ldapcherry.backend
-    :members:
+.. autoclass:: ldapcherry.backend.Backend
+    :members: __init__, auth, add_user, del_user, set_attrs, add_to_groups, del_from_groups, search, get_user, get_groups
     :undoc-members:
     :show-inheritance:
 
@@ -42,13 +42,30 @@ The following hash will be passed as configuration to the module constructor as 
         'param2': "my value 2",
     }
 
+After having set **self.config** to **config** in the constructor, parameters can be recovered
+by **self.get_param**:
+
+.. autoclass:: ldapcherry.backend.Backend
+    :members: get_param
+    :undoc-members:
+    :show-inheritance:
+
+
 Exceptions
 ~~~~~~~~~~
 The following exception can be used in your module
 
-*
-*
-*
-*
+.. automodule:: ldapcherry.exceptions
+    :members: UserDoesntExist, UserAlreadyExists, GroupDoesntExist
+    :undoc-members:
+    :show-inheritance:
 
 These exceptions permit a nicer error handling and avoid a generic message to be thrown at the user.
+
+Example
+-------
+
+Here is the ldap backend module that comes with LdapCherry:
+
+.. literalinclude:: ../ldapcherry/backend/backendLdap.py
+    :language: python
