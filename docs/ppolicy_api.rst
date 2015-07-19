@@ -8,7 +8,7 @@ The password policy modules must respect following API:
 
 .. autoclass:: ldapcherry.ppolicy.PPolicy
     :members: check, info, __init__
-    :undoc-members: check
+    :undoc-members:
     :show-inheritance:
 
 Configuration
