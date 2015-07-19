@@ -7,6 +7,8 @@
     
     install
     deploy
+    full_configuration
+    goodies
     backend_api
     ppolicy_api
     changelog
