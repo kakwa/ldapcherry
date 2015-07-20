@@ -92,6 +92,28 @@ If **type** is set to **stringlist** the parameter **values** must be filled wit
         backends:
             - <backend id>: <backend attribute name>
 
+Key attribute:
+^^^^^^^^^^^^^^
+
+One attribute must be used as a unique key accross all backends:
+
+To set the key attribute, you must set **key** to **True** on this attribute.
+
+Example:
+
+.. sourcecode:: yaml
+
+    uid:
+        description: "UID of the user"
+        display_name: "UID"
+        search_displayed: True
+        key: True                       # defining the attribute as "key"
+        type: string
+        weight: 50
+        backends:
+            ldap: uid
+            ad: sAMAccountName
+
 Authorize self modification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
