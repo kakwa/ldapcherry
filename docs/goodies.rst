@@ -16,14 +16,14 @@ This init script is available in **goodies/init-debian**.
 Apache Vhost
 ------------
 
-.. literalinclude:: ../goodies/init-debian
+.. literalinclude:: ../goodies/apache.conf
 
 Nginx Vhost
 -----------
 
-.. literalinclude:: ../goodies/init-debian
+.. literalinclude:: ../goodies/nginx.conf
 
 Lighttpd Vhost
 --------------
 
-.. literalinclude:: ../goodies/init-debian
+.. literalinclude:: ../goodies/lighttpd.conf
