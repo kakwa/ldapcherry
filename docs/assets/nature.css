@@ -158,10 +158,23 @@ div.body h6 {
 div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 225%; color: #EEEEEE; background-color: #6f8c93;}
 div.body h2 { font-size: 140%; color: #EEEEEE; background-color: #6f8c93; }
 div.body h3 { font-size: 120%; color: #2C001E; background-color: #accbd3; }
-div.body h4 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
-div.body h5 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
-div.body h6 { font-size: 100%; color: #EEEEEE; background-color: #accbd3; color: #000000}
+div.body h4 { font-size: 100%; color: #000000; background-color: #accbd3; }
+div.body h5 { font-size: 100%; color: #000000; background-color: #accbd3; }
+div.body h6 { font-size: 100%; color: #000000; background-color: #accbd3; }
  
+div.body dt { font-size: 110%; color: #2C001E; background-color: #accbd3;}
+
+.viewcode-link {
+    color: #000000;
+}
+
+div.body tt {
+    color: #000000;
+    /* padding: 1px 2px; */
+}
+
+
+
 a.headerlink {
     color: #333333;
     padding: 0 4px 0 4px;
@@ -226,14 +239,6 @@ pre {
     -moz-box-shadow: 1px 1px 1px #d8d8d8;
 }
  
-tt {
-    background-color: #EFEFEF;
-    color: #222;
-    /* padding: 1px 2px; */
-    font-size: 1.1em;
-    font-family: "Ubuntu Mono", Monaco, Consolas, "DejaVu Sans Mono", "Lucida Console", monospace;
-}
-
 .viewcode-back {
     font-family: Ubuntu, "DejaVu Sans", "Trebuchet MS", sans-serif;
 }
