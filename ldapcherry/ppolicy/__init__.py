@@ -14,7 +14,7 @@ class PPolicy:
         """ Password policy constructor
 
         :param config: the configuration of the ppolicy
-        :type config: hash {'config key': 'value'}
+        :type config: dict {'config key': 'value'}
         :param logger: the cherrypy error logger object
         :type logger: python logger
         """
