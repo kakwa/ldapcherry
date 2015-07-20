@@ -205,6 +205,84 @@ Available autofill functions:
 Roles Configuration
 ~~~~~~~~~~~~~~~~~~~
 
+The roles configuration is done in a yaml file (roles.yml by default).
+
+Mandatory parameters
+^^^^^^^^^^^^^^^^^^^^
+
+Roles are seen as an aggregate of groups:
+
+.. sourcecode:: yaml
+
+    <role id>:
+        display_name: <Role display name in LdapCherry>
+        description: <human readable role description>  
+        backends_groups:                                # list of backends
+            <backend id 1>:                             # list of groups in backend
+                - <b1 group 1>
+                - <b1 group 2>
+            <backend id 2>:
+                - <b2 group 1>
+                - <b2 group 2>
+
+.. warning:: <role id> must be unique, LdapCherry won't start if it's not
+
+Defining LdapCherry Administrator role
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+One of the declared roles must be tagged to be LdapCherry administrators.
+
+Doing so is done by setting **LC_admins** to **True** for the selected role:
+
+.. sourcecode:: yaml
+
+    <role id>:
+        display_name: <Role display name in LdapCherry>
+        description: <human readable role description>  
+
+        LC_admins: True
+
+        backends_groups:                                # list of backends
+            <backend id 1>:                             # list of groups in backend
+                - <b1 group 1>
+                - <b1 group 2>
+            <backend id 2>:
+                - <b2 group 1>
+                - <b2 group 2>
+
+Nesting roles
+^^^^^^^^^^^^^
+
+LdapCherry handles roles nesting:
+
+.. sourcecode:: yaml
+
+    parent_role:
+        display_name: Role parent
+        description: The parent role
+        backends_groups:
+            backend_id_1:
+                - b1_group_1
+                - b1_group_2
+            backend_id_2:
+                - b2_group_1
+                - b2_group_2
+        subroles:
+            child_role_1:
+                display_name: Child role 1
+                description: The first Child Role
+                backends_groups:
+                    backend_id_1:
+                        - b1_group_3
+            child_role_2:
+                display_name: Child role 2
+                description: The second Child Role
+                backends_groups:
+                    backend_id_1:
+                        - b1_group_4
+
+In that case, child_role_1 and child_role_2 will contain all groups of parent_role plus their own specific groups.
+
 Main Configuration
 ------------------
 
@@ -258,6 +336,21 @@ example:
 
 Backends
 ~~~~~~~~
+
+Backends are configure in the **backends** section, the format is the following:
+
+
+.. sourcecode:: ini
+
+    [backends]
+
+    # backend python module path
+    <backend id>.module = 'python.module.path'
+
+    # parameters of the module instance for backend <backend id>.
+    <backend id>.<param> = <value>
+
+It's possible to instanciate the same module several times.
 
 Authentication and sessions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
