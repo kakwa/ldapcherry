@@ -95,7 +95,7 @@ If **type** is set to **stringlist** the parameter **values** must be filled wit
 Key attribute:
 ^^^^^^^^^^^^^^
 
-One attribute must be used as a unique key accross all backends:
+One attribute must be used as a unique key across all backends:
 
 To set the key attribute, you must set **key** to **True** on this attribute.
 
@@ -137,7 +137,7 @@ In such case, the parameter **self** must set to **True**:
 Autofill
 ^^^^^^^^
 
-LdapCherry has the possibility to autofill fields from other fields, 
+LdapCherry has the possibility to auto-fill fields from other fields, 
 to use this functionnality **autofill** must be set.
 
 Example:
@@ -161,12 +161,12 @@ Example:
         backends:
             ldap: gidNumber
 
-Arguments of the autofill function work as follow:
+Arguments of the **autofill** function work as follow:
 
 * if argument starts with **$**, for example **$my_field**, the value of form input **my_field** will be passed to the function.
 * otherwise, it will be treated as a fixed argument.
 
-Available autofill functions:
+Available **autofill** functions:
 
 * lcUid: generate 8 characters uid from 2 other fields (first letter of the first field, 7 first letters of the second):
 
@@ -425,7 +425,7 @@ Logging
 
 LdapCherry has two loggers, one for errors and applicative actions (login, del/add, logout...) and one for access logs.
 
-Each logger can be configured to log to syslog, file or be desactivated. 
+Each logger can be configured to log to syslog, file or be disabled. 
 
 Logging parameters:
 
@@ -460,6 +460,12 @@ Example:
 
 Other LdapCherry parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++---------------+-----------+--------------------------------+------------------------+
+|   Parameter   |  Section  |           Description          |      Values            |
++===============+===========+================================+========================+
+| template_dir  | resources | LdapCherry template directory  |  path to template dir  |
++---------------+-----------+--------------------------------+------------------------+
 
 .. sourcecode:: ini
 

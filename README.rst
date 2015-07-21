@@ -32,12 +32,12 @@ It's main features are:
 * roles management (as in "groups of groups")
 * autofill forms
 * password policy
-* self modification of some selected fields by normal (non admin) users
+* self modification of some selected fields by normal (non administrator) users
 * nice bootstrap interface
-* modular through pluggable auth, password policy and backend modules
+* modular through pluggable authentication, password policy and backend modules
 
 LdapCherry is not limited to ldap, it can handle virtually any user backend (ex: SQL database, htpasswd file, etc)
-through the proper pluggin (provided that it is implemented ^^).
+through the proper plugin (provided that it is implemented ^^).
 
 LdapCherry also aims to be as simple as possible to deploy: no crazy dependencies, 
 few configuration files, extensive debug logs and full documentation.
