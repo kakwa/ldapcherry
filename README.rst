@@ -4,6 +4,20 @@
 
 Nice and simple application to manage users and groups in multiple directory services.
 
+.. image:: https://travis-ci.org/kakwa/ldapcherry.svg?branch=master
+    :target: https://travis-ci.org/kakwa/ldapcherry
+    
+.. image:: https://coveralls.io/repos/kakwa/ldapcherry/badge.svg 
+    :target: https://coveralls.io/r/kakwa/ldapcherry
+
+.. image:: https://img.shields.io/pypi/dm/ldapcherry.svg
+    :target: https://pypi.python.org/pypi/ldapcherry
+    :alt: Number of PyPI downloads
+    
+.. image:: https://img.shields.io/pypi/v/ldapcherry.svg
+    :target: https://pypi.python.org/pypi/ldapcherry
+    :alt: PyPI version
+
 ----
 
 :Doc:    `ldapcherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
@@ -13,12 +27,6 @@ Nice and simple application to manage users and groups in multiple directory ser
 :Author:  Pierre-Francois Carpentier - copyright © 2015
 
 ----
-
-.. image:: https://travis-ci.org/kakwa/ldapcherry.svg?branch=master
-    :target: https://travis-ci.org/kakwa/ldapcherry
-    
-.. image:: https://coveralls.io/repos/kakwa/ldapcherry/badge.svg 
-    :target: https://coveralls.io/r/kakwa/ldapcherry
 
 ****************
   Presentation
