@@ -14,3 +14,5 @@
     goodies
 
 .. include:: ../README.rst
+
+.. include:: forkme.rst

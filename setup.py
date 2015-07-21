@@ -136,7 +136,9 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP',
-        'Topic :: System :: Systems Administration :: Authentication/Directory',
+        "Topic :: System :: Systems Administration"
+        " :: Authentication/Directory :: LDAP",
+        "Topic :: System :: Systems Administration"
+        " :: Authentication/Directory",
         ],
 )
