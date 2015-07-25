@@ -38,8 +38,8 @@ These directories can be changed by exporting the following variables before lau
 
 .. sourcecode:: bash
 
-    #optional, default sys.prefix (/usr/ on most Linux)
-    $ export DATAROOTDIR=/usr/local/ 
+    #optional, default sys.prefix + 'share' (/usr/share/ on most Linux)
+    $ export DATAROOTDIR=/usr/local/share/
     #optional, default /etc/
     $ export SYSCONFDIR=/usr/local/etc/ 
 

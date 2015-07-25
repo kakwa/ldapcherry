@@ -4,6 +4,20 @@
 
 Nice and simple application to manage users and groups in multiple directory services.
 
+.. image:: https://travis-ci.org/kakwa/ldapcherry.svg?branch=master
+    :target: https://travis-ci.org/kakwa/ldapcherry
+    
+.. image:: https://coveralls.io/repos/kakwa/ldapcherry/badge.svg 
+    :target: https://coveralls.io/r/kakwa/ldapcherry
+
+.. image:: https://img.shields.io/pypi/dm/ldapcherry.svg
+    :target: https://pypi.python.org/pypi/ldapcherry
+    :alt: Number of PyPI downloads
+    
+.. image:: https://img.shields.io/pypi/v/ldapcherry.svg
+    :target: https://pypi.python.org/pypi/ldapcherry
+    :alt: PyPI version
+
 ----
 
 :Doc:    `ldapcherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
@@ -13,12 +27,6 @@ Nice and simple application to manage users and groups in multiple directory ser
 :Author:  Pierre-Francois Carpentier - copyright © 2015
 
 ----
-
-.. image:: https://travis-ci.org/kakwa/ldapcherry.svg?branch=master
-    :target: https://travis-ci.org/kakwa/ldapcherry
-    
-.. image:: https://coveralls.io/repos/kakwa/ldapcherry/badge.svg 
-    :target: https://coveralls.io/r/kakwa/ldapcherry
 
 ****************
   Presentation
@@ -32,12 +40,12 @@ It's main features are:
 * roles management (as in "groups of groups")
 * autofill forms
 * password policy
-* self modification of some selected fields by normal (non admin) users
+* self modification of some selected fields by normal (non administrator) users
 * nice bootstrap interface
-* modular through pluggable auth, password policy and backend modules
+* modular through pluggable authentication, password policy and backend modules
 
 LdapCherry is not limited to ldap, it can handle virtually any user backend (ex: SQL database, htpasswd file, etc)
-through the proper pluggin (provided that it is implemented ^^).
+through the proper plugin (provided that it is implemented ^^).
 
 LdapCherry also aims to be as simple as possible to deploy: no crazy dependencies, 
 few configuration files, extensive debug logs and full documentation.

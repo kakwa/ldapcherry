@@ -13,15 +13,18 @@ class PPolicy:
     def __init__(self, config, logger):
         """ Password policy constructor
 
-        :dict config: the configuration of the ppolicy
-        :logger logger: a python logger
+        :param config: the configuration of the ppolicy
+        :type config: dict {'config key': 'value'}
+        :param logger: the cherrypy error logger object
+        :type logger: python logger
         """
         pass
 
     def check(self, password):
         """ Check if a password match the ppolicy
 
-        :str password: the password to check
+        :param password: the password to check
+        :type password: string
         :rtype: dict with keys 'match' a boolean
             (True if ppolicy matches, False otherwise)
             and 'reason', an explaination string
@@ -30,7 +33,7 @@ class PPolicy:
         return ret
 
     def info(self):
-        """ Gives information about the ppolicy
+        """ Give information about the ppolicy
 
         :rtype: a string describing the ppolicy
         """
@@ -39,10 +42,14 @@ class PPolicy:
     def get_param(self, param, default=None):
         """ Get a parameter in config (handle default value)
 
-        :str param: name of the paramter to recover
-        :str default: the default value, raises an exception
+        :param param: name of the parameter to recover
+        :type param: string
+        :param default: the default value, raises an exception
             if param is not in configuration and default
             is None (which is the default value).
+        :type default: string or None
+        :rtype: the value of the parameter or the default value if
+            not set in configuration
         """
         if param in self.config:
             return self.config[param]
