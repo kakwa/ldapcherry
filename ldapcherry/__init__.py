@@ -188,11 +188,12 @@ class LdapCherry(object):
             # Loading the backend module
             try:
                 module = params['module']
-            except:
+            except Exception as e:
                 raise MissingParameter('backends', backend + '.module')
             try:
                 bc = __import__(module, globals(), locals(), ['Backend'], -1)
-            except:
+            except Exception as e:
+                self._handle_exception(e)
                 raise BackendModuleLoadingFail(module)
             try:
                 attrslist = self.attributes.get_backend_attributes(backend)
@@ -206,7 +207,8 @@ class LdapCherry(object):
                     )
             except MissingParameter as e:
                 raise e
-            except:
+            except Exception as e:
+                self._handle_exception(e)
                 raise BackendModuleInitFail(module)
 
     def _init_ppolicy(self, config):
