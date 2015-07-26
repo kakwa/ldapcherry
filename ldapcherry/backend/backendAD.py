@@ -92,11 +92,24 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.builtin = 'CN=Builtin,' + basedn
         self.user_filter_tmpl = '(sAMAccountName=%(username)s)'
         self.group_filter_tmpl = '(uid=%(userdn)s)'
-        self.search_filter_tmpl = '(|(sAMAccountName=%(searchstring)s*)' \
-            '(sn=%(searchstring)s*)(cn=%(searchstring)s*))'
+        self.search_filter_tmpl = '(&(|(sAMAccountName=%(searchstring)s)' \
+            '(cn=%(searchstring)s*)' \
+            '(name=%(searchstring)s*)' \
+            '(givenName=%(searchstring)s*)' \
+            '(cn=%(searchstring)s*))' \
+            '(&(objectClass=person)' \
+            '(objectClass=user)' \
+            '(!(objectClass=computer)))' \
+            ')'
         self.dn_user_attr = 'cn'
         self.key = 'sAMAccountName'
-        self.objectlasses = ['top', 'person', 'organizationalPerson', 'user']
+        self.objectlasses = [
+            'top',
+            'person',
+            'organizationalPerson',
+            'user',
+            'posixAccount',
+            ]
         self.group_attrs = {
             'member': "%(dn)s"
             }
