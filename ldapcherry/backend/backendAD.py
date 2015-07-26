@@ -95,6 +95,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.search_filter_tmpl = '(&(|(sAMAccountName=%(searchstring)s)' \
             '(cn=%(searchstring)s*)' \
             '(name=%(searchstring)s*)' \
+            '(sn=%(searchstring)s*)' \
             '(givenName=%(searchstring)s*)' \
             '(cn=%(searchstring)s*))' \
             '(&(objectClass=person)' \
