@@ -144,7 +144,7 @@ class TestError(object):
 
     def testLogin(self):
         app = LdapCherry()
-        loadconf('./tests/cfg/ldapcherry.ini', app)
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
         try:
             app.login('jwatson', 'passwordwatson')
         except cherrypy.HTTPRedirect as e:
@@ -155,15 +155,46 @@ class TestError(object):
 
     def testSearch(self):
         app = LdapCherry()
-        loadconf('./tests/cfg/ldapcherry.ini', app)
-        expected = {u'ssmith': {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'name': u'smith', 'uid': u'ssmith'}, u'jsmith': {'password': u'passwordsmith', 'cn': u'John Smith', 'name': u'Smith', 'uid': u'jsmith'}}
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        expected = {
+            u'ssmith': {
+                'password': u'passwordsmith',
+                'cn': u'Sheri Smith',
+                'name': u'smith',
+                'uid': u'ssmith',
+                'email': [u's.smith@example.com',
+                          u'ssmith@example.com',
+                          u'sheri.smith@example.com'
+                     ],
+                },
+            u'jsmith': {
+                'password': u'passwordsmith',
+                'cn': u'John Smith',
+                'name': u'Smith',
+                'uid': u'jsmith',
+                'email': [
+                    'j.smith@example.com',
+                    'jsmith@example.com',
+                    'jsmith.smith@example.com'
+                    ],
+                }
+            }
         ret = app._search('smith')
         assert expected == ret
 
     def testGetUser(self):
         app = LdapCherry()
-        loadconf('./tests/cfg/ldapcherry.ini', app)
-        expected = {'password': u'passwordsmith', 'cn': u'Sheri Smith', 'uid': u'ssmith', 'name': u'smith'}
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        expected = {
+            'password': u'passwordsmith',
+            'cn': u'Sheri Smith',
+            'uid': u'ssmith',
+            'name': u'smith',
+            'email': [u's.smith@example.com',
+                     u'ssmith@example.com',
+                     u'sheri.smith@example.com'
+                ],
+            }
         ret = app._get_user('ssmith')
         assert expected == ret
 

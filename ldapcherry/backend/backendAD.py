@@ -29,6 +29,7 @@ class CaFileDontExist(Exception):
         self.cafile = cafile
         self.log = "CA file %(cafile)s don't exist" % {'cafile': cafile}
 
+
 NO_ATTR = 0
 DISPLAYED_ATTRS = 1
 LISTED_ATTRS = 2
@@ -69,6 +70,7 @@ AD_BUILTIN_GROUPS = [
     'Users',
 ]
 
+
 class Backend(ldapcherry.backend.backendLdap.Backend):
 
     def __init__(self, config, logger, name, attrslist, key):
@@ -77,8 +79,8 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.backend_name = name
         self.domain = self.get_param('domain')
         self.login = self.get_param('login')
-        basedn = 'dc=' + re.sub(r'\.',',DC=', self.domain)
-        self.binddn = self.get_param('login') + '@' + self.domain 
+        basedn = 'dc=' + re.sub(r'\.', ',DC=', self.domain)
+        self.binddn = self.get_param('login') + '@' + self.domain
         self.bindpassword = self.get_param('password')
         self.ca = self.get_param('ca', False)
         self.checkcert = self.get_param('checkcert', 'on')
@@ -86,11 +88,12 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.uri = self.get_param('uri')
         self.timeout = self.get_param('timeout', 1)
         self.userdn = 'CN=Users,' + basedn
-        self.groupdn = self.userdn 
+        self.groupdn = self.userdn
         self.builtin = 'CN=Builtin,' + basedn
         self.user_filter_tmpl = '(sAMAccountName=%(username)s)'
         self.group_filter_tmpl = '(uid=%(userdn)s)'
-        self.search_filter_tmpl = '(|(sAMAccountName=%(searchstring)s*)(sn=%(searchstring)s*)(cn=%(searchstring)s*))' 
+        self.search_filter_tmpl = '(|(sAMAccountName=%(searchstring)s*)' \
+            '(sn=%(searchstring)s*)(cn=%(searchstring)s*))'
         self.dn_user_attr = 'cn'
         self.key = 'sAMAccountName'
         self.objectlasses = ['top', 'person', 'organizationalPerson', 'user']
@@ -118,9 +121,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         ldap_client.unbind_s()
         return r
 
-
     def get_groups(self, username):
-
         username = ldap.filter.escape_filter_chars(username)
         userdn = self._get_user(username, NO_ATTR)
 
@@ -140,4 +141,3 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             ret.append(self._uni(entry[0]['CN']))
 
         return ret
-
