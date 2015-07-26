@@ -91,7 +91,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.groupdn = self.userdn
         self.builtin = 'CN=Builtin,' + basedn
         self.user_filter_tmpl = '(sAMAccountName=%(username)s)'
-        self.group_filter_tmpl = '(uid=%(userdn)s)'
+        self.group_filter_tmpl = '(member=%(userdn)s)'
         self.search_filter_tmpl = '(&(|(sAMAccountName=%(searchstring)s)' \
             '(cn=%(searchstring)s*)' \
             '(name=%(searchstring)s*)' \
@@ -119,6 +119,13 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
+    def _str(self, s):
+        return s.encode('utf-8')
+
+    def _uni(self, s):
+        return s
+#        return s.decode('utf-16')
+
     def _search_group(self, searchfilter, groupdn):
         ldap_client = self._bind()
         try:
@@ -144,14 +151,18 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             'username': username
         }
 
-        groups = self._search_group(searchfilter, NO_ATTR, self.groupdn)
+        groups = self._search_group(searchfilter, self.groupdn)
+        groups = groups + self._search_group(searchfilter, self.builtin)
         ret = []
-        for entry in groups:
-            ret.append(self._uni(entry[0]['CN']))
+        self._logger(
+            severity=logging.DEBUG,
+            msg="%(backend)s: groups of '%(user)s' are %(groups)s" % {
+                'user': username,
+                'groups': str(groups),
+                'backend': self.backend_name
+                }
+        )
 
-        groups = self._search_group(searchfilter, NO_ATTR, self.builtin)
-        ret = []
         for entry in groups:
-            ret.append(self._uni(entry[0]['CN']))
-
+            ret.append(self._uni(entry[1]['cn'][0]))
         return ret
