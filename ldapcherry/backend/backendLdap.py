@@ -289,16 +289,23 @@ class Backend(ldapcherry.backend.Backend):
             content = self._str(attrs[attr])
             attr = self._str(attr)
             new = {attr: content}
-            if attr in old_attrs:
-                old = {attr: old_attrs[attr]}
+            # if attr is dn entry, use rename
+            if attr.lower() == self.dn_user_attr.lower():
+                ldap_client.rename_s(
+                    dn,
+                    ldap.dn.dn2str([[(attr, content, 1)]])
+                    )
             else:
-                old = {}
-            ldif = modlist.modifyModlist(old, new)
-            try:
-                ldap_client.modify_s(dn, ldif)
-            except Exception as e:
-                ldap_client.unbind_s()
-                self._exception_handler(e)
+                if attr in old_attrs:
+                    old = {attr: old_attrs[attr]}
+                else:
+                    old = {}
+                ldif = modlist.modifyModlist(old, new)
+                try:
+                    ldap_client.modify_s(dn, ldif)
+                except Exception as e:
+                    ldap_client.unbind_s()
+                    self._exception_handler(e)
 
         ldap_client.unbind_s()
 
