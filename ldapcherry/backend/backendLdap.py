@@ -234,7 +234,7 @@ class Backend(ldapcherry.backend.Backend):
         return s.encode('utf-8')
 
     def _uni(self, s):
-        return s.decode('utf-8')
+        return s.decode('utf-8', 'ignore')
 
     def auth(self, username, password):
 
@@ -256,11 +256,12 @@ class Backend(ldapcherry.backend.Backend):
         attrs_str = {}
         for a in attrs:
             attrs_str[self._str(a)] = self._str(attrs[a])
+
         attrs_str['objectClass'] = self.objectclasses
         dn = \
             self.dn_user_attr +\
             '=' +\
-            attrs[self.dn_user_attr] +\
+            self._str(attrs[self.dn_user_attr]) +\
             ',' +\
             self.userdn
         ldif = modlist.addModlist(attrs_str)
