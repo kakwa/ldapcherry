@@ -8,7 +8,7 @@
 from ldapcherry.exceptions import MissingParameter
 
 
-class Backend:
+class Backend(object):
 
     def __init__(self, config, logger, name, attrslist, key):
         """ Initialize the backend
