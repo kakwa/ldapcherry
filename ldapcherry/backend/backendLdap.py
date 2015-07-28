@@ -210,7 +210,22 @@ class Backend(ldapcherry.backend.Backend):
             self._exception_handler(e)
 
         ldap_client.unbind_s()
-        return r
+
+        # reencode everything in utf-8
+        ret = []
+        for entry in r:
+            uni_dn = self._uni(entry[0])
+            uni_attrs = {}
+            for attr in entry[1]:
+                if type(entry[1][attr]) is list:
+                    tmp = []
+                    for value in entry[1][attr]:
+                        tmp.append(self._uni(value))
+                else:
+                    tmp = self._uni(entry[1][attr])
+                uni_attrs[self._uni(attr)] = tmp
+            ret.append((uni_dn, uni_attrs))
+        return ret
 
     def _get_user(self, username, attrs=ALL_ATTRS):
 
@@ -284,21 +299,28 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, username, attrs):
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
-        dn = tmp[0]
+        dn = self._str(tmp[0])
         old_attrs = tmp[1]
         for attr in attrs:
-            content = self._str(attrs[attr])
-            attr = self._str(attr)
-            new = {attr: content}
+            bcontent = self._str(attrs[attr])
+            battr = self._str(attr)
+            new = {battr: bcontent}
             # if attr is dn entry, use rename
             if attr.lower() == self.dn_user_attr.lower():
                 ldap_client.rename_s(
                     dn,
-                    ldap.dn.dn2str([[(attr, content, 1)]])
+                    ldap.dn.dn2str([[(battr, bcontent, 1)]])
                     )
             else:
                 if attr in old_attrs:
-                    old = {attr: old_attrs[attr]}
+                    if type(old_attrs[attr]) is list:
+                        tmp = []
+                        for value in old_attrs[attr]:
+                            tmp.append(self._str(value))
+                        bold_value = tmp
+                    else:
+                        bold_value = self._str(old_attrs[attr])
+                    old = {battr: bold_value}
                 else:
                     old = {}
                 ldif = modlist.modifyModlist(old, new)
@@ -316,6 +338,7 @@ class Backend(ldapcherry.backend.Backend):
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
+        dn = self._str(tmp[0])
         for group in groups:
             group = self._str(group)
             for attr in self.group_attrs:
@@ -326,10 +349,10 @@ class Backend(ldapcherry.backend.Backend):
                         " with dn '%(dn)s' to group '%(group)s' by"
                         " setting '%(attr)s' to '%(content)s'" % {
                             'user': username,
-                            'dn': dn,
+                            'dn': self._uni(dn),
                             'group': group,
                             'attr': attr,
-                            'content': content,
+                            'content': self._uni(content),
                             'backend': self.backend_name
                             }
                 )
@@ -361,6 +384,7 @@ class Backend(ldapcherry.backend.Backend):
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
+        dn = self._str(tmp[0])
         for group in groups:
             group = self._str(group)
             for attr in self.group_attrs:
@@ -398,9 +422,9 @@ class Backend(ldapcherry.backend.Backend):
             for attr in attrs_tmp:
                 value_tmp = attrs_tmp[attr]
                 if len(value_tmp) == 1:
-                    attrs[attr] = self._uni(value_tmp[0])
+                    attrs[attr] = value_tmp[0]
                 else:
-                    attrs[attr] = map(self._uni, value_tmp)
+                    attrs[attr] = value_tmp
 
             if self.key in attrs:
                 ret[attrs[self.key]] = attrs
@@ -415,9 +439,9 @@ class Backend(ldapcherry.backend.Backend):
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]
             if len(value_tmp) == 1:
-                ret[attr] = self._uni(value_tmp[0])
+                ret[attr] = value_tmp[0]
             else:
-                ret[attr] = map(self._uni, value_tmp)
+                ret[attr] = value_tmp
         return ret
 
     def get_groups(self, username):

@@ -120,6 +120,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             self.attrlist.append(self._str(a))
 
     def _search_group(self, searchfilter, groupdn):
+        searchfilter = self._str(searchfilter)
         ldap_client = self._bind()
         try:
             r = ldap_client.search_s(
@@ -174,5 +175,5 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         )
 
         for entry in groups:
-            ret.append(self._uni(entry[1]['cn'][0]))
+            ret.append(entry[1]['cn'][0])
         return ret
