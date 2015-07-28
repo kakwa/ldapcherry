@@ -170,9 +170,13 @@ class TestError(object):
         assert ret == expected
 
     def testAddUser(self):
+        try:
+            inv.del_user(u'test☭')
+        except:
+            pass
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
-        'uid': 'test',
+        'uid': u'test☭',
         'sn':  'test',
         'cn':  'test',
         'userPassword': 'test',
@@ -181,12 +185,12 @@ class TestError(object):
         'homeDirectory': '/home/test/'
         }
         inv.add_user(user)
-        inv.del_user('test')
+        inv.del_user(u'test☭')
 
     def testModifyUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
-        'uid': 'test',
+        'uid': u'test☭',
         'sn':  'test',
         'cn':  'test',
         'userPassword': 'test',
@@ -195,8 +199,8 @@ class TestError(object):
         'homeDirectory': '/home/test/'
         }
         inv.add_user(user)
-        inv.set_attrs('test', {'gecos': 'test2', 'homeDirectory': '/home/test/'})
-        inv.del_user('test')
+        inv.set_attrs(u'test☭', {'gecos': 'test2', 'homeDirectory': '/home/test/'})
+        inv.del_user(u'test☭')
 
     def testAddUserDuplicate(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
