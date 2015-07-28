@@ -177,3 +177,18 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         for entry in groups:
             ret.append(entry[1]['cn'][0])
         return ret
+
+    def auth(self, username, password):
+
+        binddn = username + '@' + self.domain
+        if binddn is not None:
+            ldap_client = self._connect()
+            try:
+                ldap_client.simple_bind_s(binddn, password)
+            except ldap.INVALID_CREDENTIALS:
+                ldap_client.unbind_s()
+                return False
+            ldap_client.unbind_s()
+            return True
+        else:
+            return False
