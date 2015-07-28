@@ -148,7 +148,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             if group in AD_BUILTIN_GROUPS:
                 ad_groups.append('cn=' + group + ',' + self.builtin)
             else:
-                ad_groups.append('cn=' + group + ',' +self.groupdn)
+                ad_groups.append('cn=' + group + ',' + self.groupdn)
         return ad_groups
 
     def add_to_groups(self, username, groups):
