@@ -274,11 +274,11 @@ class Backend(ldapcherry.backend.Backend):
 
         attrs_str['objectClass'] = self.objectclasses
         dn = \
-            self.dn_user_attr +\
+            self._str(self.dn_user_attr) +\
             '=' +\
             self._str(attrs[self.dn_user_attr]) +\
             ',' +\
-            self.userdn
+            self._str(self.userdn)
         ldif = modlist.addModlist(attrs_str)
         try:
             ldap_client.add_s(dn, ldif)
@@ -289,7 +289,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def del_user(self, username):
         ldap_client = self._bind()
-        dn = self._get_user(username, NO_ATTR)
+        dn = self._str(self._get_user(username, NO_ATTR))
         if dn is not None:
             ldap_client.delete_s(dn)
         else:
