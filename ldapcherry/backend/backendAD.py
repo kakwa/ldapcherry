@@ -104,7 +104,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             ')'
         self.dn_user_attr = 'cn'
         self.key = 'sAMAccountName'
-        self.objectlasses = [
+        self.objectclasses = [
             'top',
             'person',
             'organizationalPerson',
@@ -141,6 +141,23 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
 
         ldap_client.unbind_s()
         return r
+
+    def _build_groupdn(self, groups):
+        ad_groups = []
+        for group in groups:
+            if group in AD_BUILTIN_GROUPS:
+                ad_groups.append('cn=' + group + ',' + self.builtin)
+            else:
+                ad_groups.append('cn=' + group + ',' +self.groupdn)
+        return ad_groups
+
+    def add_to_groups(self, username, groups):
+        ad_groups = self._build_groupdn(groups)
+        super(Backend, self).add_to_groups(username, ad_groups)
+
+    def del_from_groups(self, username, groups):
+        ad_groups = self._build_groupdn(groups)
+        super(Backend, self).del_from_groups(username, ad_groups)
 
     def get_groups(self, username):
         username = ldap.filter.escape_filter_chars(username)
