@@ -206,7 +206,7 @@ class LdapCherry(object):
                     key,
                     )
             except MissingParameter as e:
-                raise e
+                raise
             except Exception as e:
                 self._handle_exception(e)
                 raise BackendModuleInitFail(module)

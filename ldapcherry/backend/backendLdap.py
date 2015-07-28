@@ -130,7 +130,7 @@ class Backend(ldapcherry.backend.Backend):
                 severity=logging.ERROR,
                 msg="unknow ldap exception in ldap backend",
                 )
-        raise e
+        raise
 
     def _connect(self):
         ldap_client = ldap.initialize(self.uri)
