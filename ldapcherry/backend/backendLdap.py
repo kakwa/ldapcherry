@@ -233,7 +233,7 @@ class Backend(ldapcherry.backend.Backend):
         user_filter = self.user_filter_tmpl % {
             'username': username
         }
-
+        user_filter = self._str(user_filter)
         r = self._search(user_filter, attrs, self.userdn)
 
         if len(r) == 0:
@@ -246,9 +246,13 @@ class Backend(ldapcherry.backend.Backend):
         return dn_entry
 
     def _str(self, s):
+        if s is None:
+            return None
         return s.encode('utf-8')
 
     def _uni(self, s):
+        if s is None:
+            return None
         return s.decode('utf-8', 'ignore')
 
     def auth(self, username, password):
