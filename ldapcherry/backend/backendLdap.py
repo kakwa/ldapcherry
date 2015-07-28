@@ -311,6 +311,9 @@ class Backend(ldapcherry.backend.Backend):
                     dn,
                     ldap.dn.dn2str([[(battr, bcontent, 1)]])
                     )
+                dn = ldap.dn.dn2str(
+                    [[(battr, bcontent, 1)]] + ldap.dn.str2dn(dn)[1:]
+                    )
             else:
                 if attr in old_attrs:
                     if type(old_attrs[attr]) is list:
