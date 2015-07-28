@@ -119,13 +119,6 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
-    def _str(self, s):
-        return s.encode('utf-8')
-
-    def _uni(self, s):
-        return s
-#        return s.decode('utf-16')
-
     def _search_group(self, searchfilter, groupdn):
         ldap_client = self._bind()
         try:
