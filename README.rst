@@ -21,7 +21,7 @@ Nice and simple application to manage users and groups in multiple directory ser
 ----
 
 :Doc:    `ldapcherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
-:Dev:    `ldapcherry code on GitHub <https://github.com/kakwa/ldapcherry>`_
+:Dev:    `ldapcherry source code on GitHub <https://github.com/kakwa/ldapcherry>`_
 :PyPI:   `ldapcherry package on Pypi <http://pypi.python.org/pypi/ldapcherry>`_
 :License: MIT
 :Author:  Pierre-Francois Carpentier - copyright © 2015
@@ -32,7 +32,7 @@ Nice and simple application to manage users and groups in multiple directory ser
   Presentation
 ****************
 
-LdapCherry is CherryPY application to manage users and groups in multiple directory services.
+LdapCherry is a CherryPY application to manage users and groups in multiple directory services.
 
 It's main features are:
 
