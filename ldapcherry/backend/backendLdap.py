@@ -37,6 +37,8 @@ ALL_ATTRS = 3
 class Backend(ldapcherry.backend.Backend):
 
     def __init__(self, config, logger, name, attrslist, key):
+        """Backend initialization"""
+        # Recover all the parameters
         self.config = config
         self._logger = logger
         self.backend_name = name
@@ -55,6 +57,8 @@ class Backend(ldapcherry.backend.Backend):
         self.dn_user_attr = self.get_param('dn_user_attr')
         self.objectclasses = []
         self.key = key
+        # objectclasses parameter is a coma separated list in configuration
+        # split it to get a real list, and convert it to bytes
         for o in re.split('\W+', self.get_param('objectclasses')):
             self.objectclasses.append(self._str(o))
         self.group_attrs = {}
@@ -67,7 +71,9 @@ class Backend(ldapcherry.backend.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
+    # exception handler (mainly to log something meaningful)
     def _exception_handler(self, e):
+        """ Exception handling"""
         et = type(e)
         if et is ldap.OPERATIONS_ERROR:
             self._logger(
@@ -117,7 +123,8 @@ class Backend(ldapcherry.backend.Backend):
                 severity=logging.ERROR,
                 msg="Access error on '" +
                     self.backend_name +
-                    "' backend, please check your acls in this backend",
+                    "' backend, please check your acls in backend " +
+                    self.backend_name,
                 )
         elif et is ldap.ALREADY_EXISTS:
             desc = e[0]['desc']
@@ -128,11 +135,12 @@ class Backend(ldapcherry.backend.Backend):
         else:
             self._logger(
                 severity=logging.ERROR,
-                msg="unknow ldap exception in ldap backend",
+                msg="unknow exception in backend " + self.backend_name,
                 )
         raise
 
     def _connect(self):
+        """Initialize an ldap client"""
         ldap_client = ldap.initialize(self.uri)
         ldap.set_option(ldap.OPT_REFERRALS, 0)
         ldap.set_option(ldap.OPT_TIMEOUT, self.timeout)
@@ -140,7 +148,9 @@ class Backend(ldapcherry.backend.Backend):
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, True)
         else:
             ldap.set_option(ldap.OPT_X_TLS_DEMAND, False)
+        # set the CA file if declared and if necessary
         if self.ca and self.checkcert == 'on':
+            # check if the CA file actually exists
             if os.path.isfile(self.ca):
                 ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.ca)
             else:
@@ -176,6 +186,7 @@ class Backend(ldapcherry.backend.Backend):
         return ldap_client
 
     def _bind(self):
+        """bind to the ldap with the technical account"""
         ldap_client = self._connect()
         try:
             ldap_client.simple_bind_s(self.binddn, self.bindpassword)
@@ -185,6 +196,7 @@ class Backend(ldapcherry.backend.Backend):
         return ldap_client
 
     def _search(self, searchfilter, attrs, basedn):
+        """Generic search"""
         if attrs == NO_ATTR:
             attrlist = []
         elif attrs == DISPLAYED_ATTRS:
@@ -197,6 +209,7 @@ class Backend(ldapcherry.backend.Backend):
         else:
             attrlist = None
 
+        # bind and search the ldap
         ldap_client = self._bind()
         try:
             r = ldap_client.search_s(
@@ -211,7 +224,10 @@ class Backend(ldapcherry.backend.Backend):
 
         ldap_client.unbind_s()
 
-        # reencode everything in utf-8
+        # python-ldap doesn't know utf-8,
+        # it treates everything as bytes.
+        # So it's necessary to reencode
+        # it's output in utf-8.
         ret = []
         for entry in r:
             uni_dn = self._uni(entry[0])
@@ -228,6 +244,7 @@ class Backend(ldapcherry.backend.Backend):
         return ret
 
     def _get_user(self, username, attrs=ALL_ATTRS):
+        """Get a user from the ldap"""
 
         username = ldap.filter.escape_filter_chars(username)
         user_filter = self.user_filter_tmpl % {
@@ -239,23 +256,33 @@ class Backend(ldapcherry.backend.Backend):
         if len(r) == 0:
             return None
 
+        # if NO_ATTR, only return the DN
         if attrs == NO_ATTR:
             dn_entry = r[0][0]
+        # in other cases, return everything (dn + attributes)
         else:
             dn_entry = r[0]
         return dn_entry
 
+    # python-ldap talks in bytes,
+    # as the rest of ldapcherry talks in unicode utf-8:
+    # * everything passed to python-ldap must be converted to bytes
+    # * everything coming from python-ldap must be converted to unicode
+
     def _str(self, s):
+        """unicode -> bytes conversion"""
         if s is None:
             return None
         return s.encode('utf-8')
 
     def _uni(self, s):
+        """bytes -> unicode conversion"""
         if s is None:
             return None
         return s.decode('utf-8', 'ignore')
 
     def auth(self, username, password):
+        """Authentication of a user"""
 
         binddn = self._str(self._get_user(username, NO_ATTR))
         if binddn is not None:
@@ -271,18 +298,22 @@ class Backend(ldapcherry.backend.Backend):
             return False
 
     def add_user(self, attrs):
+        """add a user"""
         ldap_client = self._bind()
         attrs_str = {}
+        # encoding crap
         for a in attrs:
             attrs_str[self._str(a)] = self._str(attrs[a])
 
         attrs_str['objectClass'] = self.objectclasses
+        # construct is DN
         dn = \
             self._str(self.dn_user_attr) +\
             '=' +\
             self._str(attrs[self.dn_user_attr]) +\
             ',' +\
             self._str(self.userdn)
+        # gen the ldif fir add_s and add the user
         ldif = modlist.addModlist(attrs_str)
         try:
             ldap_client.add_s(dn, ldif)
@@ -292,15 +323,20 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.unbind_s()
 
     def del_user(self, username):
+        """delete a user"""
         ldap_client = self._bind()
+        # recover the user dn
         dn = self._str(self._get_user(username, NO_ATTR))
+        # delete
         if dn is not None:
             ldap_client.delete_s(dn)
         else:
+            ldap_client.unbind_s()
             raise DelUserDontExists(username)
         ldap_client.unbind_s()
 
     def set_attrs(self, username, attrs):
+        """ Set user attributes"""
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
         dn = self._str(tmp[0])
@@ -319,6 +355,8 @@ class Backend(ldapcherry.backend.Backend):
                     [[(battr, bcontent, 1)]] + ldap.dn.str2dn(dn)[1:]
                     )
             else:
+                # if attr is already set, replace the value
+                # (see dict old passed to modifyModlist)
                 if attr in old_attrs:
                     if type(old_attrs[attr]) is list:
                         tmp = []
@@ -328,6 +366,7 @@ class Backend(ldapcherry.backend.Backend):
                     else:
                         bold_value = self._str(old_attrs[attr])
                     old = {battr: bold_value}
+                # attribute is not set, just add it
                 else:
                     old = {}
                 ldif = modlist.modifyModlist(old, new)
@@ -341,14 +380,18 @@ class Backend(ldapcherry.backend.Backend):
 
     def add_to_groups(self, username, groups):
         ldap_client = self._bind()
+        # recover dn of the user and his attributes
         tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
         dn = self._str(tmp[0])
+        # add user to all groups
         for group in groups:
             group = self._str(group)
+            # iterate on group membership attributes
             for attr in self.group_attrs:
+                # fill the content template
                 content = self._str(self.group_attrs[attr] % attrs)
                 self._logger(
                     severity=logging.DEBUG,
@@ -357,7 +400,7 @@ class Backend(ldapcherry.backend.Backend):
                         " setting '%(attr)s' to '%(content)s'" % {
                             'user': username,
                             'dn': self._uni(dn),
-                            'group': group,
+                            'group': self._uni(group),
                             'attr': attr,
                             'content': self._uni(content),
                             'backend': self.backend_name
@@ -366,6 +409,7 @@ class Backend(ldapcherry.backend.Backend):
                 ldif = modlist.modifyModlist({}, {attr: content})
                 try:
                     ldap_client.modify_s(group, ldif)
+                # if already member, not a big deal, just log it and continue
                 except ldap.TYPE_OR_VALUE_EXISTS as e:
                     self._logger(
                         severity=logging.INFO,
@@ -373,7 +417,7 @@ class Backend(ldapcherry.backend.Backend):
                             " already member of group '%(group)s'"
                             "(attribute '%(attr)s')" % {
                                 'user': username,
-                                'group': group,
+                                'group': self._uni(group),
                                 'attr': attr,
                                 'backend': self.backend_name
                                 }
@@ -386,6 +430,9 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.unbind_s()
 
     def del_from_groups(self, username, groups):
+        """Delete user from groups"""
+        # it follows the same logic than add_to_groups
+        # but with MOD_DELETE
         ldap_client = self._bind()
         tmp = self._get_user(username, ALL_ATTRS)
         dn = tmp[0]
@@ -406,7 +453,7 @@ class Backend(ldapcherry.backend.Backend):
                         " wasn't member of group '%(group)s'"
                         " (attribute '%(attr)s')" % {
                             'user': username,
-                            'group': group,
+                            'group': self._uni(group),
                             'attr': attr,
                             'backend': self.backend_name
                             }
@@ -417,12 +464,16 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.unbind_s()
 
     def search(self, searchstring):
-        ret = {}
-
+        """Search users"""
+        # escape special char to avoid injection
         searchstring = ldap.filter.escape_filter_chars(searchstring)
+        # fill the search string template
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
         }
+
+        ret = {}
+        # search an process the result a little
         for u in self._search(searchfilter, DISPLAYED_ATTRS, self.userdn):
             attrs = {}
             attrs_tmp = u[1]
@@ -438,6 +489,7 @@ class Backend(ldapcherry.backend.Backend):
         return ret
 
     def get_user(self, username):
+        """Gest a specific user"""
         ret = {}
         tmp = self._get_user(username, ALL_ATTRS)
         if tmp is None:
@@ -452,7 +504,7 @@ class Backend(ldapcherry.backend.Backend):
         return ret
 
     def get_groups(self, username):
-
+        """Get all groups of a user"""
         username = ldap.filter.escape_filter_chars(username)
         userdn = self._get_user(username, NO_ATTR)
 
@@ -464,5 +516,5 @@ class Backend(ldapcherry.backend.Backend):
         groups = self._search(searchfilter, NO_ATTR, self.groupdn)
         ret = []
         for entry in groups:
-            ret.append(self._uni(entry[0]))
+            ret.append(entry[0])
         return ret
