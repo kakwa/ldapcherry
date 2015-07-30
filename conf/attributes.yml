@@ -58,7 +58,7 @@ uid:
             - $name
     backends:
         ldap: uid
-#        ad: uid
+#        ad: sAMAccountName
 uidNumber:
     description: "User ID Number of the user"
     display_name: "UID Number"
@@ -117,3 +117,12 @@ password:
     backends:
         ldap: userPassword
 #        ad: PASSWORD
+
+#logscript:
+#    description: "Windows login script"
+#    display_name: "Login script"
+#    weight: 100
+#    type: fix
+#    value: login1.bat
+#    backends:
+#        ad: scriptPath
