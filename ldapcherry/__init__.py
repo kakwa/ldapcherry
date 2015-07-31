@@ -33,7 +33,7 @@ from sets import Set
 SESSION_KEY = '_cp_username'
 
 
-# Custom log function to overrige weird error.log function
+# Custom log function to override weird error.log function
 # of cherrypy
 def syslog_error(
         msg='',
