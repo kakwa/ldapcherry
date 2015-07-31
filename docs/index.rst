@@ -12,6 +12,7 @@
     ppolicy_api
     changelog
     goodies
+    screenshots
 
 .. include:: ../README.rst
 
