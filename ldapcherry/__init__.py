@@ -74,6 +74,7 @@ def exception_decorator(func):
         except cherrypy.HTTPError as e:
             raise e
         except Exception as e:
+            cherrypy.response.status = 500
             self._handle_exception(e)
             username = self._check_session()
             if not username:
@@ -89,6 +90,7 @@ def exception_decorator(func):
                     )
             elif et is UserAlreadyExists:
                 user = e.user
+                cherrypy.response.status = 400
                 return self.temp_error.render(
                     is_admin=is_admin,
                     alert='warning',
@@ -1097,6 +1099,7 @@ class LdapCherry(object):
             display_names[r] = self.roles.flatten[r]['display_name']
         user_attrs = self._get_user(user)
         if user_attrs == {}:
+            cherrypy.response.status = 400
             return self.temp_error.render(
                 is_admin=is_admin,
                 alert='warning',

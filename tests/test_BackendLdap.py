@@ -217,7 +217,7 @@ class TestError(object):
         try:
             inv.add_user(user)
             inv.add_user(user)
-        except ldap.ALREADY_EXISTS:
+        except UserAlreadyExists:
             inv.del_user('test')
             return
         else:
