@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import pytest
 import sys
 from sets import Set
-from ldapcherry.backend.backendLdap import Backend, DelUserDontExists, CaFileDontExist
+from ldapcherry.backend.backendLdap import Backend, CaFileDontExist
 from ldapcherry.exceptions import *
 from disable import travis_disabled
 import cherrypy
@@ -31,6 +31,7 @@ cfg = {
 'dn_user_attr'       : 'uid',
 'group_attr.member'  : "%(dn)s",
 'timeout'            : 10,
+'display_name'       : 'My Test Ldap',
 }
 
 def syslog_error(msg='', context='',
@@ -228,7 +229,7 @@ class TestError(object):
         try:
             inv.del_user('test')
             inv.del_user('test')
-        except DelUserDontExists:
+        except UserDoesntExist:
             return
         else:
             raise AssertionError("expected an exception")

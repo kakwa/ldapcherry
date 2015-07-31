@@ -176,6 +176,7 @@ class LdapCherry(object):
         """
         self.backends_params = {}
         self.backends = {}
+        self.backends_display_names = {}
         for entry in config['backends']:
             # split at the first dot
             backend, sep, param = entry.partition('.')
@@ -184,6 +185,13 @@ class LdapCherry(object):
                 self.backends_params[backend] = {}
             self.backends_params[backend][param] = value
         for backend in self.backends_params:
+            # get the backend display_name
+            try:
+                self.backends_display_names[backend] = \
+                    self.backends_params[backend]['display_name']
+            except:
+                self.backends_display_names[backend] = backend
+                self.backends_params[backend]['display_name'] = backend
             params = self.backends_params[backend]
             # Loading the backend module
             try:
@@ -527,7 +535,7 @@ class LdapCherry(object):
             try:
                 tmp = self.backends[b].get_user(username)
             except UserDoesntExist as e:
-                break
+                tmp = {}
             for attr in tmp:
                 if attr in self.attributes.backend_attributes[b]:
                     attrid = self.attributes.backend_attributes[b][attr]
@@ -1011,7 +1019,7 @@ class LdapCherry(object):
             graph=self.roles.graph,
             graph_js=graph_js,
             roles_js=roles_js,
-            current_roles=None
+            current_roles=None,
             )
         return self.temp_adduser.render(
             form=form,
@@ -1026,7 +1034,10 @@ class LdapCherry(object):
         """ remove user page """
         self._check_auth(must_admin=True)
         is_admin = self._check_admin()
-        referer = cherrypy.request.headers['Referer']
+        try:
+            referer = cherrypy.request.headers['Referer']
+        except:
+            referer = '/'
         self._deleteuser(user)
         raise cherrypy.HTTPRedirect(referer)
 
@@ -1043,7 +1054,10 @@ class LdapCherry(object):
                 "</script>"
             params = self._parse_params(params)
             self._modify(params)
-            referer = cherrypy.request.headers['Referer']
+            try:
+                referer = cherrypy.request.headers['Referer']
+            except:
+                referer = '/'
             raise cherrypy.HTTPRedirect(referer)
         else:
             notification = ''
@@ -1081,14 +1095,15 @@ class LdapCherry(object):
             graph=self.roles.graph,
             graph_js=graph_js,
             roles_js=roles_js,
-            current_roles=user_roles
+            current_roles=user_roles,
             )
         return self.temp_modify.render(
             form=form,
             roles=roles,
             is_admin=is_admin,
             notification=notification,
-            standalone_groups=user_lonely_groups
+            standalone_groups=user_lonely_groups,
+            backends_display_names=self.backends_display_names,
             )
 
     @cherrypy.expose

@@ -16,13 +16,6 @@ import os
 import re
 
 
-class DelUserDontExists(Exception):
-    def __init__(self, user):
-        self.user = user
-        self.log = "cannot remove user, user <%(user)s> does not exist" % \
-            {'user': user}
-
-
 class CaFileDontExist(Exception):
     def __init__(self, cafile):
         self.cafile = cafile
@@ -42,6 +35,7 @@ class Backend(ldapcherry.backend.Backend):
         self.config = config
         self._logger = logger
         self.backend_name = name
+        self.backend_display_name = self.get_param('display_name')
         self.binddn = self.get_param('binddn')
         self.bindpassword = self.get_param('password')
         self.ca = self.get_param('ca', False)
@@ -332,7 +326,7 @@ class Backend(ldapcherry.backend.Backend):
             ldap_client.delete_s(dn)
         else:
             ldap_client.unbind_s()
-            raise DelUserDontExists(username)
+            raise UserDoesntExist(username, self.backend_display_name)
         ldap_client.unbind_s()
 
     def set_attrs(self, username, attrs):
@@ -423,7 +417,7 @@ class Backend(ldapcherry.backend.Backend):
                                 }
                     )
                 except ldap.NO_SUCH_OBJECT as e:
-                    raise GroupDoesntExist(group, self.backend_name)
+                    raise GroupDoesntExist(group, self.backend_display_name)
                 except Exception as e:
                     ldap_client.unbind_s()
                     self._exception_handler(e)
@@ -493,7 +487,7 @@ class Backend(ldapcherry.backend.Backend):
         ret = {}
         tmp = self._get_user(username, ALL_ATTRS)
         if tmp is None:
-            raise UserDoesntExist(username, self.backend_name)
+            raise UserDoesntExist(username, self.backend_display_name)
         attrs_tmp = tmp[1]
         for attr in attrs_tmp:
             value_tmp = attrs_tmp[attr]

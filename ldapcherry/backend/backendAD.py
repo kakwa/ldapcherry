@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
 #
-# License GPLv3
+# License MIT
 # LdapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
@@ -15,13 +15,6 @@ import ldapcherry.backend
 from ldapcherry.exceptions import UserDoesntExist, GroupDoesntExist
 import os
 import re
-
-
-class DelUserDontExists(Exception):
-    def __init__(self, user):
-        self.user = user
-        self.log = "cannot remove user, user <%(user)s> does not exist" % \
-            {'user': user}
 
 
 class CaFileDontExist(Exception):
@@ -77,6 +70,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.config = config
         self._logger = logger
         self.backend_name = name
+        self.backend_display_name = self.get_param('display_name')
         self.domain = self.get_param('domain')
         self.login = self.get_param('login')
         basedn = 'dc=' + re.sub(r'\.', ',DC=', self.domain)
