@@ -79,11 +79,34 @@ def exception_decorator(func):
             if not username:
                 return self.temp_service_unavailable.render()
             is_admin = self._check_admin()
-            return self.temp_error.render(
-                is_admin=is_admin,
-                alert='danger',
-                message="An error occured, please check logs for details"
-                )
+            et = type(e)
+            if et is UserDoesntExist:
+                user = e.user
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="User '" + user + "' does not exist"
+                    )
+            elif et is UserAlreadyExists:
+                user = e.user
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='warning',
+                    message="User '" + user + "' already exist"
+                    )
+            elif et is GroupDoesntExist:
+                group = e.group
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="Missing group, please check logs for details"
+                    )
+            else:
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="An error occured, please check logs for details"
+                    )
     return ret
 
 
@@ -535,6 +558,7 @@ class LdapCherry(object):
             try:
                 tmp = self.backends[b].get_user(username)
             except UserDoesntExist as e:
+                self._handle_exception(e)
                 tmp = {}
             for attr in tmp:
                 if attr in self.attributes.backend_attributes[b]:
@@ -1076,7 +1100,7 @@ class LdapCherry(object):
             return self.temp_error.render(
                 is_admin=is_admin,
                 alert='warning',
-                message="User doesn't exist"
+                message="User '" + user + "' does not exist"
                 )
         tmp = self._get_roles(user)
         user_roles = tmp['roles']
