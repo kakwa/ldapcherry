@@ -1,12 +1,14 @@
 Deploy
 ======
 
-LdapCherry aims at being as simple as possible to deploy.
+LdapCherry aims to be as simple as possible to deploy.
 The Application is constituted of:
 
-* ldapcherryd: the daemon to lauch LdapCherry
-* one ini file (ldapcherry.ini by default): the entry point for the configuration, containing all the "technical" attributes
-* two yaml files (roles.yml and attributes by default): the files containing the roles and attributes definition
+* ldapcherryd: the daemon to lauch LdapCherry.
+* one ini file (ldapcherry.ini by default): the entry point for the configuration, containing all the "technical" attributes.
+* two yaml files (roles.yml and attributes by default): the files containing the roles and attributes definition.
+
+The default configuration directory is **/etc/ldapcherry/**.
 
 Launch
 ------
@@ -31,10 +33,10 @@ Roles and Attributes Configuration
 Entry point in main configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The main configuration file (ldapcherry.ini by default) contains two parameters locating the roles and attributes configuration files:
+The main configuration file (**ldapcherry.ini** by default) contains two parameters locating the roles and attributes configuration files:
 
 +-----------------+------------+-------------------------------+-------------------+
-|      Parameter  |  Section   |            Description        |       Values      |
+|   Parameter     |  Section   |            Description        |       Values      |
 +=================+============+===============================+===================+
 | attributes.file | attributes | Attributes configuration file | Path to conf file |
 +-----------------+------------+-------------------------------+-------------------+
@@ -44,7 +46,7 @@ The main configuration file (ldapcherry.ini by default) contains two parameters 
 Attributes Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The attributes configuration is done in a yaml file (attributes.yml by default).
+The attributes configuration is done in a yaml file (**attributes.yml** by default).
 
 Mandatory parameters
 ^^^^^^^^^^^^^^^^^^^^
@@ -68,8 +70,8 @@ The mandatory parameters for an attribute, and their format are the following:
 
 .. warning::
 
-    <backend id> (the backend id) must be defined in main configuration 
-    (ldapcherry.ini by default). LdapCherry won't start if it's not.
+    <backend id> (the backend id) must be defined in main ini configuration file.
+    LdapCherry won't start if it's not.
 
 Type stringlist values
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -117,7 +119,7 @@ Example:
 Authorize self modification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A user can modify some of it's attributes (self modification). 
+A user can modify some of his attributes (self modification). 
 In such case, the parameter **self** must set to **True**:
 
 .. sourcecode:: yaml
@@ -168,7 +170,7 @@ Arguments of the **autofill** function work as follow:
 
 Available **autofill** functions:
 
-* lcUid: generate 8 characters uid from 2 other fields (first letter of the first field, 7 first letters of the second):
+* lcUid: generate 8 characters ascii uid from 2 other fields (first letter of the first field, 7 first letters of the second):
 
 .. sourcecode:: yaml
 
@@ -179,7 +181,7 @@ Available **autofill** functions:
             - $name
 
 
-* lcDisplayName: concatenate two fields
+* lcDisplayName: concatenate two fields (with a space as separator):
 
 .. sourcecode:: yaml
 
@@ -189,7 +191,7 @@ Available **autofill** functions:
             - $first-name
             - $name
 
-* lcMail: generate an email address from 2 other fields and a domain (<uid>+domain)
+* lcMail: generate an email address from 2 other fields and a domain (<uid>+domain):
 
 .. sourcecode:: yaml
 
@@ -201,7 +203,7 @@ Available **autofill** functions:
             - '@example.com'
 
 
-* lcUidNumber: generate an uid number from 2 other fields and between a minimum and maximum value
+* lcUidNumber: generate an uid number from 2 other fields and between a minimum and maximum value:
 
 .. sourcecode:: yaml
 
@@ -213,7 +215,7 @@ Available **autofill** functions:
             - '10000'
             - '40000'
 
-* lcHomeDir: generate an home directory from 2 other fields and a root (<root>+<uid>)
+* lcHomeDir: generate an home directory from 2 other fields and a root (<root>+<uid>):
 
 .. sourcecode:: yaml
 
@@ -227,7 +229,7 @@ Available **autofill** functions:
 Roles Configuration
 ~~~~~~~~~~~~~~~~~~~
 
-The roles configuration is done in a yaml file (roles.yml by default).
+The roles configuration is done in a yaml file (**roles.yml** by default).
 
 Mandatory parameters
 ^^^^^^^^^^^^^^^^^^^^
@@ -237,7 +239,7 @@ Roles are seen as an aggregate of groups:
 .. sourcecode:: yaml
 
     <role id>:
-        display_name: <Role display name in LdapCherry>
+        display_name: <role display name in LdapCherry>
         description: <human readable role description>  
         backends_groups:                                # list of backends
             <backend id 1>:                             # list of groups in backend
@@ -252,7 +254,7 @@ Roles are seen as an aggregate of groups:
 Defining LdapCherry Administrator role
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-One of the declared roles must be tagged to be LdapCherry administrators.
+At least one of the declared roles must be tagged to be LdapCherry administrators.
 
 Doing so is done by setting **LC_admins** to **True** for the selected role:
 
@@ -367,7 +369,10 @@ Backends are configure in the **backends** section, the format is the following:
     [backends]
 
     # backend python module path
-    <backend id>.module = 'python.module.path'
+    <backend id>.module = <python.module.path>
+
+    # display name of the backend in forms
+    <backend id>.display_name = <display name of the backend> 
 
     # parameters of the module instance for backend <backend id>.
     <backend id>.<param> = <value>
