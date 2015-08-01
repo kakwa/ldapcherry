@@ -1,7 +1,5 @@
 Changelog
 =========
 
-Version 0.0.1
-*************
+.. include:: ../ChangeLog.rst
 
-* first release 
