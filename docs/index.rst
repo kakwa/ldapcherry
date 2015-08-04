@@ -7,6 +7,7 @@
     
     install
     deploy
+    backends
     full_configuration
     backend_api
     ppolicy_api
