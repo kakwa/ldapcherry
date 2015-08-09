@@ -98,10 +98,6 @@ Example
 
     [backends]
     
-    #####################################
-    #   configuration of ldap backend   #
-    #####################################
-    
     # name of the module
     ldap.module = 'ldapcherry.backend.backendLdap'
     # display name of the ldap
@@ -178,6 +174,9 @@ Example
 
 .. sourcecode:: ini
 
+
+    [backends]
+
     # Name of the backend
     ad.module = 'ldapcherry.backend.backendAD'
     # display name of the ldap
@@ -197,3 +196,67 @@ Example
     #ad.starttls = 'off'
     ## check server certificate (for tls)
     #ad.checkcert = 'off'
+    
+Demo Backend
+------------
+
+.. warning:: This backend is only meant for demo.
+
+Class path
+^^^^^^^^^^
+
+The class path for the ldap backend is **ldapcherry.backend.backendDemo**.
+
+Configuration
+^^^^^^^^^^^^^
++-------------------+----------+----------------------------+----------------------+----------------------------+
+|      Parameter    | Section  |            Description     |           Values     |                Comment     |
++===================+==========+============================+======================+============================+
+| admin.user        | backends | Login for default admin    | string               | optional, default: 'admin' |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| admin.password    | backends | Password for default admin | string               | optional, default: 'admin' |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| admin.groups      | backends | Groups for default admin   | comma separated list |                            |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| basic.user        | backends | Login for default user     | string               | optional, default: 'user'  |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| basic.password    | backends | Password for default user  | string               | optional, default: 'user'  |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| basic.groups      | backends | Groups for default user    | comma separated list |                            |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| pwd_attr          | backends | Password attribute name    | string               |                            |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+| search_attributes | backends | Attributes used for search | comma separated list |                            |
++-------------------+----------+----------------------------+----------------------+----------------------------+
+
+Example
+^^^^^^^
+
+.. sourcecode:: ini
+
+    [backends]
+
+    # path to the module
+    demo.module = 'ldapcherry.backend.backendDemo'
+    # display name of the module
+    demo.display_name  = 'Demo Backend'
+
+    ## admin user login (optional, default: 'admin')
+    #demo.admin.user = 'admin'
+    ## admin user password (optional: default 'admin')
+    #demo.admin.password = 'admin'
+    # groups for the default admin user (comma separated)
+    demo.admin.groups  = 'DnsAdmins'
+
+    ## basic user login (optional, default: 'user')
+    #demo.basic.user = 'user'
+    ## admin user password (optional: default 'user')
+    #demo.basic.password = 'user'
+    # groups for the default basic user (comma separated)
+    demo.basic.groups  = 'Test 2, Test 1'
+
+    # password attribute used for auth
+    demo.pwd_attr = 'userPassword'
+    # attributes to search on
+    demo.search_attributes = 'cn, sn, givenName, uid'
+
