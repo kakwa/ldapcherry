@@ -68,5 +68,5 @@ Example
 
 Here is the ldap backend module that comes with LdapCherry:
 
-.. literalinclude:: ../ldapcherry/backend/backendLdap.py
+.. literalinclude:: ../ldapcherry/backend/backendDemo.py
     :language: python
