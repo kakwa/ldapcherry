@@ -42,6 +42,11 @@
     <script type="text/javascript" src="/static/js/removediacritic.js"></script>
     <script type="text/javascript" src="/static/js/lc-filler.js"></script>
     <script type="text/javascript" src="/static/js/sha1.js"></script>
+    % if custom_js:
+    % for js in custom_js:
+    <script type="text/javascript" src="/custom/${js}"></script>
+    % endfor
+    %endif
 
     <script>
     $(function(){

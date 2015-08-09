@@ -244,6 +244,19 @@ class LdapCherry(object):
                 self._handle_exception(e)
                 raise BackendModuleInitFail(module)
 
+    def _init_custom_js(self, config):
+        self.custom_js = []
+        if '/custom' not in config:
+            return
+        directory = self._get_param(
+            '/custom',
+            'tools.staticdir.dir',
+            config,
+            )
+        for file in os.listdir(directory):
+            if file.endswith(".js"):
+                self.custom_js.append(file)
+
     def _init_ppolicy(self, config):
         module = self._get_param(
             'ppolicy',
@@ -514,6 +527,9 @@ class LdapCherry(object):
 
             # loading the ppolicy
             self._init_ppolicy(config)
+
+            # loading custom javascript
+            self._init_custom_js(config)
 
             cherrypy.log.error(
                 msg="application started",
@@ -970,7 +986,8 @@ class LdapCherry(object):
         return self.temp_searchuser.render(
             searchresult=res,
             attrs_list=attrs_list,
-            is_admin=is_admin
+            is_admin=is_admin,
+            custom_js=self.custom_js,
             )
 
     @cherrypy.expose
@@ -1005,7 +1022,8 @@ class LdapCherry(object):
         return self.temp_searchadmin.render(
             searchresult=res,
             attrs_list=attrs_list,
-            is_admin=is_admin
+            is_admin=is_admin,
+            custom_js=self.custom_js,
             )
 
     @cherrypy.expose
@@ -1051,7 +1069,8 @@ class LdapCherry(object):
             form=form,
             roles=roles,
             is_admin=is_admin,
-            notification=notification
+            notification=notification,
+            custom_js=self.custom_js,
             )
 
     @cherrypy.expose
@@ -1131,6 +1150,7 @@ class LdapCherry(object):
             notification=notification,
             standalone_groups=user_lonely_groups,
             backends_display_names=self.backends_display_names,
+            custom_js=self.custom_js,
             )
 
     @cherrypy.expose
