@@ -462,6 +462,23 @@ Example:
     log.level = 'info'
 
 
+Custom javascript
+~~~~~~~~~~~~~~~~~
+
+It's possible to add custom javascript to LdapCherry, mainly to add custom autofill functions.
+
+Configuration:
+
++---------------------+---------+--------------------------------+--------------------------+------------------------------------------------------------+
+|      Parameter      | Section |            Description         |           Values         |                Comment                                     |
++=====================+=========+================================+==========================+============================================================+
+| tools.staticdir.on  | /custom | Serve custom js files through  | True, False              | These files could be server directly by an                 |
+|                     |         | LdapCherry                     |                          | HTTP server for better performance.                        |
++---------------------+---------+--------------------------------+--------------------------+------------------------------------------------------------+
+| tools.staticdir.dir | /custom | Directory containing custom js | Path to static resources | * custom js files must be put at the root if the directory |
+|                     |         | files                          |                          | * only files ending with ".js" are taken into account      |
++---------------------+---------+--------------------------------+--------------------------+------------------------------------------------------------+
+
 
 Other LdapCherry parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
