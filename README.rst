@@ -20,9 +20,9 @@ Nice and simple application to manage users and groups in multiple directory ser
 
 ----
 
-:Doc:    `ldapcherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
-:Dev:    `ldapcherry source code on GitHub <https://github.com/kakwa/ldapcherry>`_
-:PyPI:   `ldapcherry package on Pypi <http://pypi.python.org/pypi/ldapcherry>`_
+:Doc:    `LdapCherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
+:Dev:    `LdapCherry source code on GitHub <https://github.com/kakwa/ldapcherry>`_
+:PyPI:   `LdapCherry package on Pypi <http://pypi.python.org/pypi/ldapcherry>`_
 :License: MIT
 :Author:  Pierre-Francois Carpentier - copyright © 2015
 
