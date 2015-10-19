@@ -13,6 +13,7 @@ import logging
 import logging.handlers
 import cherrypy
 
+
 # Custom log function to override weird error.log function
 # of cherrypy
 def syslog_error(
@@ -70,5 +71,3 @@ def get_loglevel(level):
         return logging.CRITICAL
     else:
         return logging.INFO
-
-
