@@ -351,30 +351,14 @@ class LdapCherry(object):
         self.temp_lookup = lookup.TemplateLookup(
             directories=self.template_dir, input_encoding='utf-8'
             )
-        self.temp_index = \
-            self.temp_lookup.get_template('index.tmpl')
-        self.temp_error = \
-            self.temp_lookup.get_template('error.tmpl')
-        self.temp_login = \
-            self.temp_lookup.get_template('login.tmpl')
-        self.temp_searchadmin = \
-            self.temp_lookup.get_template('searchadmin.tmpl')
-        self.temp_searchuser = \
-            self.temp_lookup.get_template('searchuser.tmpl')
-        self.temp_adduser = \
-            self.temp_lookup.get_template('adduser.tmpl')
-        self.temp_roles = \
-            self.temp_lookup.get_template('roles.tmpl')
-        self.temp_groups = \
-            self.temp_lookup.get_template('groups.tmpl')
-        self.temp_form = \
-            self.temp_lookup.get_template('form.tmpl')
-        self.temp_selfmodify = \
-            self.temp_lookup.get_template('selfmodify.tmpl')
-        self.temp_modify = \
-            self.temp_lookup.get_template('modify.tmpl')
-        self.temp_service_unavailable = \
-            self.temp_lookup.get_template('service_unavailable.tmpl')
+        # load each template
+        self.temp = {}
+        for t in ('index.tmpl', 'error.tmpl', 'login.tmpl',
+                  'searchadmin.tmpl', 'searchuser.tmpl', 'adduser.tmpl',
+                  'roles.tmpl', 'groups.tmpl', 'form.tmpl', 'selfmodify.tmpl',
+                  'modify.tmpl', 'service_unavailable.tmpl'
+                  ):
+            self.temp[t] = self.temp_lookup.get_template(t)
 
     def reload(self, config=None):
         """ load/reload configuration
@@ -796,7 +780,7 @@ class LdapCherry(object):
     def signin(self, url=None):
         """simple signin page
         """
-        return self.temp_login.render(url=url)
+        return self.temp['login.tmpl'].render(url=url)
 
     @cherrypy.expose
     @exception_decorator
@@ -866,7 +850,7 @@ class LdapCherry(object):
         """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        return self.temp_index.render(is_admin=is_admin)
+        return self.temp['index.tmpl'].render(is_admin=is_admin)
 
     @cherrypy.expose
     @exception_decorator
@@ -879,7 +863,7 @@ class LdapCherry(object):
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchuser.render(
+        return self.temp['searchuser.tmpl'].render(
             searchresult=res,
             attrs_list=attrs_list,
             is_admin=is_admin,
@@ -915,7 +899,7 @@ class LdapCherry(object):
         else:
             res = None
         attrs_list = self.attributes.get_search_attributes()
-        return self.temp_searchadmin.render(
+        return self.temp['searchadmin.tmpl'].render(
             searchresult=res,
             attrs_list=attrs_list,
             is_admin=is_admin,
@@ -948,20 +932,20 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',', ':'))
-        form = self.temp_form.render(
+        form = self.temp['form.tmpl'].render(
             attributes=self.attributes.attributes,
             values=None,
             modify=False,
             autofill=True
             )
-        roles = self.temp_roles.render(
+        roles = self.temp['roles.tmpl'].render(
             roles=self.roles.flatten,
             graph=self.roles.graph,
             graph_js=graph_js,
             roles_js=roles_js,
             current_roles=None,
             )
-        return self.temp_adduser.render(
+        return self.temp['adduser.tmpl'].render(
             form=form,
             roles=roles,
             is_admin=is_admin,
@@ -1015,7 +999,7 @@ class LdapCherry(object):
         user_attrs = self._get_user(user)
         if user_attrs == {}:
             cherrypy.response.status = 400
-            return self.temp_error.render(
+            return self.temp['error.tmpl'].render(
                 is_admin=is_admin,
                 alert='warning',
                 message="User '" + user + "' does not exist"
@@ -1025,21 +1009,21 @@ class LdapCherry(object):
         user_lonely_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',', ':'))
         key = self.attributes.get_key()
-        form = self.temp_form.render(
+        form = self.temp['form.tmpl'].render(
             attributes=self.attributes.attributes,
             values=user_attrs,
             modify=True,
             keyattr=key,
             autofill=False
             )
-        roles = self.temp_roles.render(
+        roles = self.temp['roles.tmpl'].render(
             roles=self.roles.flatten,
             graph=self.roles.graph,
             graph_js=graph_js,
             roles_js=roles_js,
             current_roles=user_roles,
             )
-        return self.temp_modify.render(
+        return self.temp['modify.tmpl'].render(
             form=form,
             roles=roles,
             is_admin=is_admin,
@@ -1058,7 +1042,7 @@ class LdapCherry(object):
         sess = cherrypy.session
         user = str(sess.get(SESSION_KEY, None))
         if self.auth_mode == 'none':
-            return self.temp_error.render(
+            return self.temp['error.tmpl'].render(
                 is_admin=is_admin,
                 alert='warning',
                 message="Not accessible with authentication disabled."
@@ -1068,15 +1052,18 @@ class LdapCherry(object):
             self._selfmodify(params)
         user_attrs = self._get_user(user)
         if user_attrs == {}:
-            return self.temp_error.render(
+            return self.temp['error.tmpl'].render(
                 is_admin=is_admin,
                 alert='warning',
                 message="User doesn't exist"
                 )
-        form = self.temp_form.render(
+        form = self.temp['form.tmpl'].render(
             attributes=self.attributes.get_selfattributes(),
             values=user_attrs,
             modify=True,
             autofill=False
             )
-        return self.temp_selfmodify.render(form=form, is_admin=is_admin)
+        return self.temp['selfmodify.tmpl'].render(
+            form=form,
+            is_admin=is_admin
+            )
