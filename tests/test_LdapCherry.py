@@ -18,6 +18,7 @@ import cherrypy
 from cherrypy.process import plugins, servers
 from cherrypy import Application
 import logging
+from ldapcherry.lclogging import *
 
 cherrypy.session = {}
 
@@ -240,13 +241,13 @@ class TestError(object):
     def testLogger(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
-        assert app._get_loglevel('debug') is logging.DEBUG and \
-        app._get_loglevel('notice') is logging.INFO and \
-        app._get_loglevel('info') is logging.INFO and \
-        app._get_loglevel('warning') is logging.WARNING and \
-        app._get_loglevel('err') is logging.ERROR and \
-        app._get_loglevel('critical') is logging.CRITICAL and \
-        app._get_loglevel('alert') is logging.CRITICAL and \
-        app._get_loglevel('emergency') is logging.CRITICAL and \
-        app._get_loglevel('notalevel') is logging.INFO
+        assert get_loglevel('debug') is logging.DEBUG and \
+        get_loglevel('notice') is logging.INFO and \
+        get_loglevel('info') is logging.INFO and \
+        get_loglevel('warning') is logging.WARNING and \
+        get_loglevel('err') is logging.ERROR and \
+        get_loglevel('critical') is logging.CRITICAL and \
+        get_loglevel('alert') is logging.CRITICAL and \
+        get_loglevel('emergency') is logging.CRITICAL and \
+        get_loglevel('notalevel') is logging.INFO
 

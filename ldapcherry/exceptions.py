@@ -6,6 +6,7 @@
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
 import string
+import cherrypy
 
 
 class MissingParameter(Exception):
@@ -214,3 +215,50 @@ class GroupDoesntExist(Exception):
             "group '" + group + "'" \
             " does not exist" \
             " in backend '" + backend + "'"
+
+
+def exception_decorator(func):
+    def ret(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except cherrypy.HTTPRedirect as e:
+            raise e
+        except cherrypy.HTTPError as e:
+            raise e
+        except Exception as e:
+            cherrypy.response.status = 500
+            self._handle_exception(e)
+            username = self._check_session()
+            if not username:
+                return self.temp_service_unavailable.render()
+            is_admin = self._check_admin()
+            et = type(e)
+            if et is UserDoesntExist:
+                user = e.user
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="User '" + user + "' does not exist"
+                    )
+            elif et is UserAlreadyExists:
+                user = e.user
+                cherrypy.response.status = 400
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='warning',
+                    message="User '" + user + "' already exist"
+                    )
+            elif et is GroupDoesntExist:
+                group = e.group
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="Missing group, please check logs for details"
+                    )
+            else:
+                return self.temp_error.render(
+                    is_admin=is_admin,
+                    alert='danger',
+                    message="An error occured, please check logs for details"
+                    )
+    return ret

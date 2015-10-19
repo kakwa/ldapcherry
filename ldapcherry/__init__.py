@@ -18,6 +18,7 @@ from socket import error as socket_error
 import base64
 
 from exceptions import *
+from ldapcherry.lclogging import *
 from ldapcherry.roles import Roles
 from ldapcherry.attributes import Attributes
 
@@ -31,85 +32,6 @@ from mako import lookup
 from sets import Set
 
 SESSION_KEY = '_cp_username'
-
-
-# Custom log function to override weird error.log function
-# of cherrypy
-def syslog_error(
-        msg='',
-        context='',
-        severity=logging.INFO,
-        traceback=False
-        ):
-
-    if traceback and msg == '':
-        msg = 'Python Exception:'
-    if context == '':
-        cherrypy.log.error_log.log(severity, msg)
-    else:
-        cherrypy.log.error_log.log(
-            severity,
-            ' '.join((context, msg))
-            )
-    if traceback:
-        import traceback
-        try:
-            exc = sys.exc_info()
-            if exc == (None, None, None):
-                cherrypy.log.error_log.log(severity, msg)
-            # log each line of the exception
-            # in a separate log for lisibility
-            for l in traceback.format_exception(*exc):
-                cherrypy.log.error_log.log(severity, l)
-        finally:
-            del exc
-
-
-def exception_decorator(func):
-    def ret(self, *args, **kwargs):
-        try:
-            return func(self, *args, **kwargs)
-        except cherrypy.HTTPRedirect as e:
-            raise e
-        except cherrypy.HTTPError as e:
-            raise e
-        except Exception as e:
-            cherrypy.response.status = 500
-            self._handle_exception(e)
-            username = self._check_session()
-            if not username:
-                return self.temp_service_unavailable.render()
-            is_admin = self._check_admin()
-            et = type(e)
-            if et is UserDoesntExist:
-                user = e.user
-                return self.temp_error.render(
-                    is_admin=is_admin,
-                    alert='danger',
-                    message="User '" + user + "' does not exist"
-                    )
-            elif et is UserAlreadyExists:
-                user = e.user
-                cherrypy.response.status = 400
-                return self.temp_error.render(
-                    is_admin=is_admin,
-                    alert='warning',
-                    message="User '" + user + "' already exist"
-                    )
-            elif et is GroupDoesntExist:
-                group = e.group
-                return self.temp_error.render(
-                    is_admin=is_admin,
-                    alert='danger',
-                    message="Missing group, please check logs for details"
-                    )
-            else:
-                return self.temp_error.render(
-                    is_admin=is_admin,
-                    alert='danger',
-                    message="An error occured, please check logs for details"
-                    )
-    return ret
 
 
 class LdapCherry(object):
@@ -383,32 +305,6 @@ class LdapCherry(object):
         # set log level
         cherrypy.log.error_log.setLevel(level)
 
-    def _get_loglevel(self, level):
-        """ return logging level object
-        corresponding to a given level passed as
-        a string
-        @str level: name of a syslog log level
-        @rtype: logging, logging level from logging module
-        """
-        if level == 'debug':
-            return logging.DEBUG
-        elif level == 'notice':
-            return logging.INFO
-        elif level == 'info':
-            return logging.INFO
-        elif level == 'warning' or level == 'warn':
-            return logging.WARNING
-        elif level == 'error' or level == 'err':
-            return logging.ERROR
-        elif level == 'critical' or level == 'crit':
-            return logging.CRITICAL
-        elif level == 'alert':
-            return logging.CRITICAL
-        elif level == 'emergency' or level == 'emerg':
-            return logging.CRITICAL
-        else:
-            return logging.INFO
-
     def _auth(self, user, password):
         """ authenticate a user
         @str user: login of the user
@@ -488,7 +384,7 @@ class LdapCherry(object):
             # log configuration handling
             # get log level
             # (if not in configuration file, log level is set to debug)
-            level = self._get_loglevel(
+            level = get_loglevel(
                 self._get_param(
                     'global',
                     'log.level',
