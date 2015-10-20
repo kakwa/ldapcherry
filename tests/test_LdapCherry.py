@@ -110,6 +110,16 @@ class TestError(object):
             app._set_access_log(cfg, logging.DEBUG)
             app._set_error_log(cfg, logging.DEBUG)
 
+    def testAuth(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        app.auth_mode = 'and'
+        ret1 = app._auth('jsmith', 'passwordsmith')
+        app.auth_mode = 'or'
+        ret2 = app._auth('jsmith', 'passwordsmith')
+        assert ret2 == {'connected': True, 'isadmin': False} and \
+            ret1 == {'connected': True, 'isadmin': False}
+
     def testPPolicy(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry.ini', app)
