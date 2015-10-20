@@ -2,13 +2,13 @@ env:
   - TRAVIS="yes"
 
 before_install:
-  - [ $TEST_PEP8 -ne 1 ] && curl https://ftp-master.debian.org/keys/archive-key-7.0.asc | sudo apt-key add -
-  - [ $TEST_PEP8 -ne 1 ] && echo "deb http://http.debian.net/debian wheezy-backports main" | sudo tee -a /etc/apt/sources.list
-  - [ $TEST_PEP8 -ne 1 ] && echo "deb http://http.debian.net/debian wheezy main" | sudo tee -a /etc/apt/sources.list
-  - [ $TEST_PEP8 -ne 1 ] && sudo /sbin/ifconfig
-  - [ $TEST_PEP8 -ne 1 ] && sudo apt-get update -qq
-  - [ $TEST_PEP8 -ne 1 ] && sudo rm /etc/dpkg/dpkg.cfg.d/multiarch
-  - [ $TEST_PEP8 -ne 1 ] && sudo ./tests/test_env/deploy.sh
+  - '[ $TEST_PEP8 -ne 1 ] && curl https://ftp-master.debian.org/keys/archive-key-7.0.asc | sudo apt-key add -'
+  - '[ $TEST_PEP8 -ne 1 ] && echo "deb http://http.debian.net/debian wheezy-backports main" | sudo tee -a /etc/apt/sources.list'
+  - '[ $TEST_PEP8 -ne 1 ] && echo "deb http://http.debian.net/debian wheezy main" | sudo tee -a /etc/apt/sources.list'
+  - '[ $TEST_PEP8 -ne 1 ] && sudo /sbin/ifconfig'
+  - '[ $TEST_PEP8 -ne 1 ] && sudo apt-get update -qq'
+  - '[ $TEST_PEP8 -ne 1 ] && sudo rm /etc/dpkg/dpkg.cfg.d/multiarch'
+  - '[ $TEST_PEP8 -ne 1 ] && sudo ./tests/test_env/deploy.sh'
 
 language: python
 python:
