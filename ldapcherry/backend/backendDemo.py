@@ -7,9 +7,11 @@
 
 # This is a demo backend
 
-from ldapcherry.exceptions import MissingParameter
 from sets import Set
 import ldapcherry.backend
+from ldapcherry.exceptions import UserDoesntExist, \
+    GroupDoesntExist, MissingParameter, \
+    UserAlreadyExists
 import re
 
 
@@ -99,7 +101,10 @@ class Backend(ldapcherry.backend.Backend):
 
         """
         self._check_fix_users(username)
-        del self.users[username]
+        try:
+            del self.users[username]
+        except:
+            raise UserDoesntExist(username, self.backend_name)
 
     def set_attrs(self, username, attrs):
         """ Set a list of attributes for a given user
@@ -169,7 +174,10 @@ class Backend(ldapcherry.backend.Backend):
 
         .. warning:: raise UserDoesntExist if user doesn't exist
         """
-        return self.users[username]
+        try:
+            return self.users[username]
+        except:
+            raise UserDoesntExist(username, self.backend_name)
 
     def get_groups(self, username):
         """ Get a user's groups
@@ -178,4 +186,7 @@ class Backend(ldapcherry.backend.Backend):
         :type username: string
         :rtype: list of groups
         """
-        return self.users[username]['groups']
+        try:
+            return self.users[username]['groups']
+        except:
+            raise UserDoesntExist(username, self.backend_name)
