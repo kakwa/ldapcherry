@@ -156,10 +156,23 @@ class TestError(object):
     def testLogin(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        app.auth_mode = 'or'
         try:
             app.login('jwatson', 'passwordwatson')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/'
+            assert e[0][0] == expected
+        else:
+            raise AssertionError("expected an exception")
+
+    def testLoginFailure(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        app.auth_mode = 'or'
+        try:
+            app.login('jwatson', 'wrongPassword')
+        except cherrypy.HTTPRedirect as e:
+            expected = 'http://127.0.0.1:8080/signin'
             assert e[0][0] == expected
         else:
             raise AssertionError("expected an exception")
