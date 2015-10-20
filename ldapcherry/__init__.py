@@ -44,7 +44,7 @@ class LdapCherry(object):
             )
         else:
             cherrypy.log.error(
-                msg="uncatched exception: [%(e)s]" % {'e': str(e)},
+                msg="uncaught exception: [%(e)s]" % {'e': str(e)},
                 severity=logging.ERROR
             )
         # log the traceback as 'debug'
@@ -424,6 +424,17 @@ class LdapCherry(object):
             )
             exit(1)
 
+    def _merge_user_attrs(self, attrs_backend, attrs_out, backend_name):
+        """ merge attributes from one backend search to the attributes dict 
+        output
+
+        """
+        for attr in attrs_backend:
+            if attr in self.attributes.backend_attributes[backend_name]:
+                attrid = self.attributes.backend_attributes[backend_name][attr]
+                if attrid not in attrs_out:
+                    attrs_out[attrid] = attrs_backend[attr]
+
     def _search(self, searchstring):
         """ search users
         @str searchstring: search string
@@ -437,11 +448,7 @@ class LdapCherry(object):
             for u in tmp:
                 if u not in ret:
                     ret[u] = {}
-                for attr in tmp[u]:
-                    if attr in self.attributes.backend_attributes[b]:
-                        attrid = self.attributes.backend_attributes[b][attr]
-                        if attr not in ret[u]:
-                            ret[u][attrid] = tmp[u][attr]
+                self._merge_user_attrs(tmp[u], ret[u], b)
         return ret
 
     def _get_user(self, username):
@@ -458,11 +465,7 @@ class LdapCherry(object):
             except UserDoesntExist as e:
                 self._handle_exception(e)
                 tmp = {}
-            for attr in tmp:
-                if attr in self.attributes.backend_attributes[b]:
-                    attrid = self.attributes.backend_attributes[b][attr]
-                    if attr not in ret:
-                        ret[attrid] = tmp[attr]
+            self._merge_user_attrs(tmp, ret, b)
 
         cherrypy.log.error(
             msg="user '" + username + "' attributes " + str(ret),
