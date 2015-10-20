@@ -230,7 +230,7 @@ def exception_decorator(func):
             self._handle_exception(e)
             username = self._check_session()
             if not username:
-                return self.temp_service_unavailable.render()
+                return self.temp['service_unavailable.tmpl'].render()
             is_admin = self._check_admin()
             et = type(e)
             if et is UserDoesntExist:
