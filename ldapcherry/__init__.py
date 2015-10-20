@@ -425,7 +425,7 @@ class LdapCherry(object):
             exit(1)
 
     def _merge_user_attrs(self, attrs_backend, attrs_out, backend_name):
-        """ merge attributes from one backend search to the attributes dict 
+        """ merge attributes from one backend search to the attributes dict
         output
 
         """
