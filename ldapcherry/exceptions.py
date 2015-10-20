@@ -235,7 +235,7 @@ def exception_decorator(func):
             et = type(e)
             if et is UserDoesntExist:
                 user = e.user
-                return self.temp_error.render(
+                return self.temp['error.tmpl'].render(
                     is_admin=is_admin,
                     alert='danger',
                     message="User '" + user + "' does not exist"
@@ -243,20 +243,20 @@ def exception_decorator(func):
             elif et is UserAlreadyExists:
                 user = e.user
                 cherrypy.response.status = 400
-                return self.temp_error.render(
+                return self.temp['error.tmpl'].render(
                     is_admin=is_admin,
                     alert='warning',
                     message="User '" + user + "' already exist"
                     )
             elif et is GroupDoesntExist:
                 group = e.group
-                return self.temp_error.render(
+                return self.temp['error.tmpl'].render(
                     is_admin=is_admin,
                     alert='danger',
                     message="Missing group, please check logs for details"
                     )
             else:
-                return self.temp_error.render(
+                return self.temp['error.tmpl'].render(
                     is_admin=is_admin,
                     alert='danger',
                     message="An error occured, please check logs for details"
