@@ -1,6 +1,11 @@
 Dev
 ***
 
+* add visual notifications after actions
+* code reorganization
+* better unit tests on the demo backend
+* better unit tests on authentication
+
 Version 0.1.0
 *************
 
