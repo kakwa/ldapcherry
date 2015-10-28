@@ -396,6 +396,8 @@ class LdapCherry(object):
                 severity=logging.DEBUG
             )
 
+            self.notifications = {}
+
             self.attributes = Attributes(self.attributes_file)
 
             cherrypy.log.error(
@@ -423,6 +425,27 @@ class LdapCherry(object):
                 severity=logging.ERROR
             )
             exit(1)
+
+    def _add_notification(self, message):
+        """ add a notification in the notification queue of a user
+        """
+        sess = cherrypy.session
+        username = sess.get(SESSION_KEY, None)
+        if username is not self.notifications:
+            self.notifications[username] = []
+        self.notifications[username].append(message)
+
+    def _empty_notification(self):
+        """ empty and return list of message notification
+        """
+        sess = cherrypy.session
+        username = sess.get(SESSION_KEY, None)
+        if username in self.notifications:
+            ret = self.notifications[username]
+        else:
+            ret = []
+        self.notifications[username] = []
+        return ret
 
     def _merge_user_attrs(self, attrs_backend, attrs_out, backend_name):
         """ merge attributes from one backend search to the attributes dict
@@ -853,7 +876,10 @@ class LdapCherry(object):
         """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
-        return self.temp['index.tmpl'].render(is_admin=is_admin)
+        return self.temp['index.tmpl'].render(
+            is_admin=is_admin,
+            notifications=self._empty_notification(),
+            )
 
     @cherrypy.expose
     @exception_decorator
@@ -871,6 +897,7 @@ class LdapCherry(object):
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
+            notifications=self._empty_notification(),
             )
 
     @cherrypy.expose
@@ -907,6 +934,7 @@ class LdapCherry(object):
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
+            notifications=self._empty_notification(),
             )
 
     @cherrypy.expose
@@ -917,13 +945,11 @@ class LdapCherry(object):
         is_admin = self._check_admin()
 
         if cherrypy.request.method.upper() == 'POST':
-            notification = "<script type=\"text/javascript\">" \
-                "$.notify('User Added')" \
-                "</script>"
             params = self._parse_params(params)
             self._adduser(params)
-        else:
-            notification = ''
+            self._add_notification(
+                "User added"
+            )
 
         graph = {}
         for r in self.roles.graph:
@@ -952,8 +978,8 @@ class LdapCherry(object):
             form=form,
             roles=roles,
             is_admin=is_admin,
-            notification=notification,
             custom_js=self.custom_js,
+            notifications=self._empty_notification(),
             )
 
     @cherrypy.expose
@@ -977,18 +1003,16 @@ class LdapCherry(object):
         is_admin = self._check_admin()
 
         if cherrypy.request.method.upper() == 'POST':
-            notification = "<script type=\"text/javascript\">" \
-                "$.notify('User Modify')" \
-                "</script>"
             params = self._parse_params(params)
             self._modify(params)
+            self._add_notification(
+                "User modified"
+            )
             try:
                 referer = cherrypy.request.headers['Referer']
             except:
                 referer = '/'
             raise cherrypy.HTTPRedirect(referer)
-        else:
-            notification = ''
 
         graph = {}
         for r in self.roles.graph:
@@ -1030,10 +1054,10 @@ class LdapCherry(object):
             form=form,
             roles=roles,
             is_admin=is_admin,
-            notification=notification,
             standalone_groups=user_lonely_groups,
             backends_display_names=self.backends_display_names,
             custom_js=self.custom_js,
+            notifications=self._empty_notification(),
             )
 
     @cherrypy.expose
@@ -1053,6 +1077,9 @@ class LdapCherry(object):
         if cherrypy.request.method.upper() == 'POST':
             params = self._parse_params(params)
             self._selfmodify(params)
+            self._add_notification(
+                "Self modification done"
+            )
         user_attrs = self._get_user(user)
         if user_attrs == {}:
             return self.temp['error.tmpl'].render(
@@ -1068,5 +1095,6 @@ class LdapCherry(object):
             )
         return self.temp['selfmodify.tmpl'].render(
             form=form,
-            is_admin=is_admin
+            is_admin=is_admin,
+            notifications=self._empty_notification(),
             )

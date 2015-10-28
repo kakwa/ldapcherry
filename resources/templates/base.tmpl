@@ -56,6 +56,11 @@
 
 </head>
 <body>
+% if notifications:
+% for notif in notifications:
+<script type="text/javascript">$.notify('${notif}')</script>
+% endfor
+% endif
 <div class="container">
     <%block name="navbar"/>
     <%block name="core" />
