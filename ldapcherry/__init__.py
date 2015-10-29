@@ -947,9 +947,7 @@ class LdapCherry(object):
         if cherrypy.request.method.upper() == 'POST':
             params = self._parse_params(params)
             self._adduser(params)
-            self._add_notification(
-                "User added"
-            )
+            self._add_notification("User added")
 
         graph = {}
         for r in self.roles.graph:
@@ -993,6 +991,7 @@ class LdapCherry(object):
         except:
             referer = '/'
         self._deleteuser(user)
+        self._add_notification('User Deleted')
         raise cherrypy.HTTPRedirect(referer)
 
     @cherrypy.expose
@@ -1005,9 +1004,7 @@ class LdapCherry(object):
         if cherrypy.request.method.upper() == 'POST':
             params = self._parse_params(params)
             self._modify(params)
-            self._add_notification(
-                "User modified"
-            )
+            self._add_notification("User modified")
             try:
                 referer = cherrypy.request.headers['Referer']
             except:
