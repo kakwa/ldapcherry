@@ -906,7 +906,7 @@ class LdapCherry(object):
         """ search user page """
         keys = params.keys()
         if len(keys) != 1:
-            cherrypy.response.status = 403
+            cherrypy.response.status = 400
             return "bad argument"
         password = params[keys[0]]
         self._check_auth(must_admin=False)
@@ -915,7 +915,7 @@ class LdapCherry(object):
         if ret['match']:
             cherrypy.response.status = 200
         else:
-            cherrypy.response.status = 400
+            cherrypy.response.status = 200
         return json.dumps(ret, separators=(',', ':'))
 
     @cherrypy.expose
