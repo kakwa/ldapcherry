@@ -1,6 +1,9 @@
 $('#form').validator({
     custom: {
         'ppolicy': function($el) {
+                if(! $el.prop('required') && $el.val() == 0){
+                    return true;
+                };
                 var $ret = 'PPolicy error';
                 $.ajax({
                   url: '/checkppolicy',
