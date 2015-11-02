@@ -904,12 +904,12 @@ class LdapCherry(object):
     @exception_decorator
     def checkppolicy(self, **params):
         """ search user page """
+        self._check_auth(must_admin=False)
         keys = params.keys()
         if len(keys) != 1:
             cherrypy.response.status = 400
             return "bad argument"
         password = params[keys[0]]
-        self._check_auth(must_admin=False)
         is_admin = self._check_admin()
         ret = self._checkppolicy(password)
         if ret['match']:
