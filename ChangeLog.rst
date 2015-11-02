@@ -1,6 +1,7 @@
 Dev
 ***
 
+* [feat] custom error messages for ppolicy error in forms
 * [feat] add visual notifications after actions
 * [impr] code reorganization
 * [impr] better unit tests on the demo backend
