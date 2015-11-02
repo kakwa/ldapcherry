@@ -19,14 +19,14 @@ class PPolicy(ldapcherry.ppolicy.PPolicy):
 
     def check(self, password):
         if len(password) < self.min_length:
-            return {'match': False, 'reason': 'password too short'}
+            return {'match': False, 'reason': 'Password too short'}
         if len(re.findall(r'[A-Z]', password)) < self.min_upper:
             return {
                 'match': False,
-                'reason': 'not enough upper case characters'
+                'reason': 'Not enough upper case characters'
                 }
         if len(re.findall(r'[0-9]', password)) < self.min_digit:
-            return {'match': False, 'reason': 'not enough digits'}
+            return {'match': False, 'reason': 'Not enough digits'}
         return {'match': True, 'reason': 'password ok'}
 
     def info(self):
