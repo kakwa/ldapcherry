@@ -786,6 +786,9 @@ class LdapCherry(object):
         )
 
     def _deleteuser(self, username):
+        sess = cherrypy.session
+        admin = str(sess.get(SESSION_KEY, None))
+
         for b in self.backends:
             self.backends[b].del_user(username)
             cherrypy.log.error(
@@ -794,7 +797,7 @@ class LdapCherry(object):
             )
 
         cherrypy.log.error(
-            msg="User '" + username + "' deleted",
+            msg="User '" + username + "' deleted by '" + admin + "'" ,
             severity=logging.INFO
         )
 
