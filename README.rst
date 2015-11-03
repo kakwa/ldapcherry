@@ -57,6 +57,25 @@ few configuration files, extensive debug logs and full documentation.
 `Screenshots <http://ldapcherry.readthedocs.org/en/latest/screenshots.html#image1>`_.
 
 ***********
+  Try out
+***********
+
+.. sourcecode:: bash
+
+    # change the directory where to put the configuration (default: /etc)
+    $ export SYSCONFDIR=<sys conf dir>
+    
+    # install ldapcherry
+    $ pip install ldapcherry
+
+    # edit configuration
+    $ vi /etc/ldapcherry/ldapcherry.ini
+
+    # launch ldapcherry
+    $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini
+
+
+***********
   License
 ***********
 
