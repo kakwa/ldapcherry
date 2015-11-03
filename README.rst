@@ -20,6 +20,10 @@ Nice and simple application to manage users and groups in multiple directory ser
     :target: https://pypi.python.org/pypi/ldapcherry
     :alt: PyPI version
 
+.. image:: https://readthedocs.org/projects/ldapcherry/badge/?version=latest
+    :target: http://ldapcherry.readthedocs.org/en/latest/?badge=latest
+    :alt: Documentation Status
+
 ----
 
 :Doc:    `LdapCherry documentation on ReadTheDoc <http://ldapcherry.readthedocs.org/en/latest/>`_
