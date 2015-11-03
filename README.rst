@@ -98,6 +98,6 @@ LdapCherry is published under the MIT Public License.
 
 ----
 
-.. image:: docs/assets/python-powered.png
-.. image:: docs/assets/cherrypy.png
+.. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/docs/assets/python-powered.png
+.. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/docs/assets/cherrypy.png
 
