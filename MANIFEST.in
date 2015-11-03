@@ -1,0 +1,7 @@
+include *.rst
+graft conf
+graft docs
+graft goodies
+graft resources
+graft tests
+include LICENSE
