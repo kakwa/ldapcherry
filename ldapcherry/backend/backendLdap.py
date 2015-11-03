@@ -21,7 +21,7 @@ import re
 class CaFileDontExist(Exception):
     def __init__(self, cafile):
         self.cafile = cafile
-        self.log = "CA file %(cafile)s don't exist" % {'cafile': cafile}
+        self.log = "CA file %(cafile)s does not exist" % {'cafile': cafile}
 
 NO_ATTR = 0
 DISPLAYED_ATTRS = 1
@@ -413,7 +413,7 @@ class Backend(ldapcherry.backend.Backend):
                         severity=logging.INFO,
                         msg="%(backend)s: user '%(user)s'"
                             " already member of group '%(group)s'"
-                            "(attribute '%(attr)s')" % {
+                            " (attribute '%(attr)s')" % {
                                 'user': username,
                                 'group': self._uni(group),
                                 'attr': attr,
