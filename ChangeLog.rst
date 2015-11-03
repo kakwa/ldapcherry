@@ -1,6 +1,8 @@
 Dev
 ***
 
+* [impr] better error/log messages
+
 Version 0.2.1
 *************
 
