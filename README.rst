@@ -1,3 +1,5 @@
+.. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/resources/static/img/apple-touch-icon-72-precomposed.png
+
 **************
   LdapCherry 
 **************
