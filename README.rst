@@ -1,8 +1,8 @@
-.. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/resources/static/img/apple-touch-icon-72-precomposed.png
-
 **************
   LdapCherry 
 **************
+
+.. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/resources/static/img/apple-touch-icon-72-precomposed.png
 
 Nice and simple application to manage users and groups in multiple directory services.
 
