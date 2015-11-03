@@ -1,6 +1,15 @@
 Dev
 ***
 
+Version 0.2.1
+*************
+
+* [fix ] fix doc 
+
+Version 0.2.0
+*************
+
+
 * [feat] custom error messages for ppolicy error in forms
 * [feat] add visual notifications after actions
 * [impr] code reorganization
