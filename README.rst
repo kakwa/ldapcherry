@@ -68,8 +68,10 @@ few configuration files, extensive debug logs and full documentation.
     # install ldapcherry
     $ pip install ldapcherry
 
-    # edit configuration
+    # edit configuration files
     $ vi /etc/ldapcherry/ldapcherry.ini
+    $ vi /etc/ldapcherry/roles.yml
+    $ vi /etc/ldapcherry/attributes.yml
 
     # launch ldapcherry
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini
