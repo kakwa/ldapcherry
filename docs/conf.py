@@ -17,7 +17,11 @@
 import os
 import sys
 import sys
-from unittest.mock import MagicMock
+
+try:
+    from mock import Mock as MagicMock
+except:
+    from unittest.mock import MagicMock
 
 class Mock(MagicMock):
     @classmethod
