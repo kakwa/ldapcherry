@@ -797,7 +797,7 @@ class LdapCherry(object):
             )
 
         cherrypy.log.error(
-            msg="User '" + username + "' deleted by '" + admin + "'" ,
+            msg="User '" + username + "' deleted by '" + admin + "'",
             severity=logging.INFO
         )
 
