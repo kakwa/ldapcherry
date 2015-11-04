@@ -1,6 +1,10 @@
 Dev
 ***
 
+Version 0.2.2
+*************
+
+* [fix ] fix pypi release
 * [impr] better error/log messages
 
 Version 0.2.1
