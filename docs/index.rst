@@ -9,6 +9,7 @@
     deploy
     backends
     full_configuration
+    external_plugins
     backend_api
     ppolicy_api
     changelog
