@@ -431,7 +431,7 @@ class LdapCherry(object):
         """
         sess = cherrypy.session
         username = sess.get(SESSION_KEY, None)
-        if username is not self.notifications:
+        if username not in self.notifications:
             self.notifications[username] = []
         self.notifications[username].append(message)
 

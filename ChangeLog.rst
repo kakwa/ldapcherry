@@ -1,6 +1,8 @@
 Dev
 ***
 
+* [fix ] notifications missing in case of multiple notification waiting to be displayed
+
 Version 0.2.2
 *************
 
