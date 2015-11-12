@@ -19,7 +19,7 @@ For example:
     bk1.param = 'value'
 
 .. warning::
-    For the rest of the backends documentation, this prefix is infered.
+    For the rest of the backends documentation, this prefix is inferred.
 
 Common backend parameters
 -------------------------
