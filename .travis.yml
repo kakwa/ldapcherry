@@ -1,30 +1,26 @@
+sudo: required
+dist: trusty
+language: python
+
 env:
   - TRAVIS="yes"
 
 before_install:
-  - '[ "$TEST_PEP8" == "1" ] || curl https://ftp-master.debian.org/keys/archive-key-7.0.asc | sudo apt-key add -'
-  - '[ "$TEST_PEP8" == "1" ] || echo "deb http://http.debian.net/debian wheezy-backports main" | sudo tee -a /etc/apt/sources.list'
-  - '[ "$TEST_PEP8" == "1" ] || echo "deb http://http.debian.net/debian wheezy main" | sudo tee -a /etc/apt/sources.list'
-  - '[ "$TEST_PEP8" == "1" ] || sudo /sbin/ifconfig'
-  - '[ "$TEST_PEP8" == "1" ] || sudo apt-get update -qq'
-  - '[ "$TEST_PEP8" == "1" ] || sudo rm /etc/dpkg/dpkg.cfg.d/multiarch'
   - '[ "$TEST_PEP8" == "1" ] || sudo ./tests/test_env/deploy.sh'
 
-language: python
 python:
   - "2.7"
-#  - "3.2"
-#  - "3.3"
-# command to install dependencies
+
 install: 
   - pip install -e .
   - "if [[ $TEST_PEP8 == '1' ]]; then pip install pep8; fi"
   - pip install passlib
   - pip install coveralls
+
 # command to run tests
-script: 
-  - coverage run --source=ldapcherry setup.py test
-  - "if [[ $TEST_HIREDIS == '1' ]]; then pip install hiredis; fi"
+#
+#script: 
+#  - coverage run --source=ldapcherry setup.py test
 script: "if [[ $TEST_PEP8 == '1' ]]; then pep8 --repeat --show-source --exclude=.venv,.tox,dist,docs,build,*.egg,tests,misc . scripts/ldapcherryd; else coverage run --source=ldapcherry setup.py test; fi"
 matrix:
   include:
