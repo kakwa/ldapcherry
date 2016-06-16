@@ -9,8 +9,10 @@ admin-lv3:
             - cn=users,ou=Group,dc=example,dc=org
 #        ad:
 #            - Administrators
-#            - Domain Controllers
-#            - Domain Users
+#            - Group Policy Creator Owners
+#            - Enterprise Admins
+#            - Schema Admins
+#            - Domain Admins
 
 admin-lv2:
     display_name: Administrators Level 2
@@ -21,8 +23,7 @@ admin-lv2:
             - cn=nagios admins,ou=Group,dc=example,dc=org
             - cn=users,ou=Group,dc=example,dc=org
 #        ad:
-#            - Domain Users
-#            - Domain Controllers
+#            - Administrators
 
 developpers:
     display_name: Developpers
@@ -38,5 +39,3 @@ users:
     backends_groups:
         ldap:
             - cn=users,ou=Group,dc=example,dc=org
-#        ad:
-#            - Domain Users

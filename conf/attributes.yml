@@ -75,16 +75,16 @@ uidNumber:
             - '40000'
     backends:
         ldap: uidNumber
-#        ad: UIDNumber
+#        ad: uidNumber
 gidNumber:
     description: "Group ID Number of the user"
     display_name: "GID Number"
     weight: 70
     type: int
-    default: 10000
+    default: '10000'
     backends:
         ldap: gidNumber
-#        ad: GIDNumber
+#        ad: gidNumber
 shell:
     description: "Shell of the user"
     display_name: "Shell"
@@ -111,7 +111,7 @@ home:
             - /home/
     backends:
         ldap: homeDirectory
-#        ad: HOMEDIRECTORY
+#        ad: homeDirectory
 password:
     description: "Password of the user"
     display_name: "Password"
@@ -120,7 +120,7 @@ password:
     type: password
     backends:
         ldap: userPassword
-#        ad: userPassword 
+#        ad: unicodePwd
 
 #logscript:
 #    description: "Windows login script"
