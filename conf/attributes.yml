@@ -10,7 +10,7 @@ cn:
             - $name
     backends:
         ldap: cn
-#        ad: CN
+#        ad: cn
 first-name:
     description: "First name of the user"
     display_name: "First Name"
@@ -56,6 +56,8 @@ uid:
         args:
             - $first-name
             - $name
+            - '10000'
+            - '40000'
     backends:
         ldap: uid
 #        ad: sAMAccountName
@@ -69,6 +71,8 @@ uidNumber:
         args:
             - $first-name
             - $name
+            - '10000'
+            - '40000'
     backends:
         ldap: uidNumber
 #        ad: UIDNumber
@@ -93,7 +97,7 @@ shell:
         - /bin/sh
     backends:
         ldap: loginShell
-#        ad: LOGINSHEL
+#        ad: loginShell 
 home:
     description: "Home user path"
     display_name: "Home"
@@ -116,7 +120,7 @@ password:
     type: password
     backends:
         ldap: userPassword
-#        ad: PASSWORD
+#        ad: userPassword 
 
 #logscript:
 #    description: "Windows login script"
