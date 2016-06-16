@@ -23,11 +23,15 @@ class CaFileDontExist(Exception):
         self.log = "CA file %(cafile)s don't exist" % {'cafile': cafile}
 
 
+class MissingAttr(Exception):
+    def __init__(self):
+        self.log = 'attributes "cn" and "unicodePwd" must be declared ' \
+		   'in attributes.yml for all Active Directory backends.'
+
 NO_ATTR = 0
 DISPLAYED_ATTRS = 1
 LISTED_ATTRS = 2
 ALL_ATTRS = 3
-
 
 # UserAccountControl Attribute/Flag Values
 # For details, look at:
@@ -138,6 +142,12 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.attrlist = []
         for a in attrslist:
             self.attrlist.append(self._str(a))
+
+	if 'cn' not in self.attrlist:
+	    raise MissingAttr()
+
+	if 'unicodePwd' not in self.attrlist:
+	    raise MissingAttr()
 
     def _search_group(self, searchfilter, groupdn):
         searchfilter = self._str(searchfilter)
