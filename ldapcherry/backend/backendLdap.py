@@ -292,15 +292,19 @@ class Backend(ldapcherry.backend.Backend):
             return True
         else:
             return False
+    
+    def attrs_pretreatment(self, attrs):
+        attrs_str = {}
+        for a in attrs:
+            attrs_str[self._str(a)] = self._str(attrs[a])
+        return attrs_str
 
     def add_user(self, attrs):
         """add a user"""
         ldap_client = self._bind()
-        attrs_str = {}
         # encoding crap
-        for a in attrs:
-            attrs_str[self._str(a)] = self._str(attrs[a])
-
+        attrs_str = self.attrs_pretreatment(attrs)
+        
         attrs_str['objectClass'] = self.objectclasses
         # construct is DN
         dn = \
