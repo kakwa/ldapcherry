@@ -34,6 +34,8 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
     else:
         value = ''
         value2 = ''
+    if 'default' in attr and value == '':
+        value = ' value="'+ attr['default'] + '"'
   %>
 
   <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
