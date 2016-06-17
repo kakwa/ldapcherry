@@ -1,7 +1,15 @@
 Dev
 ***
 
+
+Version 0.2.3
+*************
+
 * [fix ] notifications missing in case of multiple notification waiting to be displayed
+* [fix ] password handling for Active Directory backend 
+* [fix ] default attribute value handling
+* [fix ] corrections on exemple configuration
+* [impr] explicite mandatory attributes for Active Directory backend
 
 Version 0.2.2
 *************
