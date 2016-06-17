@@ -11,7 +11,7 @@ cn:
             - $name
     backends:
         ldap: cn
-        ad: CN
+        ad: cn
 
 first-name:
     description: "First name of the user"
@@ -117,7 +117,7 @@ password:
     type: password
     backends:
         ldap: userPassword
-        ad: userPassword
+        ad: unicodePwd
 logscript:
     description: "Windows login script"
     display_name: "Login script"

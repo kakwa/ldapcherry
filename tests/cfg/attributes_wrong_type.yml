@@ -11,8 +11,7 @@ cn:
             - $name
     backends:
         ldap: cn
-        ad: CN
-
+        ad: cn
 first-name:
     description: "First name of the user"
     display_name: "First Name"
@@ -21,3 +20,11 @@ first-name:
     backends:
         ldap: givenName
         ad: givenName
+password:
+    description: "Password of the user"
+    display_name: "Password"
+    weight: 31
+    self: True
+    type: password
+    backends:
+        ad: unicodePwd

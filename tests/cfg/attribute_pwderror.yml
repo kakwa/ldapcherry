@@ -29,4 +29,11 @@ password:
     type: password
     backends:
         ldap: userPassword
-        ad: userPassword
+        ad: unicodePwd 
+cn:
+    description: "First Name and Display Name"
+    display_name: "Display Name"
+    type: string
+    weight: 30
+    backends:
+        ad: cn
