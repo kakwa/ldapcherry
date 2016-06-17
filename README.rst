@@ -30,7 +30,7 @@ Nice and simple application to manage users and groups in multiple directory ser
 :Dev:    `LdapCherry source code on GitHub <https://github.com/kakwa/ldapcherry>`_
 :PyPI:   `LdapCherry package on Pypi <http://pypi.python.org/pypi/ldapcherry>`_
 :License: MIT
-:Author:  Pierre-Francois Carpentier - copyright © 2015
+:Author:  Pierre-Francois Carpentier - copyright © 2016
 
 ----
 
@@ -55,6 +55,8 @@ through the proper plugin (provided that it is implemented ^^).
 
 LdapCherry also aims to be as simple as possible to deploy: no crazy dependencies, 
 few configuration files, extensive debug logs and full documentation.
+
+The default backend plugins permit to manage Ldap and Active Directory.
 
 ***************
   Screenshots
