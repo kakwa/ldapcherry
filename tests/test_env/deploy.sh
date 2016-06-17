@@ -6,20 +6,6 @@ then
   DEBIAN_FRONTEND=noninteractive apt-get install kpartx -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
   DEBIAN_FRONTEND=noninteractive apt-get install lsb-base libattr1 -t wheezy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
   DEBIAN_FRONTEND=noninteractive apt-get install samba python-samba samba-vfs-modules -t wheezy-backports -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
-  truncate -s 512M file.img
-  fdisk file.img <<EOF
-n
-p
-1
-
-
-
-w
-q
-EOF
-  kpartx -a file.img
-  mkfs.ext4 /dev/mapper/loop0p1
-  mount /dev/mapper/loop0p1 /var/lib/samba/
 else
   DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd samba python-samba samba-vfs-modules -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 fi

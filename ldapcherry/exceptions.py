@@ -127,7 +127,7 @@ class WrongParamValue(Exception):
         self.param = param
         possible_values_str = string.join(possible_values, ', ')
         self.log = \
-            "wrong value for param '%(param)s' in section '%(section)s'"\
+            "wrong value for param '%(param)s' in section '%(section)s'" \
             ", possible values are [%(values)s]" % \
             {
                 'param': param,
@@ -167,7 +167,7 @@ class PasswordAttributesCollision(Exception):
         self.key = key
         self.log = \
             "key '" + key + "' type is password," \
-            " keys '" + key + "1' and '" + key + "2'"\
+            " keys '" + key + "1' and '" + key + "2'" \
             " are reserved and cannot be used"
 
 

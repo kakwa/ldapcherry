@@ -259,7 +259,6 @@ class Backend(ldapcherry.backend.Backend):
         else:
             dn_entry = r[0]
         return dn_entry
-
     # python-ldap talks in bytes,
     # as the rest of ldapcherry talks in unicode utf-8:
     # * everything passed to python-ldap must be converted to bytes
@@ -292,7 +291,7 @@ class Backend(ldapcherry.backend.Backend):
             return True
         else:
             return False
-    
+
     def attrs_pretreatment(self, attrs):
         attrs_str = {}
         for a in attrs:
@@ -304,14 +303,14 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client = self._bind()
         # encoding crap
         attrs_str = self.attrs_pretreatment(attrs)
-        
+
         attrs_str['objectClass'] = self.objectclasses
         # construct is DN
         dn = \
-            self._str(self.dn_user_attr) +\
-            '=' +\
-            self._str(attrs[self.dn_user_attr]) +\
-            ',' +\
+            self._str(self.dn_user_attr) + \
+            '=' + \
+            self._str(attrs[self.dn_user_attr]) + \
+            ',' + \
             self._str(self.userdn)
         # gen the ldif fir add_s and add the user
         ldif = modlist.addModlist(attrs_str)
