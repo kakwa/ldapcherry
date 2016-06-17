@@ -141,6 +141,8 @@ Example
 Active Directory Backend
 ------------------------
 
+.. warning:: This backend needs the **cn** and **unicodePwd** attributes to be declared in attributes.yml
+
 Class path
 ^^^^^^^^^^
 
