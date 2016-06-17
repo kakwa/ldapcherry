@@ -21,7 +21,7 @@ class TestError(object):
     def testGetSelfAttributes(self):
         inv = Attributes('./tests/cfg/attributes.yml')
         ret = inv.get_selfattributes()
-        expected = {'password': {'backends': {'ad': 'userPassword', 'ldap': 'userPassword'}, 'display_name': 'Password', 'description': 'Password of the user', 'weight': 31, 'self': True, 'type': 'password'}, 'shell': {'backends': {'ad': 'SHELL', 'ldap': 'shell'}, 'display_name': 'Shell', 'description': 'Shell of the user', 'weight': 80, 'values': ['/bin/bash', '/bin/zsh', '/bin/sh'], 'self': True, 'type': 'stringlist'}}
+        expected = {'password': {'backends': {'ad': 'unicodePwd', 'ldap': 'userPassword'}, 'display_name': 'Password', 'description': 'Password of the user', 'weight': 31, 'self': True, 'type': 'password'}, 'shell': {'backends': {'ad': 'SHELL', 'ldap': 'shell'}, 'display_name': 'Shell', 'description': 'Shell of the user', 'weight': 80, 'values': ['/bin/bash', '/bin/zsh', '/bin/sh'], 'self': True, 'type': 'stringlist'}}
         assert ret == expected
 
     def testGetSelfAttributes(self):
@@ -33,7 +33,7 @@ class TestError(object):
     def testGetSearchAttributes(self):
         inv = Attributes('./tests/cfg/attributes.yml')
         ret = inv.get_search_attributes()
-        expected = {'first-name': {'backends': {'ad': 'givenName', 'ldap': 'givenName'}, 'display_name': 'First Name', 'description': 'First name of the user', 'weight': 20, 'search_displayed': True, 'type': 'string'}, 'cn': {'autofill': {'function': 'cn', 'args': ['$first-name', '$name']}, 'backends': {'ad': 'CN', 'ldap': 'cn'}, 'display_name': 'Display Name', 'description': 'Firt Name and Display Name', 'weight': 30, 'search_displayed': True, 'type': 'string'}, 'name': {'backends': {'ad': 'sn', 'ldap': 'sn'}, 'display_name': 'Name', 'description': 'Family name of the user', 'weight': 10, 'search_displayed': True, 'type': 'string'}, 'uid': {'display_name': 'UID', 'description': 'UID of the user', 'weight': 50, 'autofill': {'function': 'uid', 'args': ['$first-name', '$last-name']}, 'backends': {'ad': 'UID', 'ldap': 'uid'}, 'key': True, 'search_displayed': True, 'type': 'string'}}
+        expected = {'first-name': {'backends': {'ad': 'givenName', 'ldap': 'givenName'}, 'display_name': 'First Name', 'description': 'First name of the user', 'weight': 20, 'search_displayed': True, 'type': 'string'}, 'cn': {'autofill': {'function': 'cn', 'args': ['$first-name', '$name']}, 'backends': {'ad': 'cn', 'ldap': 'cn'}, 'display_name': 'Display Name', 'description': 'Firt Name and Display Name', 'weight': 30, 'search_displayed': True, 'type': 'string'}, 'name': {'backends': {'ad': 'sn', 'ldap': 'sn'}, 'display_name': 'Name', 'description': 'Family name of the user', 'weight': 10, 'search_displayed': True, 'type': 'string'}, 'uid': {'display_name': 'UID', 'description': 'UID of the user', 'weight': 50, 'autofill': {'function': 'uid', 'args': ['$first-name', '$last-name']}, 'backends': {'ad': 'UID', 'ldap': 'uid'}, 'key': True, 'search_displayed': True, 'type': 'string'}}
         assert ret == expected
 
     def testGetBackendAttributes(self):
