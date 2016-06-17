@@ -36,7 +36,7 @@ echo "deploy AD"
 printf '' > "${smbconffile}" && \
     ${sambacmd} domain provision ${hostip} \
     --domain="${domain}" --realm="${realm}" --dns-backend="${sambadns}" \
-    --targetdir="${targetdir}" --workgroup="${domain}" --use-rfc2307 \
+    --targetdir="${targetdir}" --use-rfc2307 \
     --configfile="${smbconffile}" --server-role="${role}" -d 1 --adminpass="${adpass}"
     
 
