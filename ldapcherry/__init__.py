@@ -31,6 +31,9 @@ from mako.template import Template
 from mako import lookup
 from sets import Set
 
+# passlib hash password module import
+from passlib.context import CryptContext
+
 SESSION_KEY = '_cp_username'
 
 
@@ -596,7 +599,12 @@ class LdapCherry(object):
                     raise PasswordMissMatch()
                 if not self._checkppolicy(params['attrs'][pwd1])['match']:
                     raise PPolicyError()
-                params['attrs'][attr] = params['attrs'][pwd1]
+                hash_type = self.attributes.attributes[attr].get('hash')
+                if hash_type:
+                    ctx = CryptContext(schemes=[hash_type])
+                    params['attrs'][attr] = ctx.encrypt(params['attrs'][pwd1])
+                else:
+                    params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs']:
                 self.attributes.check_attr(attr, params['attrs'][attr])
                 backends = self.attributes.get_backends_attributes(attr)
@@ -653,7 +661,12 @@ class LdapCherry(object):
                                 params['attrs'][pwd1]
                                 )['match']:
                         raise PPolicyError()
-                    params['attrs'][attr] = params['attrs'][pwd1]
+                    hash_type = self.attributes.attributes[attr].get('hash')
+                    if hash_type:
+                        ctx = CryptContext(schemes=[hash_type])
+                        params['attrs'][attr] = ctx.encrypt(params['attrs'][pwd1])
+                    else:
+                        params['attrs'][attr] = params['attrs'][pwd1]
             if attr in params['attrs'] and params['attrs'][attr] != '':
                 self.attributes.check_attr(attr, params['attrs'][attr])
                 backends = self.attributes.get_backends_attributes(attr)
