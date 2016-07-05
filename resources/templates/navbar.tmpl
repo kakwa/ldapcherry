@@ -15,9 +15,9 @@
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <a class="navbar-brand navbar-right" href='/logout'><span class="glyphicon glyphicon-off"></span> Logout</a>
-		            <form method='GET' action='/searchuser' class="navbar-form navbar-right" role="search">
+		            <form method='GET' action='/searchuser' class="navbar-form navbar-right" role="search" data-toggle="validator">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="searchstring" placeholder="Search User">
+                            <input type="text" class="form-control" data-minlength="3" name="searchstring" placeholder="Search User" data-error="Too short">
                         </div>
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>

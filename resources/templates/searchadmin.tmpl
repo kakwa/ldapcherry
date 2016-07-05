@@ -3,10 +3,10 @@
 <%block name="core">
     <div class="row clearfix">
         <div class="col-md-12 column">
-            <form method='get' action='/searchadmin' role="form" class="form-inline">
+            <form method='get' action='/searchadmin' role="form" class="form-inline" data-toggle="validator">
                 <div class="form-group">
                      <label for="searchstring">Search user to modify/delete</label>
-                     <input type="text" class="form-control" id="searchstring" name="searchstring" placeholder="Search User">
+                     <input type="text" class="form-control" data-minlength="3" data-error="Too short" id="searchstring" name="searchstring" placeholder="Search User">
                 </div>
                 <div class="form-group">
                     <label for="submit">Submit</label>
