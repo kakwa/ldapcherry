@@ -1,6 +1,12 @@
 Dev
 ***
 
+Version 0.2.4
+*************
+
+* [fix ] use post instead of get for ppolicy validation
+* [fix ] impose a minimum lenght of 3 for searches
+* [fix ] fix the maxuid in uid calculation in js
 
 Version 0.2.3
 *************
