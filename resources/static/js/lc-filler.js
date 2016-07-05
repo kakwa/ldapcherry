@@ -24,7 +24,7 @@ function lcMail(firstname, lastname, domain){
 function lcUidNumber(firstname, lastname, minuid, maxuid){
     var iminuid = parseInt(minuid);
     var imaxuid = parseInt(maxuid);
-    return (parseInt('0x'+sha1(firstname+lastname)) % imaxuid) + iminuid;
+    return (parseInt('0x'+sha1(firstname+lastname)) % (imaxuid - iminuid)) + iminuid;
 }
 
 function lcHomeDir(firstname, lastname, basedir){
