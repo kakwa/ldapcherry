@@ -180,14 +180,14 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
 
         ldap_client = self._bind()
 
-        dn = str('CN=%(cn)s,%(user_dn)s' % {
+        dn = self._str('CN=%(cn)s,%(user_dn)s' % {
                     'cn': cn,
                     'user_dn': self.userdn
                     })
 
         attrs = {}
 
-        attrs['unicodePwd'] = str(password_value)
+        attrs['unicodePwd'] = self._str(password_value)
 
         ldif = modlist.modifyModlist({'unicodePwd': 'tmp'}, attrs)
         ldap_client.modify_s(dn, ldif)
