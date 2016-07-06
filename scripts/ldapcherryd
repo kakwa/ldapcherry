@@ -17,8 +17,8 @@ from ldapcherry import LdapCherry
 
 
 def start(configfile=None, daemonize=False, environment=None,
-          fastcgi=False, scgi=False, pidfile=None, imports=None,
-          cgi=False):
+          fastcgi=False, scgi=False, pidfile=None,
+          cgi=False, debug=False):
     """Subscribe all engine plugins and start the engine."""
     sys.path = [''] + sys.path
 
@@ -47,7 +47,7 @@ def start(configfile=None, daemonize=False, environment=None,
     instance = LdapCherry()
     app = cherrypy.tree.mount(instance, '/', configfile)
     cherrypy.config.update(configfile)
-    instance.reload(app.config)
+    instance.reload(app.config, debug)
 
     engine = cherrypy.engine
 
@@ -123,6 +123,8 @@ if __name__ == '__main__':
                  help="store the process id in the given file")
     p.add_option('-P', '--Path', action="append", dest='Path',
                  help="add the given paths to sys.path")
+    p.add_option('-D', '--debug', action="store_true", dest='debug',
+                 help="debug to stderr in foreground")
     options, args = p.parse_args()
 
     if options.Path:
@@ -139,4 +141,4 @@ if __name__ == '__main__':
 
     start(options.config, options.daemonize,
           options.environment, options.fastcgi, options.scgi,
-          options.pidfile, options.cgi)
+          options.pidfile, options.cgi, options.debug)

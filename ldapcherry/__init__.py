@@ -260,7 +260,7 @@ class LdapCherry(object):
         # set log level
         cherrypy.log.access_log.setLevel(level)
 
-    def _set_error_log(self, config, level):
+    def _set_error_log(self, config, level, debug=False):
         """ Configure error logs
         """
         error_handler = self._get_param(
@@ -304,6 +304,12 @@ class LdapCherry(object):
 
         # set log level
         cherrypy.log.error_log.setLevel(level)
+
+        if debug:
+            handler = logging.StreamHandler(sys.stderr)
+            handler.setLevel(logging.DEBUG)
+            cherrypy.log.error_log.addHandler(handler)
+            cherrypy.log.error_log.setLevel(logging.DEBUG)
 
     def _auth(self, user, password):
         """ authenticate a user
@@ -360,7 +366,7 @@ class LdapCherry(object):
                   ):
             self.temp[t] = self.temp_lookup.get_template(t)
 
-    def reload(self, config=None):
+    def reload(self, config=None, debug=False):
         """ load/reload configuration
         @dict: configuration of ldapcherry
         """
@@ -379,7 +385,7 @@ class LdapCherry(object):
             # configure access log
             self._set_access_log(config, level)
             # configure error log
-            self._set_error_log(config, level)
+            self._set_error_log(config, level, debug)
 
             # load template files
             self._load_templates(config)
