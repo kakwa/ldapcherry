@@ -21,8 +21,11 @@ LdapCherry is launched using the internal cherrypy server:
     # ldapcherryd help
     $ ldapcherryd -h
 
-    # launching ldapcherryd in the forground
+    # launching ldapcherryd in the foreground
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini
+
+    # launching ldapcherryd in the foreground in debug mode
+    $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -D
 
     # launching ldapcherryd as a daemon
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -p /var/run/ldapcherry/ldapcherry.pid -d
