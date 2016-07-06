@@ -40,16 +40,16 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
 
   <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
     % if modify and a == keyattr:
-  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
   <span class="form-control" aria-describedby="basic-addon-${a}">${tmp}</span>
     % elif attr['type'] == 'string':
-  <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'email':
-  <input type="email"  id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid">
+  <input type="email"  id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid" readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'int':
-  <input type="number" id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value}>
+  <input type="number" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'fix':
-  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}">
+  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}" readonly  onfocus="this.removeAttribute('readonly');">
   <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" id="attr.${a}" name="attr.${a}">
@@ -59,9 +59,9 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
         %endfor
   </select>
     % elif attr['type'] == 'password':
-      <input type="password" class="form-control" data-ppolicy="ppolicy" name="attr.${a}1" id="${a}1" placeholder="${attr['description']}" ${required}>
+      <input type="password" class="form-control" data-ppolicy="ppolicy" name="attr.${a}1" id="${a}1" autocomplete='off' placeholder="${attr['description']}" ${required} readonly  onfocus="this.removeAttribute('readonly');">
       <span class="input-group-addon" id="basic-addon-${a}2">Retype ${attr['display_name']}</span>
-      <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" placeholder="Confirm" ${required}>
+      <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" autocomplete='off' placeholder="Confirm" ${required} readonly  onfocus="this.removeAttribute('readonly');">
     % endif
 </div>
 <div class="help-block with-errors"></div>

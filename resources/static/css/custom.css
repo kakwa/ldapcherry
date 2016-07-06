@@ -70,3 +70,13 @@ div#footer {
         font-size: 12px;
         text-align: center;
 }
+
+.form-control:-moz-read-only { /* For Firefox */
+    background-color: white;
+    cursor: default;
+}
+
+.form-control:read-only {
+    background-color: white;
+    cursor: default;
+}
