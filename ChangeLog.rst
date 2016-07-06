@@ -1,6 +1,7 @@
 Dev
 ***
 
+* [impr] add focus on first input of forms
 
 Version 0.2.5
 *************
