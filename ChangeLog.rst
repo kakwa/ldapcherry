@@ -2,6 +2,7 @@ Dev
 ***
 
 * [impr] add focus on first input of forms
+* [feat] add a -D switch to ldapcherryd which enables logging to stderr in foreground
 
 Version 0.2.5
 *************
