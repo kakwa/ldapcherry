@@ -1,6 +1,14 @@
 Dev
 ***
 
+
+Version 0.2.5
+*************
+
+* [fix ] encoding issues for passwords and cn in ad backend
+* [fix ] fix minimum lenght of 3 in search (no empty search, and server side check)
+* [impr] disable form autofilling (annoying in firefox), kind of a hack...
+
 Version 0.2.4
 *************
 
