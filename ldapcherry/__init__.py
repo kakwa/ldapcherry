@@ -359,7 +359,7 @@ class LdapCherry(object):
             )
         # load each template
         self.temp = {}
-        for t in ('index.tmpl', 'error.tmpl', 'login.tmpl',
+        for t in ('index.tmpl', 'error.tmpl', 'login.tmpl', '404.tmpl',
                   'searchadmin.tmpl', 'searchuser.tmpl', 'adduser.tmpl',
                   'roles.tmpl', 'groups.tmpl', 'form.tmpl', 'selfmodify.tmpl',
                   'modify.tmpl', 'service_unavailable.tmpl'
@@ -1063,6 +1063,17 @@ class LdapCherry(object):
             standalone_groups=user_lonely_groups,
             backends_display_names=self.backends_display_names,
             custom_js=self.custom_js,
+            notifications=self._empty_notification(),
+            )
+
+    @cherrypy.expose
+    @exception_decorator
+    def default(self, attr=''):
+        cherrypy.response.status = 404
+        self._check_auth(must_admin=False)
+        is_admin = self._check_admin()
+        return self.temp['404.tmpl'].render(
+            is_admin=is_admin,
             notifications=self._empty_notification(),
             )
 
