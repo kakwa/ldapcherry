@@ -1,4 +1,33 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="navbar.tmpl"/>
 <%block name="core">
+    <div class="row clearfix top-buffer bottom-buffer">
+        <div class="col-md-2 column">
+        </div>
+        <div class="col-md-12 column">
+            <div class="well well-sm">
+                <legend>Your attributes:</legend>
+		<table id="RecordTable" class="table table-hover table-condensed">
+		<tbody>
+		% if not searchresult is None:
+                     %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
+                     <tr>
+                             % if attr in searchresult:
+                                 <%
+                                 value = searchresult[attr]
+                                 if type(value) is list:
+                                     value = ', '.join(value)
+                                 %>
+                                <td>${attrs_list[attr]['display_name']}:</td>
+                                <td>${value}</td>
+                             % endif
+                     </tr>
+                     % endfor
+		%endif
+		</tbody>
+            </div>
+        </div>
+        <div class="col-md-2 column">
+        </div>
+    </div>
 </%block>

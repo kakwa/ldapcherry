@@ -885,8 +885,19 @@ class LdapCherry(object):
         """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
+        sess = cherrypy.session
+        user = str(sess.get(SESSION_KEY, None))
+        if self.auth_mode == 'none':
+            user_attrs = None
+        else:
+            user_attrs = self._get_user(user)
+        attrs_list = self.attributes.get_search_attributes()
+        print attrs_list
+        print user_attrs
         return self.temp['index.tmpl'].render(
             is_admin=is_admin,
+            attrs_list=attrs_list,
+            searchresult=user_attrs,
             notifications=self._empty_notification(),
             )
 

@@ -1,8 +1,13 @@
 Dev
 ***
 
+Version 0.3.0
+*************
+
 * [impr] add focus on first input of forms
+* [impr] add 404 (default) handler and its error page
 * [feat] add a -D switch to ldapcherryd which enables logging to stderr in foreground
+* [feat] print user's attribute on index page
 
 Version 0.2.5
 *************
