@@ -5,8 +5,11 @@
         <div class="col-md-2 column">
         </div>
         <div class="col-md-12 column">
-            <div class="well well-sm">
-                <legend>Your attributes:</legend>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Your attributes:</h3>
+              </div>
+              <div class="panel-body">
 		<table id="RecordTable" class="table table-hover table-condensed">
 		<tbody>
 		% if not searchresult is None:
@@ -25,8 +28,10 @@
                      % endfor
 		%endif
 		</tbody>
+                </table>
+                </div>
+              </div>
             </div>
-        </div>
         <div class="col-md-2 column">
         </div>
     </div>
