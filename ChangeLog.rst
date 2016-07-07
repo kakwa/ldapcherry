@@ -1,7 +1,7 @@
 Dev
 ***
 
-Version 0.3.0
+Version 0.3.1
 *************
 
 * [fix ] better and "html" correct display of user's attributes
