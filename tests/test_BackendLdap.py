@@ -120,12 +120,12 @@ class TestError(object):
 
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        ret = inv.auth('jwatson', 'passwordwatson')
+        ret = inv.auth(u'jwatsoné', u'passwordwatsoné')
         assert ret == True
 
     def testAuthFailure(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        res = inv.auth('notauser', 'password') or inv.auth('jwatson', 'notapassword')
+        res = inv.auth('notauser', 'password') or inv.auth(u'jwatsoné', 'notapasswordé')
         assert res == False
 
     def testMissingParam(self):
@@ -140,13 +140,13 @@ class TestError(object):
 
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        ret = inv.get_user('jwatson')
-        expected = {'uid': 'jwatson', 'cn': 'John Watson', 'sn': 'watson'}
+        ret = inv.get_user(u'jwatsoné')
+        expected = {'uid': u'jwatsoné', 'cn': 'John Watson', 'sn': 'watson'}
         assert ret == expected
 
     def testGetGroups(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        ret = inv.get_groups('jwatson')
+        ret = inv.get_groups(u'jwatsoné')
         expected = ['cn=itpeople,ou=Groups,dc=example,dc=org']
         assert ret == expected
 
@@ -156,11 +156,11 @@ class TestError(object):
            'cn=hrpeople,ou=Groups,dc=example,dc=org',
            'cn=itpeople,ou=Groups,dc=example,dc=org',
         ]
-        inv.add_to_groups('jwatson', groups)
-        ret = inv.get_groups('jwatson')
+        inv.add_to_groups(u'jwatsoné', groups)
+        ret = inv.get_groups(u'jwatsoné')
         print ret
-        inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
-        inv.del_from_groups('jwatson', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+        inv.del_from_groups(u'jwatsoné', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
+        inv.del_from_groups(u'jwatsoné', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
         assert ret == ['cn=itpeople,ou=Groups,dc=example,dc=org', 'cn=hrpeople,ou=Groups,dc=example,dc=org']
 
 
@@ -236,8 +236,8 @@ class TestError(object):
 
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
-        ret = inv.get_user('jwatson')
-        expected = {'uid': 'jwatson', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'watson', 'mail': 'j.watson@example.com', 'homePhone': '555-111-2225', 'cn': 'John Watson', 'userPassword': u'passwordwatson'}
+        ret = inv.get_user(u'jwatsoné')
+        expected = {'uid': u'jwatsoné', 'objectClass': 'inetOrgPerson', 'carLicense': 'HERCAR 125', 'sn': 'watson', 'mail': 'j.watson@example.com', 'homePhone': '555-111-2225', 'cn': 'John Watson', 'userPassword': u'passwordwatsoné'}
         assert ret == expected
 
     def testAddUserMissingMustattribute(self):

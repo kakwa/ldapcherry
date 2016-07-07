@@ -244,10 +244,9 @@ class Backend(ldapcherry.backend.Backend):
 
         username = ldap.filter.escape_filter_chars(username)
         user_filter = self.user_filter_tmpl % {
-            'username': username
+            'username': self._uni(username)
         }
-        user_filter = self._str(user_filter)
-        r = self._search(user_filter, attrs, self.userdn)
+        r = self._search(self._str(user_filter), attrs, self.userdn)
 
         if len(r) == 0:
             return None
@@ -279,11 +278,14 @@ class Backend(ldapcherry.backend.Backend):
     def auth(self, username, password):
         """Authentication of a user"""
 
-        binddn = self._str(self._get_user(username, NO_ATTR))
+        binddn = self._get_user(self._str(username), NO_ATTR)
         if binddn is not None:
             ldap_client = self._connect()
             try:
-                ldap_client.simple_bind_s(binddn, password)
+                ldap_client.simple_bind_s(
+                        self._str(binddn),
+                        self._str(password)
+                        )
             except ldap.INVALID_CREDENTIALS:
                 ldap_client.unbind_s()
                 return False
@@ -327,7 +329,7 @@ class Backend(ldapcherry.backend.Backend):
         """delete a user"""
         ldap_client = self._bind()
         # recover the user dn
-        dn = self._str(self._get_user(username, NO_ATTR))
+        dn = self._str(self._get_user(self._str(username), NO_ATTR))
         # delete
         if dn is not None:
             ldap_client.delete_s(dn)
@@ -339,7 +341,7 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, username, attrs):
         """ Set user attributes"""
         ldap_client = self._bind()
-        tmp = self._get_user(username, ALL_ATTRS)
+        tmp = self._get_user(self._str(username), ALL_ATTRS)
         dn = self._str(tmp[0])
         old_attrs = tmp[1]
         for attr in attrs:
@@ -382,7 +384,7 @@ class Backend(ldapcherry.backend.Backend):
     def add_to_groups(self, username, groups):
         ldap_client = self._bind()
         # recover dn of the user and his attributes
-        tmp = self._get_user(username, ALL_ATTRS)
+        tmp = self._get_user(self._str(username), ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
@@ -435,7 +437,7 @@ class Backend(ldapcherry.backend.Backend):
         # it follows the same logic than add_to_groups
         # but with MOD_DELETE
         ldap_client = self._bind()
-        tmp = self._get_user(username, ALL_ATTRS)
+        tmp = self._get_user(self._str(username), ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
@@ -467,7 +469,7 @@ class Backend(ldapcherry.backend.Backend):
     def search(self, searchstring):
         """Search users"""
         # escape special char to avoid injection
-        searchstring = ldap.filter.escape_filter_chars(searchstring)
+        searchstring = ldap.filter.escape_filter_chars(self._str(searchstring))
         # fill the search string template
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
@@ -492,7 +494,7 @@ class Backend(ldapcherry.backend.Backend):
     def get_user(self, username):
         """Gest a specific user"""
         ret = {}
-        tmp = self._get_user(username, ALL_ATTRS)
+        tmp = self._get_user(self._str(username), ALL_ATTRS)
         if tmp is None:
             raise UserDoesntExist(username, self.backend_name)
         attrs_tmp = tmp[1]
@@ -506,7 +508,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def get_groups(self, username):
         """Get all groups of a user"""
-        username = ldap.filter.escape_filter_chars(username)
+        username = ldap.filter.escape_filter_chars(self._str(username))
         userdn = self._get_user(username, NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {

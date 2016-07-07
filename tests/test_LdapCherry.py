@@ -158,7 +158,7 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
         app.auth_mode = 'or'
         try:
-            app.login('jwatson', 'passwordwatson')
+            app.login('jwatsoné', 'passwordwatsoné')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/'
             assert e[0][0] == expected
@@ -170,7 +170,7 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
         app.auth_mode = 'or'
         try:
-            app.login('jwatson', 'wrongPassword')
+            app.login('jwatsoné', 'wrongPasswordé')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/signin'
             assert e[0][0] == expected
