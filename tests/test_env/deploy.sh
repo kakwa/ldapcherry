@@ -48,8 +48,8 @@ mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
 sleep 5
 
-#sh -x /etc/init.d/samba restart
-/etc/init.d/samba-ad-dc restart
+sh -x /etc/init.d/samba stop 
+sh -x /etc/init.d/samba-ad-dc restart
 #sh -x /etc/init.d/smbd restart
 #sh -x /etc/init.d/nmbd restart
 
