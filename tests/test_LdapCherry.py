@@ -19,6 +19,7 @@ from cherrypy.process import plugins, servers
 from cherrypy import Application
 import logging
 from ldapcherry.lclogging import *
+import json
 
 cherrypy.session = {}
 
@@ -260,6 +261,29 @@ class TestError(object):
         for page in pages:
             print(page)
             htmlvalidator(pages[page])
+
+    def testNoneType(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        app.modify('ssmith'),
+ 
+    def testNaughtyStrings(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        with open('./tests/cfg/blns.json') as data_file:
+            data = json.load(data_file)
+        for attr in data:
+            print('testing: ' + attr)
+            # delete whatever is happening...
+            try:
+                app._deleteuser('test')
+            except:
+                pass
+            form = {'groups': {}, 'attrs': {'password1': u'password☭', 'password2': u'password☭', 'cn': 'Test', 'name': attr, 'uidNumber': u'1000', 'gidNumber': u'1000', 'home': u'/home/test', 'first-name': u'Test ☭', 'email': u'test@test.fr', 'uid': 'test'}, 'roles': {'admin-lv3': u'on', 'admin-lv2': u'on', 'users': u'on'}}
+            app._adduser(form)
+            page = app.searchuser('test'),
+            app._deleteuser('test')
+            htmlvalidator(page[0])
 
     def testLogger(self):
         app = LdapCherry()

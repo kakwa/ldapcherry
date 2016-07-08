@@ -16,6 +16,7 @@ import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
 import base64
+import cgi
 
 from exceptions import *
 from ldapcherry.lclogging import *
@@ -53,6 +54,31 @@ class LdapCherry(object):
             severity=logging.DEBUG,
             traceback=True
             )
+
+    def _escape_list(self, data):
+        ret = []
+        for i in data:
+            ret.append(cgi.escape(i, True))
+
+    def _escape_dict(self, data):
+        for d in data:
+            if isinstance(data[d], list):
+                data[d] = self._escape_list(data[d])
+            elif isinstance(data[d], dict):
+                data[d] = self._escape_dict(data[d])
+            else:
+                data[d] = cgi.escape(data[d], True)
+        return data
+
+    def _escape(self, data, dtype):
+        if data is None:
+            return None
+        elif dtype == 'search_list':
+            for d in data:
+                data[d] = self._escape_dict(data[d])
+        elif dtype == 'attr_list':
+            data = self._escape_dict(data)
+        return data
 
     def _get_param(self, section, key, config, default=None):
         """ Get configuration parameter "key" from config
@@ -895,7 +921,7 @@ class LdapCherry(object):
         return self.temp['index.tmpl'].render(
             is_admin=is_admin,
             attrs_list=attrs_list,
-            searchresult=user_attrs,
+            searchresult=self._escape(user_attrs, 'attr_list'),
             notifications=self._empty_notification(),
             )
 
@@ -911,7 +937,7 @@ class LdapCherry(object):
             res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp['searchuser.tmpl'].render(
-            searchresult=res,
+            searchresult=self._escape(res, 'search_list'),
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
@@ -948,7 +974,7 @@ class LdapCherry(object):
             res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp['searchadmin.tmpl'].render(
-            searchresult=res,
+            searchresult=self._escape(res, 'search_list'),
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
@@ -1053,7 +1079,7 @@ class LdapCherry(object):
         key = self.attributes.get_key()
         form = self.temp['form.tmpl'].render(
             attributes=self.attributes.attributes,
-            values=user_attrs,
+            values=self._escape(user_attrs, 'attr_list'),
             modify=True,
             keyattr=key,
             autofill=False
@@ -1069,7 +1095,7 @@ class LdapCherry(object):
             form=form,
             roles=roles,
             is_admin=is_admin,
-            standalone_groups=user_lonely_groups,
+            standalone_groups=self._escape(user_lonely_groups, 'attr_list'),
             backends_display_names=self.backends_display_names,
             custom_js=self.custom_js,
             notifications=self._empty_notification(),
@@ -1115,7 +1141,7 @@ class LdapCherry(object):
                 )
         form = self.temp['form.tmpl'].render(
             attributes=self.attributes.get_selfattributes(),
-            values=user_attrs,
+            values=self._escape(user_attrs, 'attr_list'),
             modify=True,
             autofill=False
             )

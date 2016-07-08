@@ -29,6 +29,8 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
             tmp = values[a][0]
         else:
             tmp = values[a]
+        if tmp is None:
+           tmp = ''  
         value = ' value="'+ tmp + '"'
         value2 = '<option>'+ tmp +'</option>'
     else:

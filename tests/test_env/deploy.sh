@@ -2,6 +2,7 @@
 
 DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install samba -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+DEBIAN_FRONTEND=noninteractive apt-get install w3c-markup-validator -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 
 rsync -a `dirname $0`/ /
 cd `dirname $0`/../../
