@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 0.3.2
+*************
+
+* [fix ] fix many encoding errors on login and password
+
 Version 0.3.1
 *************
 
