@@ -109,7 +109,7 @@ if as_option_root() or not os.path.exists(
 setup(
     name='ldapcherry',
     zip_safe=False,
-    version='0.3.2',
+    version='0.3.3',
     author='Pierre-Francois Carpentier',
     author_email='carpentier.pf@gmail.com',
     packages=[

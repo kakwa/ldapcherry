@@ -1,6 +1,13 @@
 Dev
 ***
 
+Version 0.3.3
+*************
+
+
+* [fix ] add html escape for fields display
+* [impr] disable minimum search lenght for admin search
+
 Version 0.3.2
 *************
 
