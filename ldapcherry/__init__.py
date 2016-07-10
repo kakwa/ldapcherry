@@ -59,6 +59,7 @@ class LdapCherry(object):
         ret = []
         for i in data:
             ret.append(cgi.escape(i, True))
+        return ret
 
     def _escape_dict(self, data):
         for d in data:
@@ -66,6 +67,8 @@ class LdapCherry(object):
                 data[d] = self._escape_list(data[d])
             elif isinstance(data[d], dict):
                 data[d] = self._escape_dict(data[d])
+            elif isinstance(data[d], Set):
+                data[d] = Set(self._escape_list(data[d]))
             else:
                 data[d] = cgi.escape(data[d], True)
         return data
@@ -77,6 +80,8 @@ class LdapCherry(object):
             for d in data:
                 data[d] = self._escape_dict(data[d])
         elif dtype == 'attr_list':
+            data = self._escape_dict(data)
+        elif dtype == 'lonely_groups':
             data = self._escape_dict(data)
         return data
 
@@ -1095,7 +1100,7 @@ class LdapCherry(object):
             form=form,
             roles=roles,
             is_admin=is_admin,
-            standalone_groups=self._escape(user_lonely_groups, 'attr_list'),
+            standalone_groups=self._escape(user_lonely_groups, 'lonely_groups'),
             backends_display_names=self.backends_display_names,
             custom_js=self.custom_js,
             notifications=self._empty_notification(),
