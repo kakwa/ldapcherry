@@ -1,6 +1,12 @@
 Dev
 ***
 
+Version 0.3.4
+*************
+
+* [impr] focus on first field for all forms 
+* [impr] add icon in navbar to return on /
+
 Version 0.3.3
 *************
 
