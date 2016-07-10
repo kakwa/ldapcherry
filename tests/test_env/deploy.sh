@@ -27,7 +27,7 @@ df -h
 smbconffile=/etc/samba/smb.conf
 domain=dc
 realm=dc.ldapcherry.org
-sambadns=SAMBA_INTERNAL
+sambadns=NONE
 targetdir=/var/lib/samba/
 role=dc
 sambacmd=samba-tool
@@ -49,10 +49,12 @@ mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
 sleep 5
 
-sh -x /etc/init.d/samba stop 
-sh -x /etc/init.d/samba-ad-dc restart
-#sh -x /etc/init.d/smbd restart
-#sh -x /etc/init.d/nmbd restart
+/etc/init.d/samba stop 
+/etc/init.d/smbd stop
+/etc/init.d/nmbd stop 
+/etc/init.d/samba-ad-dc restart
+
+cat /var/log/samba/*
 
 sleep 5
 
