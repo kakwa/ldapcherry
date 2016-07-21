@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 0.3.5
+*************
+
+* [fix ] fix error in ad backend when self modifying password
+
 Version 0.3.4
 *************
 
