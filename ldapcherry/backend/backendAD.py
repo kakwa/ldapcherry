@@ -174,16 +174,19 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
                 ad_groups.append('cn=' + group + ',' + self.groupdn)
         return ad_groups
 
-    def _set_password(self, cn, password):
+    def _set_password(self, name, password, by_cn=True):
         unicode_pass = '\"' + password + '\"'
         password_value = unicode_pass.encode('utf-16-le')
 
         ldap_client = self._bind()
 
-        dn = self._str('CN=%(cn)s,%(user_dn)s' % {
-                    'cn': cn,
-                    'user_dn': self.userdn
-                    })
+        if by_cn:
+            dn = self._str('CN=%(cn)s,%(user_dn)s' % {
+                        'cn': name,
+                        'user_dn': self.userdn
+                       })
+        else:
+            dn = name
 
         attrs = {}
 
@@ -201,7 +204,8 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         password = attrs['unicodePwd']
         del(attrs['unicodePwd'])
         super(Backend, self).add_user(attrs)
-        self._set_password(attrs['cn'], password)
+        userdn = self._get_user(username, NO_ATTR)
+        self._set_password(userdn, password, False)
 
     def set_attrs(self, username, attrs):
         if 'unicodePwd' in attrs:
