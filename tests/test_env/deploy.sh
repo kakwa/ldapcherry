@@ -29,6 +29,9 @@ df -h
 /etc/init.d/nmbd stop 
 /etc/init.d/samba-ad-dc stop
 
+pkill -9 winbindd
+pkill -9 smbd
+pkill -9 nmbd
 
 find /var/log/samba/ -type f -exec rm -f {} \;
 
