@@ -52,10 +52,12 @@ printf '' > "${smbconffile}" && \
 echo "Move configuration"
 mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
-cat ${targetdir}/etc/smb.conf
+cat ${smbconffile}
 
 mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
+
+timeout 30 samba -i
 
 sleep 5
 
