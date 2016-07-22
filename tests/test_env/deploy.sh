@@ -24,6 +24,14 @@ cat /etc/hosts
 
 df -h
 
+/etc/init.d/samba stop 
+/etc/init.d/smbd stop
+/etc/init.d/nmbd stop 
+/etc/init.d/samba-ad-dc stop
+
+
+find /var/log/samba/ -type f -exec rm -f {} \;
+
 smbconffile=/etc/samba/smb.conf
 domain=dc
 realm=dc.ldapcherry.org
@@ -44,15 +52,14 @@ printf '' > "${smbconffile}" && \
 echo "Move configuration"
 mv "${targetdir}/etc/smb.conf" "${smbconffile}"
 
+cat ${targetdir}/etc/smb.conf
+
 mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
 
 sleep 5
 
-/etc/init.d/samba stop 
-/etc/init.d/smbd stop
-/etc/init.d/nmbd stop 
-/etc/init.d/samba-ad-dc restart
+/etc/init.d/samba-ad-dc start
 
 cat /var/log/samba/*
 
