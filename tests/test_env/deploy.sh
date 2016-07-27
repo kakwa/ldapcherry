@@ -46,6 +46,7 @@ adpass=qwertyP455
 
 hostname ad.ldapcherry.org 
 /etc/init.d/dnsmasq stop
+pkill -9 dnsmasq
 
 echo "deploy AD"
 printf '' > "${smbconffile}" && \
