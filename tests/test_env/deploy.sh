@@ -44,7 +44,7 @@ role=dc
 sambacmd=samba-tool
 adpass=qwertyP455
 
-hostname $realm
+hostname test.ldapcherry.org 
 /etc/init.d/dnsmasq stop
 
 echo "deploy AD"
