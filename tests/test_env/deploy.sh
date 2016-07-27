@@ -44,6 +44,8 @@ role=dc
 sambacmd=samba-tool
 adpass=qwertyP455
 
+hostname $realm
+
 echo "deploy AD"
 printf '' > "${smbconffile}" && \
     ${sambacmd} domain provision ${hostip} \
