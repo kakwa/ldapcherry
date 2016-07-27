@@ -38,13 +38,14 @@ find /var/log/samba/ -type f -exec rm -f {} \;
 smbconffile=/etc/samba/smb.conf
 domain=dc
 realm=dc.ldapcherry.org
-sambadns=NONE
+sambadns=SAMBA_INTERNAL
 targetdir=/var/lib/samba/
 role=dc
 sambacmd=samba-tool
 adpass=qwertyP455
 
 hostname $realm
+/etc/init.d/dnsmasq stop
 
 echo "deploy AD"
 printf '' > "${smbconffile}" && \
