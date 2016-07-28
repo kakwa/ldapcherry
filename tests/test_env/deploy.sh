@@ -29,10 +29,6 @@ df -h
 /etc/init.d/nmbd stop 
 /etc/init.d/samba-ad-dc stop
 
-pkill -9 winbindd
-pkill -9 smbd
-pkill -9 nmbd
-
 find /var/log/samba/ -type f -exec rm -f {} \;
 
 smbconffile=/etc/samba/smb.conf
@@ -68,9 +64,6 @@ cat ${smbconffile}
 
 mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
-
-timeout 30 samba -i
-
 sleep 5
 
 /etc/init.d/samba-ad-dc start
@@ -79,4 +72,4 @@ cat /var/log/samba/*
 
 sleep 5
 
-netstat -apn
+netstat -apn | grep samba
