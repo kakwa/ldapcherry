@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
-from __future__ import unicode_literals
 
 import pytest
 import sys
@@ -159,7 +158,7 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
         app.auth_mode = 'or'
         try:
-            app.login('jwatsoné', 'passwordwatsoné')
+            app.login(u'jwatsoné', u'passwordwatsoné')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/'
             assert e[0][0] == expected
@@ -171,7 +170,7 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
         app.auth_mode = 'or'
         try:
-            app.login('jwatsoné', 'wrongPasswordé')
+            app.login(u'jwatsoné', u'wrongPasswordé')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/signin'
             assert e[0][0] == expected
