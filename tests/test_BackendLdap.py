@@ -178,9 +178,9 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
         'uid': u'test☭',
-        'sn':  'test',
-        'cn':  'test',
-        'userPassword': 'test',
+        'sn':  u'test☭',
+        'cn':  u'test☭',
+        'userPassword': u'test☭',
         'uidNumber': '42',
         'gidNumber': '42',
         'homeDirectory': '/home/test/'
@@ -192,9 +192,9 @@ class TestError(object):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
         'uid': u'test☭',
-        'sn':  'test',
-        'cn':  'test',
-        'userPassword': 'test',
+        'sn':  u'test☭',
+        'cn':  u'test☭',
+        'userPassword': u'test☭',
         'uidNumber': '42',
         'gidNumber': '42',
         'homeDirectory': '/home/test/'
@@ -206,11 +206,11 @@ class TestError(object):
     def testAddUserDuplicate(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
-        'uid': 'test',
-        'sn':  'test',
-        'cn':  'test',
+        'uid': u'test☭',
+        'sn':  u'test☭',
+        'cn':  u'test☭',
         'uidNumber': '42',
-        'userPassword': 'test',
+        'userPassword': u'test☭',
         'gidNumber': '42',
         'homeDirectory': '/home/test/'
         }
@@ -218,17 +218,17 @@ class TestError(object):
             inv.add_user(user)
             inv.add_user(user)
         except UserAlreadyExists:
-            inv.del_user('test')
+            inv.del_user(u'test☭')
             return
         else:
-            inv.del_user('test')
+            inv.del_user(u'test☭')
             raise AssertionError("expected an exception")
 
     def testDelUserDontExists(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         try:
-            inv.del_user('test')
-            inv.del_user('test')
+            inv.del_user(u'test☭')
+            inv.del_user(u'test☭')
         except UserDoesntExist:
             return
         else:
@@ -243,10 +243,10 @@ class TestError(object):
     def testAddUserMissingMustattribute(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
-        'uid': 'test',
-        'sn':  'test',
-        'cn':  'test',
-        'userPassword': 'test',
+        'uid': u'test☭',
+        'sn':  u'test☭',
+        'cn':  u'test☭',
+        'userPassword': u'test☭',
         'gidNumber': '42',
         'homeDirectory': '/home/test/'
         }
@@ -255,5 +255,5 @@ class TestError(object):
         except ldap.OBJECT_CLASS_VIOLATION:
             return
         else:
-            inv.del_user('test')
+            inv.del_user(u'test☭')
             raise AssertionError("expected an exception")
