@@ -186,7 +186,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
                         'user_dn': self.userdn
                        })
         else:
-            dn = name
+            dn = self._str(name)
 
         attrs = {}
 
@@ -204,14 +204,14 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         password = attrs['unicodePwd']
         del(attrs['unicodePwd'])
         super(Backend, self).add_user(attrs)
-        userdn = self._get_user(username, NO_ATTR)
-        self._set_password(userdn, password, False)
+        self._set_password(attrs['cn'], password)
 
     def set_attrs(self, username, attrs):
         if 'unicodePwd' in attrs:
             password = attrs['unicodePwd']
             del(attrs['unicodePwd'])
-            self._set_password(attrs['cn'], password)
+            userdn = self._get_user(self._str(username), NO_ATTR)
+            self._set_password(userdn, password, False)
         super(Backend, self).set_attrs(username, attrs)
 
     def add_to_groups(self, username, groups):
@@ -224,7 +224,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
 
     def get_groups(self, username):
         username = ldap.filter.escape_filter_chars(username)
-        userdn = self._get_user(username, NO_ATTR)
+        userdn = self._get_user(self._str(username), NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {
             'userdn': userdn,
@@ -253,7 +253,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         if binddn is not None:
             ldap_client = self._connect()
             try:
-                ldap_client.simple_bind_s(binddn, password)
+                ldap_client.simple_bind_s(self._str(binddn), self._str(password))
             except ldap.INVALID_CREDENTIALS:
                 ldap_client.unbind_s()
                 return False
