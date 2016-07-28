@@ -48,6 +48,11 @@ hostname ad.ldapcherry.org
 /etc/init.d/dnsmasq stop
 pkill -9 dnsmasq
 
+kill -9 `cat /var/run/samba/smbd.pid` 
+rm -f /var/run/samba/smbd.pid
+kill -9 `cat /var/run/samba/nmbd.pid` 
+rm -f /var/run/samba/nmbd.pid
+
 echo "deploy AD"
 printf '' > "${smbconffile}" && \
     ${sambacmd} domain provision ${hostip} \
