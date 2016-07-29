@@ -56,20 +56,24 @@ default_groups = ['Domain Admins', 'Backup Operators']
 
 class TestError(object):
 
+    @travis_disabled
     def testNominal(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         return True
 
+    @travis_disabled
     def testAuthSuccess(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         ret = inv.auth('Administrator', 'qwertyP455')
         assert ret == True
 
+    @travis_disabled
     def testAuthFailure(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         res = inv.auth('notauser', 'password') or inv.auth(u'☭default_user', 'notapassword')
         assert res == False
 
+    @travis_disabled
     def testMissingParam(self):
         cfg2 = {}
         return True
@@ -80,6 +84,7 @@ class TestError(object):
         else:
             raise AssertionError("expected an exception")
 
+    @travis_disabled
     def testSetPassword(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
@@ -92,6 +97,7 @@ class TestError(object):
         inv.del_user(u'☭default_user')
         assert ret == True
 
+    @travis_disabled
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
@@ -106,6 +112,7 @@ class TestError(object):
             if i != 'unicodePwd':
                 assert ret[i] == expected[i]
 
+    @travis_disabled
     def testGetGroups(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
@@ -118,6 +125,7 @@ class TestError(object):
         inv.del_user(u'☭default_user')
         assert ret == expected
 
+    @travis_disabled
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
@@ -131,6 +139,7 @@ class TestError(object):
         inv.del_user(u'☭default_user2')
         assert Set(ret.keys()) == Set(expected)
 
+    @travis_disabled
     def testAddUser(self):
         try:
             inv.del_user(u'test☭')
@@ -149,6 +158,7 @@ class TestError(object):
         inv.add_user(user)
         inv.del_user(u'test☭')
 
+    @travis_disabled
     def testModifyUser(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         user = {
@@ -164,6 +174,7 @@ class TestError(object):
         inv.set_attrs(u'test☭', {'gecos': 'test2', 'homeDirectory': '/home/test/'})
         inv.del_user(u'test☭')
 
+    @travis_disabled
     def testAddUserDuplicate(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         user = {
@@ -185,6 +196,7 @@ class TestError(object):
             inv.del_user(u'test☭')
             raise AssertionError("expected an exception")
 
+    @travis_disabled
     def testDelUserDontExists(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
