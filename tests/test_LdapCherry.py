@@ -18,6 +18,7 @@ from cherrypy.process import plugins, servers
 from cherrypy import Application
 import logging
 from ldapcherry.lclogging import *
+from disable import *
 import json
 
 cherrypy.session = {}
@@ -245,6 +246,7 @@ class TestError(object):
         app._modify(modify_form)
         app._deleteuser('test')
 
+    @slow_disabled
     def testHtml(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
@@ -266,6 +268,7 @@ class TestError(object):
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
         app.modify('ssmith'),
  
+    @slow_disabled
     def testNaughtyStrings(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
