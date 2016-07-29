@@ -570,7 +570,7 @@ class LdapCherry(object):
             return 'anonymous'
         return cherrypy.session.get(SESSION_KEY)
 
-    def _check_auth(self, must_admin):
+    def _check_auth(self, must_admin, redir_login=True):
         """ check if a user is autheticated and, optionnaly an administrator
         if user not authentifaced -> redirection to login page (with base64
             of the originaly requested page (redirection after login)
@@ -591,15 +591,28 @@ class LdapCherry(object):
         b64requrl = base64.b64encode(cherrypy.url() + qs)
         if not username:
             # return to login page (with base64 of the url in query string
-            raise cherrypy.HTTPRedirect(
-                "/signin?url=%(url)s" % {'url': b64requrl},
-                )
+            if redir_login:
+                raise cherrypy.HTTPRedirect(
+                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    )
+            else:
+                raise cherrypy.HTTPError(
+                    "403 Forbidden",
+                    "You must be logged in to access this ressource.",
+                    )
 
         if 'connected' not in cherrypy.session \
                 or not cherrypy.session['connected']:
-            raise cherrypy.HTTPRedirect(
-                "/signin?url=%(url)s" % {'url': b64requrl},
-                )
+            if redir_login:
+                raise cherrypy.HTTPRedirect(
+                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    )
+            else:
+                raise cherrypy.HTTPError(
+                    "403 Forbidden",
+                    "You must be logged in to access this ressource.",
+                    )
+
         if cherrypy.session['connected'] and \
                 not cherrypy.session['isadmin']:
             if must_admin:
@@ -610,13 +623,20 @@ class LdapCherry(object):
                     )
             else:
                 return username
+
         if cherrypy.session['connected'] and \
                 cherrypy.session['isadmin']:
             return username
         else:
-            raise cherrypy.HTTPRedirect(
-                "/signin?url=%(url)s" % {'url': b64requrl},
-                )
+            if redir_login:
+                raise cherrypy.HTTPRedirect(
+                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    )
+            else:
+                raise cherrypy.HTTPError(
+                    "403 Forbidden",
+                    "You must be logged in to access this ressource.",
+                    )
 
     def _adduser(self, params):
         cherrypy.log.error(
@@ -953,7 +973,7 @@ class LdapCherry(object):
     @exception_decorator
     def checkppolicy(self, **params):
         """ search user page """
-        self._check_auth(must_admin=False)
+        self._check_auth(must_admin=False, redir_login=False)
         keys = params.keys()
         if len(keys) != 1:
             cherrypy.response.status = 400
@@ -1108,7 +1128,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     @exception_decorator
-    def default(self, attr=''):
+    def default(self, attr='', **params):
         cherrypy.response.status = 404
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
