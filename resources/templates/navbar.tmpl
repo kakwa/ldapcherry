@@ -13,12 +13,19 @@
                 <a class="navbar-brand" href="/searchadmin">Delete/Modify User</a>
                 % endif
                 </div>
-
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <a class="navbar-brand navbar-right" href='/logout'><span class="glyphicon glyphicon-off"></span> Logout</a>
+                            % if is_admin:
+		            <form method='GET' action='/searchadmin' class="navbar-form navbar-right" role="search" data-toggle="validator">
+                            % else:
 		            <form method='GET' action='/searchuser' class="navbar-form navbar-right" role="search" data-toggle="validator">
+                            % endif
                         <div class="form-group">
+                            % if is_admin:
+                            <input type="text" class="form-control" name="searchstring" placeholder="Search User">
+                            % else:
                             <input type="text" class="form-control" data-minlength="3" name="searchstring" placeholder="Search User" data-error="Too short" required>
+                            % endif
                         </div>
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>
