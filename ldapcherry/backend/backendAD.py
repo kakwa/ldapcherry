@@ -253,7 +253,10 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         if binddn is not None:
             ldap_client = self._connect()
             try:
-                ldap_client.simple_bind_s(self._str(binddn), self._str(password))
+                ldap_client.simple_bind_s(
+                    self._str(binddn),
+                    self._str(password)
+                )
             except ldap.INVALID_CREDENTIALS:
                 ldap_client.unbind_s()
                 return False
