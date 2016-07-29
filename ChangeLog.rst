@@ -1,6 +1,10 @@
 Dev
 ***
 
+* [fix ] fix many encoding errors in AD backend
+* [impr] add unit tests on AD backend
+* [impr] display the admin result page if searching as admin in navbar form
+
 Version 0.3.5
 *************
 
