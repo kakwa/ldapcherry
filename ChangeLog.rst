@@ -1,6 +1,7 @@
 Dev
 ***
 
+* [fix ] fix bad handling of = or & in passwords in ppolicy checker (js)
 * [fix ] fix many encoding errors in AD backend
 * [impr] add unit tests on AD backend
 * [impr] display the admin result page if searching as admin in navbar form
