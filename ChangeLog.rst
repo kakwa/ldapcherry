@@ -1,6 +1,10 @@
 Dev
 ***
 
+* [impr] add unit test for multi backend setup
+* [fix ] notify on add in case if user is already in one backend
+* [fix ] notify on modify in case if user is not in every backend
+* [fix ] delete user in all backends even if it doesn't exist in one of them
 * [fix ] fix bad handling of = or & in passwords in ppolicy checker (js)
 * [fix ] fix many encoding errors in AD backend
 * [impr] add unit tests on AD backend
