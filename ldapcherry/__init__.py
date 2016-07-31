@@ -847,7 +847,14 @@ class LdapCherry(object):
         admin = sess.get(SESSION_KEY, None)
 
         for b in self.backends:
-            self.backends[b].del_user(username)
+            try:
+                self.backends[b].del_user(username)
+            except UserDoesntExist as e:
+                cherrypy.log.error(
+                    msg="User '" + username +
+                        "' didn't exist in backend '" + b + "'",
+                    severity=logging.INFO
+                )
             cherrypy.log.error(
                 msg="user '" + username + "' deleted from backend '" + b + "'",
                 severity=logging.DEBUG
