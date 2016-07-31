@@ -13,6 +13,7 @@ from sets import Set
 from ldapcherry import LdapCherry
 from ldapcherry.exceptions import *
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
+import ldapcherry.backend.backendAD
 import cherrypy
 from cherrypy.process import plugins, servers
 from cherrypy import Application
@@ -22,6 +23,27 @@ from disable import *
 import json
 
 cherrypy.session = {}
+
+adcfg = {
+    'display_name': u'test☭',
+    'domain': 'DC.LDAPCHERRY.ORG',
+    'login': 'Administrator',
+    'password': 'qwertyP455',
+    'uri': 'ldaps://ad.ldapcherry.org',
+    'checkcert': 'off',
+}
+adattr = ['shell', 'cn', 'sAMAccountName', 'uidNumber', 'gidNumber', 'home', 'unicodePwd', 'givenName', 'email', 'sn']
+
+
+addefault_user = {
+'sAMAccountName': u'☭default_user',
+'sn':  u'test☭1',
+'cn':  u'test☭2',
+'unicodePwd': u'test☭P666',
+'uidNumber': '42',
+'gidNumber': '42',
+'homeDirectory': '/home/test/'
+}
 
 # monkey patching cherrypy to disable config interpolation
 def new_as_dict(self, raw=True, vars=None):
@@ -286,6 +308,14 @@ class TestError(object):
             page = app.searchuser('test'),
             app._deleteuser('test')
             htmlvalidator(page[0])
+
+    @travis_disabled
+    def testDeleteUserOneBackend(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_adldap.cfg', app)
+        inv = ldapcherry.backend.backendAD.Backend(adcfg, cherrypy.log, u'test☭', adattr, 'sAMAccountName')
+        inv.add_user(addefault_user.copy())
+        app._deleteuser(u'☭default_user')
 
     def testLogger(self):
         app = LdapCherry()
