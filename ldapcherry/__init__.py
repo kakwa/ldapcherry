@@ -661,8 +661,16 @@ class LdapCherry(object):
                     if b not in badd:
                         badd[b] = {}
                     badd[b][backends[b]] = params['attrs'][attr]
+        added = False
         for b in badd:
-            self.backends[b].add_user(badd[b])
+            try:
+                self.backends[b].add_user(badd[b])
+                added = True
+            except UserAlreadyExists as e:
+                self._add_notification('User already exists in backend "' + b + '"')
+        if not added:
+            raise e
+
 
         key = self.attributes.get_key()
         username = params['attrs'][key]
@@ -719,7 +727,11 @@ class LdapCherry(object):
                         badd[b] = {}
                     badd[b][backends[b]] = params['attrs'][attr]
         for b in badd:
-            self.backends[b].set_attrs(username, badd[b])
+            try:
+                self.backends[b].set_attrs(username, badd[b])
+            except UserDoesntExist as e:
+                self._add_notification('User does not exist in backend "' + b + '"')
+
         return badd
 
     def _selfmodify(self, params):
@@ -1096,6 +1108,15 @@ class LdapCherry(object):
         display_names = {}
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
+
+        if user is None:
+            cherrypy.response.status = 400
+            return self.temp['error.tmpl'].render(
+                is_admin=is_admin,
+                alert='warning',
+                message="No user requested"
+                )
+
         user_attrs = self._get_user(user)
         if user_attrs == {}:
             cherrypy.response.status = 400

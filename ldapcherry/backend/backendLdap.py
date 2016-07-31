@@ -342,6 +342,8 @@ class Backend(ldapcherry.backend.Backend):
         """ Set user attributes"""
         ldap_client = self._bind()
         tmp = self._get_user(self._str(username), ALL_ATTRS)
+        if tmp is None:
+            raise UserDoesntExist(username, self.backend_name)
         dn = self._str(tmp[0])
         old_attrs = tmp[1]
         for attr in attrs:

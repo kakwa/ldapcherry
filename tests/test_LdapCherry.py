@@ -288,8 +288,13 @@ class TestError(object):
     def testNoneType(self):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_test.ini', app)
-        app.modify('ssmith'),
+        app.modify('ssmith')
  
+    def testNoneModify(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_test.ini', app)
+        app.modify(user=None)
+
     @slow_disabled
     def testNaughtyStrings(self):
         app = LdapCherry()
@@ -316,6 +321,32 @@ class TestError(object):
         inv = ldapcherry.backend.backendAD.Backend(adcfg, cherrypy.log, u'test☭', adattr, 'sAMAccountName')
         inv.add_user(addefault_user.copy())
         app._deleteuser(u'☭default_user')
+
+    @travis_disabled
+    def testAddUserOneBackend(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_adldap.cfg', app)
+        inv = ldapcherry.backend.backendAD.Backend(adcfg, cherrypy.log, u'test☭', adattr, 'sAMAccountName')
+        inv.add_user(addefault_user.copy())
+        form = {'groups': {}, 'attrs': {'password1': u'password☭P455', 'password2': u'password☭P455', 'cn': u'Test ☭ Test', 'name': u'Test ☭', 'uidNumber': u'1000', 'gidNumber': u'1000', 'home': u'/home/test', 'first-name': u'Test ☭', 'email': u'test@test.fr', 'uid': u'☭default_user'}, 'roles': {'admin-lv3': u'on', 'admin-lv2': u'on', 'users': u'on'}}
+        app._adduser(form)
+        app._deleteuser(u'☭default_user')
+
+    @travis_disabled
+    def testModifyUserOneBackend(self):
+        app = LdapCherry()
+        loadconf('./tests/cfg/ldapcherry_adldap.cfg', app)
+        inv = ldapcherry.backend.backendAD.Backend(adcfg, cherrypy.log, u'test☭', adattr, 'sAMAccountName')
+	try:
+            app._deleteuser(u'☭default_user')
+        except:
+            pass
+        inv.add_user(addefault_user.copy())
+        modify_form = { 'attrs': {'first-name': u'Test42 ☭', 'uid': u'☭default_user'}, 'roles': { 'admin-lv3': u'on'}}
+        app._modify(modify_form)
+        app._deleteuser(u'☭default_user')
+
+
 
     def testLogger(self):
         app = LdapCherry()
