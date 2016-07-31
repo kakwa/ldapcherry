@@ -1,6 +1,9 @@
 Dev
 ***
 
+Version 0.4.0
+*************
+
 * [impr] add unit test for multi backend setup
 * [fix ] notify on add in case if user is already in one backend
 * [fix ] notify on modify in case if user is not in every backend
