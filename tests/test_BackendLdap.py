@@ -172,12 +172,12 @@ class TestError(object):
 
     def testAddUser(self):
         try:
-            inv.del_user(u'test☭')
+            inv.del_user(u'test☭,cn=')
         except:
             pass
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         user = {
-        'uid': u'test☭',
+        'uid': u'test☭,cn=',
         'sn':  u'test☭',
         'cn':  u'test☭',
         'userPassword': u'test☭',
@@ -186,7 +186,7 @@ class TestError(object):
         'homeDirectory': '/home/test/'
         }
         inv.add_user(user)
-        inv.del_user(u'test☭')
+        inv.del_user(u'test☭,cn=')
 
     def testModifyUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')

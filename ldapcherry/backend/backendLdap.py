@@ -311,7 +311,9 @@ class Backend(ldapcherry.backend.Backend):
         dn = \
             self._str(self.dn_user_attr) + \
             '=' + \
-            self._str(attrs[self.dn_user_attr]) + \
+            ldap.dn.escape_dn_chars(
+                self._str(attrs[self.dn_user_attr])
+                ) + \
             ',' + \
             self._str(self.userdn)
         # gen the ldif fir add_s and add the user
