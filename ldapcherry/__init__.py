@@ -667,10 +667,11 @@ class LdapCherry(object):
                 self.backends[b].add_user(badd[b])
                 added = True
             except UserAlreadyExists as e:
-                self._add_notification('User already exists in backend "' + b + '"')
+                self._add_notification(
+                    'User already exists in backend "' + b + '"'
+                    )
         if not added:
             raise e
-
 
         key = self.attributes.get_key()
         username = params['attrs'][key]
@@ -730,7 +731,9 @@ class LdapCherry(object):
             try:
                 self.backends[b].set_attrs(username, badd[b])
             except UserDoesntExist as e:
-                self._add_notification('User does not exist in backend "' + b + '"')
+                self._add_notification(
+                    'User does not exist in backend "' + b + '"'
+                    )
 
         return badd
 
