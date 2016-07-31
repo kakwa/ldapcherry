@@ -81,7 +81,7 @@ gidNumber:
     default: 10000
     backends:
         ldap: gidNumber
-        ad: GIDNumber
+        ad: gidNumber
 shell:
     description: "Shell of the user"
     display_name: "Shell"
