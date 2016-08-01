@@ -442,6 +442,8 @@ class Backend(ldapcherry.backend.Backend):
         # but with MOD_DELETE
         ldap_client = self._bind()
         tmp = self._get_user(self._str(username), ALL_ATTRS)
+        if tmp is None:
+            raise UserDoesntExist(username, self.backend_name)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
