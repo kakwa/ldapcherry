@@ -2,8 +2,8 @@ sudo: required
 dist: trusty
 language: python
 
-env:
-  - TRAVIS="yes"
+#env:
+#  - TRAVIS="yes"
 
 before_install:
   - '[ "$TEST_PEP8" == "1" ] || sudo ./tests/test_env/deploy.sh'

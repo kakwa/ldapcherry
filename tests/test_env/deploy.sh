@@ -48,6 +48,7 @@ kill -9 `cat /var/run/samba/smbd.pid`
 rm -f /var/run/samba/smbd.pid
 kill -9 `cat /var/run/samba/nmbd.pid` 
 rm -f /var/run/samba/nmbd.pid
+rm -rf /var/run/samba
 
 echo "deploy AD"
 printf '' > "${smbconffile}" && \
