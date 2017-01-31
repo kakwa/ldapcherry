@@ -8,7 +8,6 @@ import pytest
 import sys
 from sets import Set
 from ldapcherry.backend.backendLdap import Backend
-from ldapcherry import syslog_error
 from ldapcherry.exceptions import *
 import cherrypy
 import logging

@@ -31,9 +31,9 @@ class PPolicy(ldapcherry.ppolicy.PPolicy):
 
     def info(self):
         return \
-            "* Minimum length: %(len)n\n" \
-            "* Minimum number of uppercase characters: %(upper)n\n" \
-            "* Minimum number of digits: %(digit)n" % {
+            "* Minimum length: %(len)d\n" \
+            "* Minimum number of uppercase characters: %(upper)d\n" \
+            "* Minimum number of digits: %(digit)d" % {
                 'upper': self.min_upper,
                 'len': self.min_length,
                 'digit': self.min_digit

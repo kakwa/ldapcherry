@@ -90,10 +90,10 @@ class PPolicyError(Exception):
 
 class MissingMainFile(Exception):
     def __init__(self, config):
-        self.rolefile = rolefile
+        self.config = config
         self.log = \
             "fail to open main file '%(config)s'" % \
-            {'rolefile': rolefile}
+            {'config': config}
 
 
 class MissingAttributesFile(Exception):

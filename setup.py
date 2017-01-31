@@ -90,7 +90,6 @@ resources_files = get_list_files(
     data_dir,
     )
 
-as_option_root
 # add the configuration files if they don't exist
 if as_option_root() or not os.path.exists(
         config_dir):
