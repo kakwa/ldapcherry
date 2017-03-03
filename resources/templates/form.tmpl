@@ -26,14 +26,15 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
         required = ' required '
     if not values is None and a in values:
         if type(values[a]) is list:
-            tmp = values[a][0]
+            raw_value = values[a][0]
         else:
-            tmp = values[a]
-        if tmp is None:
-           tmp = ''  
-        value = ' value="'+ tmp + '"'
-        value2 = '<option>'+ tmp +'</option>'
+            raw_value = values[a]
+        if raw_value is None:
+           raw_value = ''
+        value = ' value="'+ raw_value + '"'
+        value2 = '<option>'+ raw_value +'</option>'
     else:
+        raw_value = ''
         value = ''
         value2 = ''
     if 'default' in attr and value == '':
@@ -43,7 +44,7 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
   <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
     % if modify and a == keyattr:
   <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
-  <span class="form-control" aria-describedby="basic-addon-${a}">${tmp}</span>
+  <span class="form-control" aria-describedby="basic-addon-${a}">${raw_value}</span>
     % elif attr['type'] == 'string':
   <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'email':
@@ -64,6 +65,8 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
       <input type="password" class="form-control" data-ppolicy="ppolicy" name="attr.${a}1" id="${a}1" autocomplete='off' placeholder="${attr['description']}" ${required} readonly  onfocus="this.removeAttribute('readonly');">
       <span class="input-group-addon" id="basic-addon-${a}2">Retype ${attr['display_name']}</span>
       <input type="password" class="form-control" data-match="#${a}1"  data-match-error="Passwords don't match" name="attr.${a}2" id="#${a}2" autocomplete='off' placeholder="Confirm" ${required} readonly  onfocus="this.removeAttribute('readonly');">
+    % elif attr['type'] == 'textfield':
+      <textarea id="attr.${a}" name="attr.${a}" class="form-control" placeholder="${attr['description']}">${raw_value}</textarea>
     % endif
 </div>
 <div class="help-block with-errors"></div>
