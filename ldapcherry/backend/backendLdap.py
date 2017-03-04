@@ -275,6 +275,19 @@ class Backend(ldapcherry.backend.Backend):
             return None
         return s.decode('utf-8', 'ignore')
 
+    def _extract_content(self, args, formatting):
+        match_object = re.search('\((.+)\)', formatting)
+
+        if not match_object:
+            raise Exception
+
+        arg_key = match_object.group(1)
+
+        if isinstance(args[arg_key], list):
+            return args[arg_key][0]
+        else:
+            return args[arg_key]
+
     def auth(self, username, password):
         """Authentication of a user"""
 
@@ -399,7 +412,7 @@ class Backend(ldapcherry.backend.Backend):
             # iterate on group membership attributes
             for attr in self.group_attrs:
                 # fill the content template
-                content = self._str(self.group_attrs[attr] % attrs)
+                content = self._str(self._extract_content(attrs, self.group_attrs[attr]))
                 self._logger(
                     severity=logging.DEBUG,
                     msg="%(backend)s: adding user '%(user)s'"
@@ -451,7 +464,7 @@ class Backend(ldapcherry.backend.Backend):
         for group in groups:
             group = self._str(group)
             for attr in self.group_attrs:
-                content = self._str(self.group_attrs[attr] % attrs)
+                content = self._str(self._extract_content(attrs, self.group_attrs[attr]))
                 ldif = [(ldap.MOD_DELETE, attr, content)]
                 try:
                     ldap_client.modify_s(group, ldif)
