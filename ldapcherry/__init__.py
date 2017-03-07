@@ -1051,26 +1051,31 @@ class LdapCherry(object):
         for r in self.roles.flatten:
             display_names[r] = self.roles.flatten[r]['display_name']
         roles_js = json.dumps(display_names, separators=(',', ':'))
-        form = self.temp['form.tmpl'].render(
-            attributes=self.attributes.attributes,
-            values=None,
-            modify=False,
-            autofill=True
-            )
-        roles = self.temp['roles.tmpl'].render(
-            roles=self.roles.flatten,
-            graph=self.roles.graph,
-            graph_js=graph_js,
-            roles_js=roles_js,
-            current_roles=None,
-            )
-        return self.temp['adduser.tmpl'].render(
-            form=form,
-            roles=roles,
-            is_admin=is_admin,
-            custom_js=self.custom_js,
-            notifications=self._empty_notification(),
-            )
+        try:
+            form = self.temp['form.tmpl'].render(
+                attributes=self.attributes.attributes,
+                values=None,
+                modify=False,
+                autofill=True
+                )
+            roles = self.temp['roles.tmpl'].render(
+                roles=self.roles.flatten,
+                graph=self.roles.graph,
+                graph_js=graph_js,
+                roles_js=roles_js,
+                current_roles=None,
+                )
+            return self.temp['adduser.tmpl'].render(
+                form=form,
+                roles=roles,
+                is_admin=is_admin,
+                custom_js=self.custom_js,
+                notifications=self._empty_notification(),
+                )
+        except NameError:
+            raise TemplateRenderError(
+                    exceptions.text_error_template().render()
+                    )
 
     @cherrypy.expose
     @exception_decorator
@@ -1203,20 +1208,27 @@ class LdapCherry(object):
                 "Self modification done"
             )
         user_attrs = self._get_user(user)
-        if user_attrs == {}:
-            return self.temp['error.tmpl'].render(
-                is_admin=is_admin,
-                alert='warning',
-                message="User doesn't exist"
+
+        try:
+            if user_attrs == {}:
+                return self.temp['error.tmpl'].render(
+                    is_admin=is_admin,
+                    alert='warning',
+                    message="User doesn't exist"
+                    )
+
+            form = self.temp['form.tmpl'].render(
+                attributes=self.attributes.get_selfattributes(),
+                values=self._escape(user_attrs, 'attr_list'),
+                modify=True,
+                autofill=False
                 )
-        form = self.temp['form.tmpl'].render(
-            attributes=self.attributes.get_selfattributes(),
-            values=self._escape(user_attrs, 'attr_list'),
-            modify=True,
-            autofill=False
-            )
-        return self.temp['selfmodify.tmpl'].render(
-            form=form,
-            is_admin=is_admin,
-            notifications=self._empty_notification(),
-            )
+            return self.temp['selfmodify.tmpl'].render(
+                form=form,
+                is_admin=is_admin,
+                notifications=self._empty_notification(),
+                )
+        except NameError:
+            raise TemplateRenderError(
+                    exceptions.text_error_template().render()
+                    )
