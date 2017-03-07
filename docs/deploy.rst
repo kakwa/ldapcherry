@@ -62,7 +62,7 @@ The mandatory parameters for an attribute, and their format are the following:
         description: <Human readable description of the attribute>                       # (free text)
         display_name: <Display name in LdapCherry forms>                                 # (free text)
         weight: <weight controlling the display order of the attributes, lower is first> # (integer)
-        type: <type of the attributes>                                                   # (in ['int', 'string', 'email', 'stringlist', 'fix'])
+        type: <type of the attributes>                                                   # (in ['int', 'string', 'email', 'stringlist', 'fix', 'textfield'])
         backends:                                                                        # (list of backend attributes name)
             - <backend id 1>: <backend 1 attribute name>
             - <backend id 2>: <backend 2 attribute name>
@@ -75,6 +75,18 @@ The mandatory parameters for an attribute, and their format are the following:
 
     <backend id> (the backend id) must be defined in main ini configuration file.
     LdapCherry won't start if it's not.
+
+Type listing
+^^^^^^^^^^^^
+
+The following **type** are supported:
+
+* **int**:        an integer (ex: uid)
+* **string**:     a string (ex: first name)
+* **stringlist**: a string to choose from a given list of strings (ex: one of /bin/sh, /bin/bash /bin/zsh for a shell)
+* **textfield**:  free multiline text (ex: an SSH key)
+* **email**:      an email address
+* **fix**:        a fix value, only present shown information purposes
 
 Type stringlist values
 ^^^^^^^^^^^^^^^^^^^^^^
