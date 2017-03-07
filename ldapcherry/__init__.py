@@ -30,6 +30,7 @@ from cherrypy.lib.httputil import parse_query_string
 # Mako template engines imports
 from mako.template import Template
 from mako import lookup
+from mako import exceptions
 from sets import Set
 
 SESSION_KEY = '_cp_username'
@@ -1133,29 +1134,37 @@ class LdapCherry(object):
         standalone_groups = tmp['unusedgroups']
         roles_js = json.dumps(display_names, separators=(',', ':'))
         key = self.attributes.get_key()
-        form = self.temp['form.tmpl'].render(
-            attributes=self.attributes.attributes,
-            values=self._escape(user_attrs, 'attr_list'),
-            modify=True,
-            keyattr=key,
-            autofill=False
+
+        try:
+            form = self.temp['form.tmpl'].render(
+                attributes=self.attributes.attributes,
+                values=self._escape(user_attrs, 'attr_list'),
+                modify=True,
+                keyattr=key,
+                autofill=False
+                )
+
+            roles = self.temp['roles.tmpl'].render(
+                roles=self.roles.flatten,
+                graph=self.roles.graph,
+                graph_js=graph_js,
+                roles_js=roles_js,
+                current_roles=user_roles,
             )
-        roles = self.temp['roles.tmpl'].render(
-            roles=self.roles.flatten,
-            graph=self.roles.graph,
-            graph_js=graph_js,
-            roles_js=roles_js,
-            current_roles=user_roles,
+
+            glued_template = self.temp['modify.tmpl'].render(
+                form=form,
+                roles=roles,
+                is_admin=is_admin,
+                standalone_groups=self._escape(standalone_groups, 'lonely_groups'),
+                backends_display_names=self.backends_display_names,
+                custom_js=self.custom_js,
+                notifications=self._empty_notification(),
             )
-        return self.temp['modify.tmpl'].render(
-            form=form,
-            roles=roles,
-            is_admin=is_admin,
-            standalone_groups=self._escape(standalone_groups, 'lonely_groups'),
-            backends_display_names=self.backends_display_names,
-            custom_js=self.custom_js,
-            notifications=self._empty_notification(),
-            )
+        except NameError:
+            raise TemplateRenderError(exceptions.text_error_template().render())
+
+        return glued_template
 
     @cherrypy.expose
     @exception_decorator

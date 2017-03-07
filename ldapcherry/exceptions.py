@@ -217,6 +217,11 @@ class GroupDoesntExist(Exception):
             " in backend '" + backend + "'"
 
 
+class TemplateRenderError(Exception):
+    def __init__(self, error):
+        self.log = "Template Render Error: " + error
+
+
 def exception_decorator(func):
     def ret(self, *args, **kwargs):
         try:
