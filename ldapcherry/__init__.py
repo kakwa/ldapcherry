@@ -1156,13 +1156,18 @@ class LdapCherry(object):
                 form=form,
                 roles=roles,
                 is_admin=is_admin,
-                standalone_groups=self._escape(standalone_groups, 'lonely_groups'),
+                standalone_groups=self._escape(
+                    standalone_groups,
+                    'lonely_groups'
+                    ),
                 backends_display_names=self.backends_display_names,
                 custom_js=self.custom_js,
                 notifications=self._empty_notification(),
             )
         except NameError:
-            raise TemplateRenderError(exceptions.text_error_template().render())
+            raise TemplateRenderError(
+                    exceptions.text_error_template().render()
+                    )
 
         return glued_template
 

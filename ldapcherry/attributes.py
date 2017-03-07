@@ -16,7 +16,8 @@ from sets import Set
 import yaml
 
 # List of available types for form
-types = ['string', 'textfield', 'email', 'int', 'stringlist', 'fix', 'password']
+types = ['string', 'textfield', 'email', 'int', 'stringlist',
+         'fix', 'password']
 
 
 class Attributes:
