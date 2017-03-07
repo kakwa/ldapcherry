@@ -16,7 +16,7 @@ from sets import Set
 import yaml
 
 # List of available types for form
-types = ['string', 'email', 'int', 'stringlist', 'fix', 'password']
+types = ['string', 'textfield', 'email', 'int', 'stringlist', 'fix', 'password']
 
 
 class Attributes:
@@ -80,6 +80,8 @@ class Attributes:
             raise AttrNotDefined(attrid)
         attr_type = self.attributes[attrid]['type']
         if attr_type == 'string':
+            return
+        elif attr_type == 'textfield':
             return
         elif attr_type == 'email':
             if self._is_email(value):
