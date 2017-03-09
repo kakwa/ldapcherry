@@ -11,10 +11,6 @@ Nice and simple application to manage users and groups in multiple directory ser
     
 .. image:: https://coveralls.io/repos/kakwa/ldapcherry/badge.svg 
     :target: https://coveralls.io/r/kakwa/ldapcherry
-
-.. image:: https://img.shields.io/pypi/dm/ldapcherry.svg
-    :target: https://pypi.python.org/pypi/ldapcherry
-    :alt: Number of PyPI downloads
     
 .. image:: https://img.shields.io/pypi/v/ldapcherry.svg
     :target: https://pypi.python.org/pypi/ldapcherry
