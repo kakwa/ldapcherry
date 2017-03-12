@@ -677,7 +677,7 @@ class LdapCherry(object):
         key = self.attributes.get_key()
         username = params['attrs'][key]
         sess = cherrypy.session
-        admin = sess.get(SESSION_KEY, None)
+        admin = sess.get(SESSION_KEY, 'unknown')
 
         cherrypy.log.error(
             msg="user '" + username + "' added by '" + admin + "'",
@@ -774,7 +774,7 @@ class LdapCherry(object):
             )
 
         sess = cherrypy.session
-        admin = sess.get(SESSION_KEY, None)
+        admin = sess.get(SESSION_KEY, 'unknown')
 
         cherrypy.log.error(
             msg="user '" + username + "' modified by '" + admin + "'",
@@ -860,7 +860,7 @@ class LdapCherry(object):
 
     def _deleteuser(self, username):
         sess = cherrypy.session
-        admin = sess.get(SESSION_KEY, None)
+        admin = sess.get(SESSION_KEY, 'unknown')
 
         for b in self.backends:
             try:
