@@ -109,3 +109,16 @@ cn: developpers
 description: Developpers 
 member: cn=Sheri Smith,ou=people,dc=example,dc=org
 
+dn: cn=posixdev,ou=group,dc=example,dc=org
+objectclass: posixGroup
+cn: posixdev
+description: Developpers
+gidNumber: 10002
+memberUid: ssmith
+
+dn: cn=posixadm,ou=group,dc=example,dc=org
+objectclass: posixGroup
+cn: posixadm
+description: Administration
+gidNumber: 10001
+memberUid: ssmith
