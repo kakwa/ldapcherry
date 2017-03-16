@@ -139,6 +139,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             }
 
         self.attrlist = []
+        self.group_attrs_keys = []
         for a in attrslist:
             self.attrlist.append(self._str(a))
 

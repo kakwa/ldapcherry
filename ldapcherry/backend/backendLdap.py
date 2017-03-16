@@ -180,7 +180,6 @@ class Backend(ldapcherry.backend.Backend):
         or if it's multivaluated.
         """
         for key in self.group_attrs_keys:
-            pass
             if key not in attrs:
                 raise MissingGroupAttr(key)
             if type(attrs[key]) is list and len(attrs[key]) == 1:
