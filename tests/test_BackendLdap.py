@@ -163,7 +163,6 @@ class TestError(object):
         inv.del_from_groups(u'jwatsoné', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
         assert ret == ['cn=itpeople,ou=Groups,dc=example,dc=org', 'cn=hrpeople,ou=Groups,dc=example,dc=org']
 
-
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.search('smith')
