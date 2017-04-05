@@ -5,6 +5,7 @@ for(var j in classes){
     //console.log(formSelector);
     //console.log(forms);
     if (forms.length > 0){
+        forms[0].style.removeProperty('display');
         var in_groups = forms[0].getElementsByClassName('input-group-addon');
         //console.log(in_groups);
         var i, len = in_groups.length;
