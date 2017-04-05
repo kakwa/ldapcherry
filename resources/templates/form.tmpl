@@ -58,7 +58,9 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
   <select class="form-control" id="attr.${a}" name="attr.${a}">
         ${value2}
         %for val in attr['values']:
+        %if '<option>' + val + '</option>' != value2:
         <option>${val}</option>
+        %endif
         %endfor
   </select>
     % elif attr['type'] == 'password':
