@@ -6,7 +6,7 @@ for(j=0; j < len_j; j++){
     //console.log(formSelector);
     //console.log(forms);
     if (forms.length > 0){
-        forms[0].style.removeProperty('display');
+        forms[0].style.removeProperty("display");
         var InputGroups = forms[0].getElementsByClassName("input-group-addon");
         //console.log(InputGroups);
         var i, len = InputGroups.length;
