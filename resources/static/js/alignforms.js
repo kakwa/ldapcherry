@@ -1,22 +1,23 @@
-classes = ['lcform-col-1', 'lcform-col-2']; 
-for(var j in classes){
+var classes = ["lcform-col-1", "lcform-col-2"];
+var j, len_j = classes.length;
+for(j=0; j < len_j; j++){
     var formSelector = classes[j];
     var forms = document.getElementsByClassName(formSelector);
     //console.log(formSelector);
     //console.log(forms);
     if (forms.length > 0){
         forms[0].style.removeProperty('display');
-        var in_groups = forms[0].getElementsByClassName('input-group-addon');
-        //console.log(in_groups);
-        var i, len = in_groups.length;
+        var InputGroups = forms[0].getElementsByClassName("input-group-addon");
+        //console.log(InputGroups);
+        var i, len = InputGroups.length;
         var longest = 0;
         for(i=0; i < len; i++){
-            if (in_groups[i].id != 'basic-addon-password2'){
-                longest = longest < in_groups[i].clientWidth ? in_groups[i].clientWidth : longest;
+            if (InputGroups[i].id !== "basic-addon-password2"){
+                longest = longest < InputGroups[i].clientWidth ? InputGroups[i].clientWidth : longest;
             }
         }
         for(i=0; i < len; i++){
-            in_groups[i].style.minWidth = (longest + 0) + 'px';
+            InputGroups[i].style.minWidth = (longest + 0) + "px";
         }
         //console.log(longest);
     }
