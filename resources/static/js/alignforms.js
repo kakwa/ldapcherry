@@ -1,6 +1,6 @@
 var classes = ["lcform-col-1", "lcform-col-2"];
-var j, len_j = classes.length;
-for(j=0; j < len_j; j++){
+var j, lenj = classes.length;
+for(j=0; j < lenj; j++){
     var formSelector = classes[j];
     var forms = document.getElementsByClassName(formSelector);
     //console.log(formSelector);
