@@ -1,6 +1,14 @@
 Dev
 ***
 
+Version 0.5.0
+*************
+
+* [feat] add handling of textfielf (thanks to Stan Rudenko)
+* [fix ] fix ldap.group_attr.<attr> handling with attr different than dn (uid for example)
+* [impr] removing duplicate option in form select fields
+* [impr] add dynamic resizing to align form labels (input-group-addon width)
+
 Version 0.4.0
 *************
 
