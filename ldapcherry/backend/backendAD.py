@@ -28,6 +28,7 @@ class MissingAttr(Exception):
         self.log = 'attributes "cn" and "unicodePwd" must be declared ' \
            'in attributes.yml for all Active Directory backends.'
 
+
 NO_ATTR = 0
 DISPLAYED_ATTRS = 1
 LISTED_ATTRS = 2
