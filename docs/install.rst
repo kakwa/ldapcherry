@@ -12,18 +12,13 @@ Download the latest release from `GitHub <https://github.com/kakwa/ldapcherry/re
     $ cd ldapcherry*
     $ python setup.py install
 
-From Pypi
----------
-
-.. sourcecode:: bash 
-
-    $ pip install ldapcherry
-
-or
+Alternatively, you can install from git:
 
 .. sourcecode:: bash
 
-    $ easy_install ldapcherry 
+    $ git clone https://github.com/kakwa/ldapcherry 
+    $ cd ldapcherry
+    $ python setup.py install
 
 Installed files
 ---------------
@@ -38,8 +33,12 @@ These directories can be changed by exporting the following variables before lau
 
 .. sourcecode:: bash
 
-    #optional, default sys.prefix + 'share' (/usr/share/ on most Linux)
+    # optional, default sys.prefix + 'share' (/usr/share/ on most Linux)
     $ export DATAROOTDIR=/usr/local/share/
-    #optional, default /etc/
+
+    # optional, default /etc/
     $ export SYSCONFDIR=/usr/local/etc/ 
 
+.. note:: if --root is passed, the install prefix is honored for these directories
+
+.. warning:: If you change these directories, **templates.dir** and **tools.staticdir.dir** in *ldapcherry.ini* need to be modified accordingly.
