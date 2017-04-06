@@ -35,6 +35,8 @@ from sets import Set
 
 SESSION_KEY = '_cp_username'
 
+version = '0.5.1'
+
 
 class LdapCherry(object):
 

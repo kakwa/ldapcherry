@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 0.5.1
+*************
+
+* [impr] cleaner align of labels (input-group-addon width)
+
 Version 0.5.0
 *************
 
