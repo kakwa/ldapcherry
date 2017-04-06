@@ -66,11 +66,16 @@ The default backend plugins permit to manage Ldap and Active Directory.
 
 .. sourcecode:: bash
 
+    # clone the repository
+    $ git clone https://github.com/kakwa/ldapcherry && cd ldapcherry
+
     # change the directory where to put the configuration (default: /etc)
-    $ export SYSCONFDIR=<sys conf dir>
+    $ export SYSCONFDIR=/etc
+    # change the directory where to put the resource (default: /usr/share)
+    $ export DATAROOTDIR=/usr/share/
     
     # install ldapcherry
-    $ pip install ldapcherry
+    $ python setup.py
 
     # edit configuration files
     $ vi /etc/ldapcherry/ldapcherry.ini
@@ -78,7 +83,7 @@ The default backend plugins permit to manage Ldap and Active Directory.
     $ vi /etc/ldapcherry/attributes.yml
 
     # launch ldapcherry
-    $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini
+    $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -D
 
 
 ***********
