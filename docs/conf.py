@@ -32,8 +32,9 @@ MOCK_MODULES = ['ldap']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../ldapcherry'))
 
-from ldapcherry.version import version
+from version import version
 
 # -- General configuration -----------------------------------------------------
 

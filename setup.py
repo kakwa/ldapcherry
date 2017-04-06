@@ -17,7 +17,8 @@ data_dir = os.path.join(datarootdir, 'ldapcherry')
 config_dir = os.path.join(sysconfdir, 'ldapcherry')
 small_description = 'A simple web application to manage Ldap entries'
 
-from ldapcherry.version import version
+sys.path.append('ldapcherry/')
+from version import version
 
 # change requirements according to python version
 if sys.version_info[0] == 2:
