@@ -2,7 +2,7 @@
 
 cd  `dirname $0`/../
 
-version=`sed -e "s/version\ * = \ *'\(.*\)'.*/\1/;tx;d;:x" ./ldapcherry/__init__.py`
+version=`sed -e "s/version\ * = \ *'\(.*\)'.*/\1/;tx;d;:x" ./ldapcherry/version.py`
 
 git tag "$version"
 git push origin "$version"
