@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 0.5.2
+*************
+
+* [fix ] regression in 0.5.1, setup.py could not work without the dependencies already installed
+
 Version 0.5.1
 *************
 
