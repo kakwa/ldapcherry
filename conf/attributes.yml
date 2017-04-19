@@ -118,6 +118,7 @@ password:
     weight: 31
     self: True
     type: password
+#    hash: ldap_sha512_crypt
     backends:
         ldap: userPassword
 #        ad: unicodePwd

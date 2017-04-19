@@ -25,6 +25,7 @@ if sys.version_info[0] == 2:
     install_requires = [
         'CherryPy >= 3.0.0',
         'python-ldap',
+        'passlib',
         'PyYAML',
         'Mako'
         ],
