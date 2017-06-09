@@ -18,11 +18,15 @@ This init script is available in **goodies/init-debian**.
 Apache Vhost
 ------------
 
+Basic Apache Vhost:
+
 .. literalinclude:: ../goodies/apache.conf
     :language: xml
 
 Nginx Vhost
 -----------
+
+Basic Nginx Vhost:
 
 .. literalinclude:: ../goodies/nginx.conf
     :language: yaml
@@ -30,11 +34,19 @@ Nginx Vhost
 Nginx Vhost (FastCGI)
 ---------------------
 
+Nginx Vhost in FastCGI mode:
+
 .. literalinclude:: ../goodies/nginx-fastcgi.conf
     :language: yaml
 
+.. warning::
+
+    LdapCherry requires the python flup module to run in FastCGI
+
 Lighttpd Vhost
 --------------
+
+Basic Lighttpd Vhost
 
 .. literalinclude:: ../goodies/lighttpd.conf
     :language: yaml
