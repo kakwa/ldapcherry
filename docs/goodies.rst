@@ -27,6 +27,12 @@ Nginx Vhost
 .. literalinclude:: ../goodies/nginx.conf
     :language: yaml
 
+Nginx Vhost (FastCGI)
+---------------------
+
+.. literalinclude:: ../goodies/nginx-fastcgi.conf
+    :language: yaml
+
 Lighttpd Vhost
 --------------
 
