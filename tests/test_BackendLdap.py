@@ -128,16 +128,6 @@ class TestError(object):
         res = inv.auth('notauser', 'password') or inv.auth(u'jwatsoné', 'notapasswordé')
         assert res == False
 
-    def testMissingParam(self):
-        cfg2 = {}
-        return True
-        try:
-            inv = Backend(cfg2, cherrypy.log, 'ldap', attr, 'uid')
-        except MissingKey:
-            return
-        else:
-            raise AssertionError("expected an exception")
-
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'ldap', attr, 'uid')
         ret = inv.get_user(u'jwatsoné')

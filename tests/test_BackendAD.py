@@ -74,17 +74,6 @@ class TestError(object):
         assert res == False
 
     @travis_disabled
-    def testMissingParam(self):
-        cfg2 = {}
-        return True
-        try:
-            inv = Backend(cfg2, cherrypy.log, u'test☭', attr, 'sAMAccountName')
-        except MissingKey:
-            return
-        else:
-            raise AssertionError("expected an exception")
-
-    @travis_disabled
     def testSetPassword(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:

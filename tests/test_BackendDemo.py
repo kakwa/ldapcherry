@@ -69,16 +69,6 @@ class TestError(object):
         res = inv.auth('notauser', 'password') or inv.auth('default_user', 'notapassword')
         assert res == False
 
-    def testMissingParam(self):
-        cfg2 = {}
-        return True
-        try:
-            inv = Backend(cfg2, cherrypy.log, 'test', attr, 'uid')
-        except MissingKey:
-            return
-        else:
-            raise AssertionError("expected an exception")
-
     def testGetUser(self):
         inv = Backend(cfg, cherrypy.log, 'test', attr, 'uid')
         inv.add_user(default_user)
