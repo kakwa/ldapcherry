@@ -36,7 +36,7 @@ Nice and simple application to manage users and groups in multiple directory ser
 
 LdapCherry is a CherryPY application to manage users and groups in multiple directory services.
 
-It's main features are:
+Its main features are:
 
 * manage multiple directories/databases backends in an unified way
 * roles management (as in "groups of groups")
