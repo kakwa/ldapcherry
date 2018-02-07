@@ -34,9 +34,9 @@ Nice and simple application to manage users and groups in multiple directory ser
   Demo
 ********
 
-A demo is accessible there: https://ldapcherry.kakwalab.ovh
+A demo is accessible here: https://ldapcherry.kakwalab.ovh
 
-The Credential are:
+The credentials are:
 
 * as administrator: admin/admin
 * as user: user/user
