@@ -30,6 +30,21 @@ Nice and simple application to manage users and groups in multiple directory ser
 
 ----
 
+********
+  Demo
+********
+
+A demo is accessible there: https://ldapcherry.kakwalab.ovh
+
+The Credential are:
+
+* as administrator: admin/admin
+* as user: user/user
+
+Please take note that it's not possible to modify/delete the 'admin' and 'user' users.
+
+Also take note that the service will be reseted once per day.
+
 ****************
   Presentation
 ****************
