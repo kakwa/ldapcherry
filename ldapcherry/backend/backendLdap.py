@@ -349,7 +349,7 @@ class Backend(ldapcherry.backend.Backend):
     def attrs_pretreatment(self, attrs):
         attrs_str = {}
         for a in attrs:
-            attrs_str[self._str(a)] = self._str(attrs[a])
+            attrs_str[self._str(a)] = [self._str(attrs[a])]
         return attrs_str
 
     def add_user(self, attrs):
@@ -403,7 +403,7 @@ class Backend(ldapcherry.backend.Backend):
         for attr in attrs:
             bcontent = self._str(attrs[attr])
             battr = self._str(attr)
-            new = {battr: bcontent}
+            new = {battr: [bcontent]}
             # if attr is dn entry, use rename
             if attr.lower() == self.dn_user_attr.lower():
                 ldap_client.rename_s(
@@ -423,7 +423,7 @@ class Backend(ldapcherry.backend.Backend):
                             tmp.append(self._str(value))
                         bold_value = tmp
                     else:
-                        bold_value = self._str(old_attrs[attr])
+                        bold_value = [self._str(old_attrs[attr])]
                     old = {battr: bold_value}
                 # attribute is not set, just add it
                 else:
@@ -466,7 +466,7 @@ class Backend(ldapcherry.backend.Backend):
                             'backend': self.backend_name
                             }
                 )
-                ldif = modlist.modifyModlist({}, {attr: content})
+                ldif = modlist.modifyModlist({}, {attr: [content]})
                 try:
                     ldap_client.modify_s(group, ldif)
                 # if already member, not a big deal, just log it and continue
