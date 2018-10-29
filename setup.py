@@ -23,7 +23,7 @@ from version import version
 # change requirements according to python version
 if sys.version_info[0] == 2:
     install_requires = [
-        'CherryPy >= 3.0.0',
+        'CherryPy >= 3.0.0, < 18.0.0',
         'python-ldap',
         'PyYAML',
         'Mako'
