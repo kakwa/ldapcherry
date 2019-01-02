@@ -15,7 +15,7 @@ import logging
 import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
-import base64
+import urllib
 import cgi
 
 from exceptions import *
@@ -387,7 +387,8 @@ class LdapCherry(object):
         )
         # preload templates
         self.temp_lookup = lookup.TemplateLookup(
-            directories=self.template_dir, input_encoding='utf-8'
+            directories=self.template_dir, input_encoding='utf-8',
+            default_filters=['unicode', 'h']
             )
         # load each template
         self.temp = {}
@@ -573,7 +574,7 @@ class LdapCherry(object):
 
     def _check_auth(self, must_admin, redir_login=True):
         """ check if a user is autheticated and, optionnaly an administrator
-        if user not authentifaced -> redirection to login page (with base64
+        if user not authenticated -> redirect to login page (with escaped URL
             of the originaly requested page (redirection after login)
         if user authenticated, not admin and must_admin enabled -> 403 error
         @boolean must_admin: flag "user must be an administrator to access
@@ -588,13 +589,13 @@ class LdapCherry(object):
             qs = ''
         else:
             qs = '?' + cherrypy.request.query_string
-        # base64 of the requested URL
-        b64requrl = base64.b64encode(cherrypy.url() + qs)
+        # Escaped version of the requested URL
+        quoted_requrl = urllib.quote_plus(cherrypy.url() + qs)
         if not username:
-            # return to login page (with base64 of the url in query string
+            # return to login page (with quoted url in query string)
             if redir_login:
                 raise cherrypy.HTTPRedirect(
-                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    "/signin?url=%(url)s" % {'url': quoted_requrl},
                     )
             else:
                 raise cherrypy.HTTPError(
@@ -606,7 +607,7 @@ class LdapCherry(object):
                 or not cherrypy.session['connected']:
             if redir_login:
                 raise cherrypy.HTTPRedirect(
-                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    "/signin?url=%(url)s" % {'url': quoted_requrl},
                     )
             else:
                 raise cherrypy.HTTPError(
@@ -631,7 +632,7 @@ class LdapCherry(object):
         else:
             if redir_login:
                 raise cherrypy.HTTPRedirect(
-                    "/signin?url=%(url)s" % {'url': b64requrl},
+                    "/signin?url=%(url)s" % {'url': quoted_requrl},
                     )
             else:
                 raise cherrypy.HTTPError(
@@ -919,7 +920,7 @@ class LdapCherry(object):
             if url is None:
                 redirect = "/"
             else:
-                redirect = base64.b64decode(url)
+                redirect = url
             raise cherrypy.HTTPRedirect(redirect)
         else:
             message = "login failed for user '%(user)s'" % {
@@ -932,7 +933,7 @@ class LdapCherry(object):
             if url is None:
                 qs = ''
             else:
-                qs = '?url=' + url
+                qs = '?url=' + urllib.quote_plus(url)
             raise cherrypy.HTTPRedirect("/signin" + qs)
 
     @cherrypy.expose
