@@ -1,6 +1,9 @@
 Dev
 ***
 
+* [sec ] fix XSS injection in the url redirect in the login page (thanks to jthiltges)
+* [impr] more systematic use of html and url escaping in the html rendering to prevent against content injection (thanks to jthiltges)
+
 Version 0.5.2
 *************
 
