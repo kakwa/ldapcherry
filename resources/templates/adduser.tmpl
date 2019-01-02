@@ -9,11 +9,11 @@
               <form method='POST' autocomplete="off" action='/adduser' role="form" class="form-signin" id=form>
               <fieldset>
               <legend>Fill new user's attributes:</legend>
-              ${form}
+              ${form | n}
               </fieldset>
               <fieldset>
               <legend>Enable/Disable user's roles:</legend>
-              ${roles}
+              ${roles | n}
               </fieldset>
               <div class="form-group">
                 <div class="input-group">

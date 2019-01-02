@@ -9,11 +9,11 @@
               <form method='POST' action='/modify' role="form" class="form-signin" id="form">
               <fieldset>
               <legend>Modify user's attributes:</legend>
-              ${form}
+              ${form | n}
               </fieldset>
               <fieldset>
               <legend>Enable/Disable user's roles:</legend>
-              ${roles}
+              ${roles | n}
               </fieldset>
               % if len(standalone_groups) != 0:
               <fieldset>
