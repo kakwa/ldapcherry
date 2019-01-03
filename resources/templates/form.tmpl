@@ -1,5 +1,6 @@
 ## -*- coding: utf-8 -*-
 <% 
+from markupsafe import Markup
 len_attr = len(attributes)
 switch = len_attr / 2
 if not switch * 2 == len_attr:
@@ -31,32 +32,32 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
             raw_value = values[a]
         if raw_value is None:
            raw_value = ''
-        value = ' value="'+ raw_value + '"'
-        value2 = '<option>'+ raw_value +'</option>'
+        value = Markup(' value="{}"').format(raw_value)
+        value2 = Markup('<option>{}</option>').format(raw_value)
     else:
         raw_value = ''
         value = ''
         value2 = ''
     if 'default' in attr and value == '':
-        value = ' value="'+ attr['default'] + '"'
+        value = Markup(' value="{}"').format(attr['default'])
   %>
 
   <span class="input-group-addon" id="basic-addon-${a}">${attr['display_name']}</span>
     % if modify and a == keyattr:
-  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
+  <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} ${value | n} readonly  onfocus="this.removeAttribute('readonly');">
   <span class="form-control" aria-describedby="basic-addon-${a}">${raw_value}</span>
     % elif attr['type'] == 'string':
-  <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
+  <input type="text"   id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value | n} readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'email':
-  <input type="email"  id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} data-error="email address is invalid" readonly  onfocus="this.removeAttribute('readonly');">
+  <input type="email"  id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value | n} data-error="email address is invalid" readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'int':
-  <input type="number" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value} readonly  onfocus="this.removeAttribute('readonly');">
+  <input type="number" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' placeholder="${attr['description']}" aria-describedby="basic-addon-${a}" ${required} ${value | n} readonly  onfocus="this.removeAttribute('readonly');">
     % elif attr['type'] == 'fix':
   <input type="hidden" id="attr.${a}" name="attr.${a}" class="form-control" autocomplete='off' aria-describedby="basic-addon-${a}" ${required} value="${attr['value']}" readonly  onfocus="this.removeAttribute('readonly');">
   <span class="form-control" placeholder="${attr['description']}" aria-describedby="basic-addon-${a}">${attr['value']}</span>
     % elif attr['type'] == 'stringlist':
   <select class="form-control" id="attr.${a}" name="attr.${a}">
-        ${value2}
+        ${value2 | n}
         %for val in attr['values']:
         %if '<option>' + val + '</option>' != value2:
         <option>${val}</option>
