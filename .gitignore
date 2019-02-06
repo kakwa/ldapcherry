@@ -54,3 +54,4 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+ldapcherry-dev.ini
