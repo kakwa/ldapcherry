@@ -86,33 +86,31 @@ ${form_col(lc2)}
 </div>
 % if autofill:
 <%
-import sys
-if sys.version < '3':
-    from sets import Set as set
-
-attr_set = set([])
+attr_set = []
 attr_events = {}
 functions = {}
 for attrid in attributes:
     attr = attributes[attrid]
     field = 'attr.' + attrid
-    attr_set.add(field)
-    if 'autofill' in attr:
-        function = attr['autofill']['function']
-        tuple = (field, function)
-        if not tuple in functions:
-            functions[tuple] = []
-        for arg in attr['autofill']['args']:
-            if arg[0] == '$':
-                field_arg = 'attr.' + arg[1:]
-                attr_set.add(field_arg)
-                functions[tuple].append("fields['" + field_arg + "'].value")
-                if not field_arg in attr_events:
-                    attr_events[field_arg] = []
-                attr_events[field_arg].append(tuple) 
-            else:
-                value = arg
-                functions[tuple].append("'" + value + "'")
+    if field not in attr_set:
+        attr_set.append(field)
+        if 'autofill' in attr:
+            function = attr['autofill']['function']
+            tuple = (field, function)
+            if not tuple in functions:
+                functions[tuple] = []
+            for arg in attr['autofill']['args']:
+                if arg[0] == '$':
+                    field_arg = 'attr.' + arg[1:]
+                    if field_arg not in attr_set:
+                        attr_set.append(field_arg)
+                    functions[tuple].append("fields['" + field_arg + "'].value")
+                    if not field_arg in attr_events:
+                        attr_events[field_arg] = []
+                    attr_events[field_arg].append(tuple)
+                else:
+                    value = arg
+                    functions[tuple].append("'" + value + "'")
 %>
 <script>
 var fields = new Object();
