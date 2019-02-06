@@ -243,7 +243,7 @@ class LdapCherry(object):
         elif self.auth_mode == 'custom':
             # load custom auth module
             auth_module = self._get_param('auth', 'auth.module', config)
-            auth = __import__(auth_module, globals(), locals(), ['Auth'], -1)
+            auth = __import__(auth_module, globals(), locals(), ['Auth'], 0)
             self.auth = auth.Auth(config['auth'], cherrypy.log)
         else:
             raise WrongParamValue(
