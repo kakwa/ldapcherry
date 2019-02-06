@@ -15,10 +15,9 @@ import logging
 import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
-import urllib
 import cgi
 
-from exceptions import *
+from ldapcherry.exceptions import *
 from ldapcherry.lclogging import *
 from ldapcherry.roles import Roles
 from ldapcherry.attributes import Attributes
@@ -31,7 +30,13 @@ from cherrypy.lib.httputil import parse_query_string
 from mako.template import Template
 from mako import lookup
 from mako import exceptions
-from sets import Set
+
+
+if sys.version < '3':
+    from sets import Set as set
+    from urllib import quote_plus
+else:
+    from urllib.parse import quote_plus
 
 SESSION_KEY = '_cp_username'
 
@@ -68,8 +73,8 @@ class LdapCherry(object):
                 data[d] = self._escape_list(data[d])
             elif isinstance(data[d], dict):
                 data[d] = self._escape_dict(data[d])
-            elif isinstance(data[d], Set):
-                data[d] = Set(self._escape_list(data[d]))
+            elif isinstance(data[d], set):
+                data[d] = set(self._escape_list(data[d]))
             else:
                 data[d] = cgi.escape(data[d], True)
         return data
@@ -178,7 +183,7 @@ class LdapCherry(object):
             except Exception as e:
                 raise MissingParameter('backends', backend + '.module')
             try:
-                bc = __import__(module, globals(), locals(), ['Backend'], -1)
+                bc = __import__(module, globals(), locals(), ['Backend'], 0)
             except Exception as e:
                 self._handle_exception(e)
                 raise BackendModuleLoadingFail(module)
@@ -219,7 +224,7 @@ class LdapCherry(object):
             'ldapcherry.ppolicy'
         )
         try:
-            pp = __import__(module, globals(), locals(), ['PPolicy'], -1)
+            pp = __import__(module, globals(), locals(), ['PPolicy'], 0)
         except:
             raise BackendModuleLoadingFail(module)
         if 'ppolicy' in config:
@@ -590,7 +595,7 @@ class LdapCherry(object):
         else:
             qs = '?' + cherrypy.request.query_string
         # Escaped version of the requested URL
-        quoted_requrl = urllib.quote_plus(cherrypy.url() + qs)
+        quoted_requrl = quote_plus(cherrypy.url() + qs)
         if not username:
             # return to login page (with quoted url in query string)
             if redir_login:
@@ -695,7 +700,7 @@ class LdapCherry(object):
                 roles.append(r)
         groups = self.roles.get_groups(roles)
         for b in groups:
-            self.backends[b].add_to_groups(username, Set(groups[b]))
+            self.backends[b].add_to_groups(username, set(groups[b]))
 
         cherrypy.log.error(
             msg="user '" + username + "' made member of " +
@@ -823,10 +828,10 @@ class LdapCherry(object):
                 if b not in g:
                     g[b] = []
             tmp = \
-                Set(groups_add[b]) - \
-                Set(groups_keep[b]) - \
-                Set(groups_current[b]) - \
-                Set(lonely_groups[b])
+                set(groups_add[b]) - \
+                set(groups_keep[b]) - \
+                set(groups_current[b]) - \
+                set(lonely_groups[b])
             cherrypy.log.error(
                 msg="user '" + username + "' added to groups: " +
                     str(list(tmp)) + " in backend '" + b + "'",
@@ -840,11 +845,11 @@ class LdapCherry(object):
                     g[b] = []
             tmp = \
                 (
-                    (Set(groups_rm[b]) | Set(groups_remove[b])) -
-                    (Set(groups_keep[b]) | Set(groups_add[b]))
+                    (set(groups_rm[b]) | set(groups_remove[b])) -
+                    (set(groups_keep[b]) | set(groups_add[b]))
                 ) & \
                 (
-                    Set(groups_current[b]) | Set(lonely_groups[b])
+                    set(groups_current[b]) | set(lonely_groups[b])
                 )
             cherrypy.log.error(
                 msg="user '" + username + "' removed from groups: " +
@@ -933,7 +938,7 @@ class LdapCherry(object):
             if url is None:
                 qs = ''
             else:
-                qs = '?url=' + urllib.quote_plus(url)
+                qs = '?url=' + quote_plus(url)
             raise cherrypy.HTTPRedirect("/signin" + qs)
 
     @cherrypy.expose

@@ -11,7 +11,10 @@ import ldap.modlist as modlist
 import ldap.filter
 import logging
 import ldapcherry.backend
-from sets import Set
+import sys
+if sys.version < '3':
+    from sets import Set as set
+
 from ldapcherry.exceptions import UserDoesntExist, \
     GroupDoesntExist, \
     UserAlreadyExists
@@ -74,12 +77,12 @@ class Backend(ldapcherry.backend.Backend):
         for o in re.split('\W+', self.get_param('objectclasses')):
             self.objectclasses.append(self._str(o))
         self.group_attrs = {}
-        self.group_attrs_keys = Set([])
+        self.group_attrs_keys = set([])
         for param in config:
             name, sep, group = param.partition('.')
             if name == 'group_attr':
                 self.group_attrs[group] = self.get_param(param)
-                self.group_attrs_keys |= Set(
+                self.group_attrs_keys |= set(
                     self._extract_format_keys(self.get_param(param))
                 )
 
@@ -393,7 +396,7 @@ class Backend(ldapcherry.backend.Backend):
         ldap_client.unbind_s()
 
     def set_attrs(self, username, attrs):
-        """ Set user attributes"""
+        """ set user attributes"""
         ldap_client = self._bind()
         tmp = self._get_user(self._str(username), ALL_ATTRS)
         if tmp is None:

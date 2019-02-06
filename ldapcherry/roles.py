@@ -9,7 +9,9 @@ import os
 import sys
 import copy
 
-from sets import Set
+if sys.version < '3':
+    from sets import Set as set
+
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
 from ldapcherry.exceptions import *
@@ -27,7 +29,7 @@ class Roles:
 
     def __init__(self, role_file):
         self.role_file = role_file
-        self.backends = Set([])
+        self.backends = set([])
         try:
             stream = open(role_file, 'r')
         except:
@@ -51,7 +53,7 @@ class Roles:
         for backends in backends_list:
             for b in backends:
                 if b not in ret:
-                    ret[b] = Set([])
+                    ret[b] = set([])
                 for group in backends[b]:
                     ret[b].add(group)
         for b in ret:
@@ -134,8 +136,8 @@ class Roles:
 
             if roleid not in self.graph:
                 self.graph[roleid] = {
-                    'parent_roles': Set([]),
-                    'sub_roles': Set([])
+                    'parent_roles': set([]),
+                    'sub_roles': set([])
                     }
 
         # Create the nested groups
@@ -147,7 +149,7 @@ class Roles:
                     if b not in self.group2roles:
                         self.group2roles[b] = {}
                     if g not in self.group2roles[b]:
-                        self.group2roles[b][g] = Set([])
+                        self.group2roles[b][g] = set([])
                     self.group2roles[b][g].add(roleid)
 
             parent_roles[roleid] = []
@@ -223,7 +225,7 @@ class Roles:
         # add groups of the role to usedgroups
         for b in self.roles[role]['backends_groups']:
             if b not in usedgroups:
-                usedgroups[b] = Set([])
+                usedgroups[b] = set([])
             for g in self.roles[role]['backends_groups'][b]:
                 usedgroups[b].add(g)
 
@@ -254,11 +256,11 @@ class Roles:
         """get groups to remove from list of
         roles to remove and current roles
         """
-        current_roles = Set(current_roles)
+        current_roles = set(current_roles)
 
         ret = {}
-        roles_to_remove = Set(roles_to_remove)
-        tmp = Set([])
+        roles_to_remove = set(roles_to_remove)
+        tmp = set([])
         # get sub roles of the role to remove that the user belongs to
         # if we remove a role, there is no reason to keep the sub roles
         for r in roles_to_remove:
@@ -267,7 +269,7 @@ class Roles:
                     tmp.add(sr)
 
         roles_to_remove = roles_to_remove.union(tmp)
-        roles = current_roles.difference(Set(roles_to_remove))
+        roles = current_roles.difference(set(roles_to_remove))
         groups_roles = self._get_groups(roles)
         groups_roles_to_remove = self._get_groups(roles_to_remove)
 
@@ -284,12 +286,12 @@ class Roles:
             for b in self.flatten[r]['backends_groups']:
                 groups = self.flatten[r]['backends_groups'][b]
                 if b not in ret:
-                    ret[b] = Set(groups)
-                ret[b] = ret[b].union(Set(groups))
+                    ret[b] = set(groups)
+                ret[b] = ret[b].union(set(groups))
         return ret
 
     def _get_subroles(self, role):
-        ret = Set([])
+        ret = set([])
         for sr in self.graph[role]['sub_roles']:
             tmp = self._get_subroles(sr)
             tmp.add(sr)
@@ -298,10 +300,10 @@ class Roles:
 
     def get_roles(self, groups):
         """get list of roles and list of standalone groups"""
-        roles = Set([])
-        parentroles = Set([])
-        notroles = Set([])
-        tmp = Set([])
+        roles = set([])
+        parentroles = set([])
+        notroles = set([])
+        tmp = set([])
         usedgroups = {}
         unusedgroups = {}
         ret = {}
@@ -316,7 +318,7 @@ class Roles:
             for g in groups[b]:
                 if b not in usedgroups or g not in usedgroups[b]:
                     if b not in unusedgroups:
-                        unusedgroups[b] = Set([])
+                        unusedgroups[b] = set([])
                     unusedgroups[b].add(g)
 
         ret['roles'] = roles

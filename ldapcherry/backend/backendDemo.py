@@ -7,7 +7,11 @@
 
 # This is a demo backend
 
-from sets import Set
+
+import sys
+if sys.version < '3':
+    from sets import Set as set
+
 import ldapcherry.backend
 from ldapcherry.exceptions import UserDoesntExist, \
     GroupDoesntExist, MissingParameter, \
@@ -37,12 +41,12 @@ class Backend(ldapcherry.backend.Backend):
         self.backend_name = name
         admin_user = self.get_param('admin.user', 'admin')
         admin_password = self.get_param('admin.password', 'admin')
-        admin_groups = Set(re.split('\W+', self.get_param('admin.groups')))
+        admin_groups = set(self._basic_splitter(self.get_param('admin.groups')))
         basic_user = self.get_param('basic.user', 'user')
         basic_password = self.get_param('basic.password', 'user')
-        basic_groups = Set(re.split('\W+', self.get_param('basic.groups')))
+        basic_groups = set(self._basic_splitter(self.get_param('basic.groups')))
         pwd_attr = self.get_param('pwd_attr')
-        self.search_attrs = Set(
+        self.search_attrs = set(
             re.split('\W+', self.get_param('search_attributes')),
             )
         self.pwd_attr = pwd_attr
@@ -59,6 +63,10 @@ class Backend(ldapcherry.backend.Backend):
                 pwd_attr: basic_password,
                 'groups': basic_groups,
                 }
+
+    @staticmethod
+    def _basic_splitter(in_str):
+        return [re.sub(r'(?<!\\)\\', '', x) for x in re.split(r'(?<!\\),\W*', in_str)]
 
     def _check_fix_users(self, username):
         if self.admin_user == username or self.basic_user == username:
@@ -91,7 +99,7 @@ class Backend(ldapcherry.backend.Backend):
         if username in self.users:
             raise UserAlreadyExists(username, self.backend_name)
         self.users[username] = attrs
-        self.users[username]['groups'] = Set([])
+        self.users[username]['groups'] = set([])
 
     def del_user(self, username):
         """ Delete a user from the backend
@@ -107,7 +115,7 @@ class Backend(ldapcherry.backend.Backend):
             raise UserDoesntExist(username, self.backend_name)
 
     def set_attrs(self, username, attrs):
-        """ Set a list of attributes for a given user
+        """ set a list of attributes for a given user
 
         :param username: 'key' attribute of the user
         :type username: string
@@ -128,7 +136,7 @@ class Backend(ldapcherry.backend.Backend):
         """
         self._check_fix_users(username)
         current_groups = self.users[username]['groups']
-        new_groups = current_groups | Set(groups)
+        new_groups = current_groups | set(groups)
         self.users[username]['groups'] = new_groups
 
     def del_from_groups(self, username, groups):
@@ -143,7 +151,7 @@ class Backend(ldapcherry.backend.Backend):
         """
         self._check_fix_users(username)
         current_groups = self.users[username]['groups']
-        new_groups = current_groups - Set(groups)
+        new_groups = current_groups - set(groups)
         self.users[username]['groups'] = new_groups
 
     def search(self, searchstring):

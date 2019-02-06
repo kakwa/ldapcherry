@@ -12,8 +12,10 @@ import re
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
 from ldapcherry.exceptions import *
-from sets import Set
 import yaml
+
+if sys.version < '3':
+    from sets import Set as set
 
 # List of available types for form
 types = ['string', 'textfield', 'email', 'int', 'stringlist',
@@ -24,7 +26,7 @@ class Attributes:
 
     def __init__(self, attributes_file):
         self.attributes_file = attributes_file
-        self.backends = Set([])
+        self.backends = set([])
         self.self_attributes = {}
         self.backend_attributes = {}
         self.displayed_attributes = {}
