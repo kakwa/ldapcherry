@@ -86,8 +86,11 @@ ${form_col(lc2)}
 </div>
 % if autofill:
 <%
-from sets import Set
-attr_set = Set([])
+import sys
+if sys.version < '3':
+    from sets import Set as set
+
+attr_set = set([])
 attr_events = {}
 functions = {}
 for attrid in attributes:
@@ -122,7 +125,7 @@ if (fields['${attrid}'] != null) {
     fields['${attrid}'].onchange = function () {
     % for tuple in attr_events[attrid]:
         if (typeof(${tuple[1]}) == "function") {
-            fields['${tuple[0]}'].value = ${tuple[1]}(${', '.join(functions[tuple])});
+            fields['${tuple[0]}'].value = ${tuple[1] | n}(${', '.join(functions[tuple]) | n});
         }
     % endfor
     };

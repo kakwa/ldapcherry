@@ -58,7 +58,7 @@
 <body>
 % if notifications:
 % for notif in notifications:
-<script type="text/javascript">$.notify('${notif}')</script>
+<script type="text/javascript">$.notify('${notif | n}')</script>
 % endfor
 % endif
 <div class="container">

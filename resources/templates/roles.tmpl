@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 <script type="text/javascript">
-    var graph = ${graph_js};
-    var roles = ${roles_js};
+    var graph = ${graph_js | n};
+    var roles = ${roles_js | n};
     function enableParentRoles(roleid){
         var parentRoles = graph[roleid]['parent_roles'];
         var DnRole = roles[roleid];
