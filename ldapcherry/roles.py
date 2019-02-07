@@ -9,13 +9,13 @@ import os
 import sys
 import copy
 
-if sys.version < '3':
-    from sets import Set as set
-
 from ldapcherry.pyyamlwrapper import loadNoDump
 from ldapcherry.pyyamlwrapper import DumplicatedKey
 from ldapcherry.exceptions import *
 import yaml
+
+if sys.version < '3':
+    from sets import Set as set
 
 
 class CustomDumper(yaml.SafeDumper):
@@ -32,7 +32,7 @@ class Roles:
         self.backends = set([])
         try:
             stream = open(role_file, 'r')
-        except:
+        except Exception as e:
             raise MissingRolesFile(role_file)
         try:
             self.roles_raw = loadNoDump(stream)

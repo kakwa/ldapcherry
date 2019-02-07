@@ -12,14 +12,13 @@ import ldap.filter
 import logging
 import ldapcherry.backend
 import sys
-if sys.version < '3':
-    from sets import Set as set
-
 from ldapcherry.exceptions import UserDoesntExist, \
     GroupDoesntExist, \
     UserAlreadyExists
 import os
 import re
+if sys.version < '3':
+    from sets import Set as set
 
 
 class CaFileDontExist(Exception):
@@ -74,7 +73,7 @@ class Backend(ldapcherry.backend.Backend):
         self.key = key
         # objectclasses parameter is a coma separated list in configuration
         # split it to get a real list, and convert it to bytes
-        for o in re.split('\W+', self.get_param('objectclasses')):
+        for o in re.split(r'\W+', self.get_param('objectclasses')):
             self.objectclasses.append(self._str(o))
         self.group_attrs = {}
         self.group_attrs_keys = set([])

@@ -33,7 +33,7 @@ class Attributes:
         self.key = None
         try:
             stream = open(attributes_file, 'r')
-        except:
+        except Exception as e:
             raise MissingAttributesFile(attributes_file)
         try:
             self.attributes = loadNoDump(stream)
@@ -71,7 +71,7 @@ class Attributes:
             raise MissingUserKey()
 
     def _is_email(self, email):
-        pattern = '[\.\w]{1,}[@]\w+[.]\w+'
+        pattern = r'[\.\w]{1,}[@]\w+[.]\w+'
         if re.match(pattern, email):
             return True
         else:

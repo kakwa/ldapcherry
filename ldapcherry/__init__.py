@@ -173,7 +173,7 @@ class LdapCherry(object):
             try:
                 self.backends_display_names[backend] = \
                     self.backends_params[backend]['display_name']
-            except:
+            except Exception as e:
                 self.backends_display_names[backend] = backend
                 self.backends_params[backend]['display_name'] = backend
             params = self.backends_params[backend]
@@ -225,7 +225,7 @@ class LdapCherry(object):
         )
         try:
             pp = __import__(module, globals(), locals(), ['PPolicy'], 0)
-        except:
+        except Exception as e:
             raise BackendModuleLoadingFail(module)
         if 'ppolicy' in config:
             ppcfg = config['ppolicy']
@@ -1091,7 +1091,7 @@ class LdapCherry(object):
         is_admin = self._check_admin()
         try:
             referer = cherrypy.request.headers['Referer']
-        except:
+        except Exception as e:
             referer = '/'
         self._deleteuser(user)
         self._add_notification('User Deleted')
@@ -1110,7 +1110,7 @@ class LdapCherry(object):
             self._add_notification("User modified")
             try:
                 referer = cherrypy.request.headers['Referer']
-            except:
+            except Exception as e:
                 referer = '/'
             raise cherrypy.HTTPRedirect(referer)
 
