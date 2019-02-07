@@ -102,7 +102,7 @@ def start(configfile=None, daemonize=False, environment=None,
         engine.block()
 
 
-if __name__ == '__main__':
+def main():
     from optparse import OptionParser
 
     p = OptionParser()
@@ -142,3 +142,6 @@ if __name__ == '__main__':
     start(options.config, options.daemonize,
           options.environment, options.fastcgi, options.scgi,
           options.pidfile, options.cgi, options.debug)
+
+if __name__ == '__main__':
+    main()

@@ -29,8 +29,12 @@ if sys.version_info[0] == 2:
         'Mako'
         ],
 elif sys.version_info[0] == 3:
-    print('unsupported version')
-    exit(1)
+    install_requires = [
+        'CherryPy >= 3.0.0',
+        'python-ldap',
+        'PyYAML',
+        'Mako'
+        ],
 else:
     print('unsupported version')
     exit(1)
@@ -120,7 +124,9 @@ setup(
         'ldapcherry.ppolicy'
         ],
     data_files=resources_files,
-    scripts=['scripts/ldapcherryd'],
+    entry_points = {
+        'console_scripts': ['ldapcherryd = ldapcherry.cli:main']
+    },
     url='https://github.com/kakwa/ldapcherry',
     license=license,
     description=small_description,
