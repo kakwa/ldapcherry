@@ -2,9 +2,6 @@ sudo: required
 dist: xenial
 language: python
 
-#env:
-#  - TRAVIS="yes"
-
 before_install:
   - '[ "$TEST_PEP8" == "1" ] || sudo ./tests/test_env/deploy.sh'
 
@@ -14,10 +11,6 @@ install:
   - pip install passlib
   - pip install coveralls
 
-# command to run tests
-#
-#script: 
-#  - coverage run --source=ldapcherry setup.py test
 script: "if [[ $TEST_PEP8 == '1' ]]; then pycodestyle --repeat --show-source --exclude=.venv,.tox,dist,docs,build,*.egg,tests,misc,setup.py .; else coverage run --source=ldapcherry setup.py test; fi"
 matrix:
   include:
