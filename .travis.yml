@@ -9,7 +9,7 @@ before_install:
   - '[ "$TEST_PEP8" == "1" ] || sudo ./tests/test_env/deploy.sh'
 
 install: 
-  - pip install -e -r $REQ_FILE
+  - "pip install -e . -r $REQ_FILE"
   - "if [[ $TEST_PEP8 == '1' ]]; then pip install pycodestyle; fi"
   - pip install passlib
   - pip install coveralls
