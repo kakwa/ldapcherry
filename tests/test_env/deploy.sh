@@ -3,7 +3,7 @@
 apt update
 
 DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
-DEBIAN_FRONTEND=noninteractive apt-get install samba-vfs-modules samba -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+DEBIAN_FRONTEND=noninteractive apt-get install samba-dsdb-modules samba-vfs-modules samba -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install winbind -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 
 [ -e '/etc/default/slapd' ] && rm -rf /etc/default/slapd
