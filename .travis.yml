@@ -37,14 +37,6 @@ matrix:
       env:
         TEST_PEP8=0
         REQ_FILE=requirements.txt
-    - python: "3.4"
-      env:
-        TEST_PEP8=0
-        REQ_FILE=requirements-el7.txt
-    - python: "3.5"
-      env:
-        TEST_PEP8=0
-        REQ_FILE=requirements-stretch.txt
     - python: "3.6"
       env:
         TEST_PEP8=0
