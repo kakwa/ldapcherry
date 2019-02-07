@@ -48,8 +48,9 @@ role=dc
 sambacmd=samba-tool
 adpass=qwertyP455
 
+systemctl unmask samba-ad-dc
+
 hostname ad.ldapcherry.org 
-/etc/init.d/dnsmasq stop
 pkill -9 dnsmasq
 
 kill -9 `cat /var/run/samba/smbd.pid` 
@@ -75,10 +76,11 @@ mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
 sleep 5
 
+systemctl start samba-ad-dc
 /etc/init.d/samba-ad-dc start
 
 cat /var/log/samba/*
 
 sleep 5
 
-netstat -apn | grep samba
+ss -apn | grep samba

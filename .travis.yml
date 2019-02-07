@@ -9,7 +9,7 @@ before_install:
   - '[ "$TEST_PEP8" == "1" ] || sudo ./tests/test_env/deploy.sh'
 
 install: 
-  - pip install -e .
+  - pip install -e -r $REQ_FILE
   - "if [[ $TEST_PEP8 == '1' ]]; then pip install pycodestyle; fi"
   - pip install passlib
   - pip install coveralls
@@ -22,15 +22,33 @@ script: "if [[ $TEST_PEP8 == '1' ]]; then pycodestyle --repeat --show-source --e
 matrix:
   include:
     - python: "2.7"
-      env: TEST_PEP8=1
+      env:
+        TEST_PEP8=1
+        REQ_FILE=requirements.txt
     - python: "2.7"
-      env: TEST_PEP8=0
-    - python: "3.5"
-      env: TEST_PEP8=0
-    - python: "3.6"
-      env: TEST_PEP8=0
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements-el7.txt
+    - python: "2.7"
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements-stretch.txt
+    - python: "2.7"
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements.txt
     - python: "3.4"
-      env: TEST_PEP8=0
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements-el7.txt
+    - python: "3.5"
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements-stretch.txt
+    - python: "3.6"
+      env:
+        TEST_PEP8=0
+        REQ_FILE=requirements.txt
 
 after_success:
   - coveralls
