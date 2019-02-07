@@ -6,13 +6,14 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
-from sets import Set
 from ldapcherry.backend.backendLdap import Backend, CaFileDontExist
 from ldapcherry.exceptions import *
 from disable import travis_disabled
 import cherrypy
 import logging
 import ldap
+if sys.version < '3':
+    from sets import Set as set
 
 cfg = {
 'module'             : 'ldapcherry.backend.ldap',
@@ -148,7 +149,6 @@ class TestError(object):
         ]
         inv.add_to_groups(u'jwatsoné', groups)
         ret = inv.get_groups(u'jwatsoné')
-        print ret
         inv.del_from_groups(u'jwatsoné', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
         inv.del_from_groups(u'jwatsoné', ['cn=hrpeople,ou=Groups,dc=example,dc=org'])
         assert ret == ['cn=itpeople,ou=Groups,dc=example,dc=org', 'cn=hrpeople,ou=Groups,dc=example,dc=org']

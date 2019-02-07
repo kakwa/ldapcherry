@@ -6,12 +6,14 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
-from sets import Set
 from ldapcherry.backend.backendDemo import Backend
 from ldapcherry.exceptions import *
 from disable import travis_disabled
 import cherrypy
 import logging
+if sys.version < '3':
+    from sets import Set as set
+
 
 cfg = {
     'display_name': 'test',
@@ -82,7 +84,7 @@ class TestError(object):
         inv.add_user(default_user)
         inv.add_to_groups('default_user', default_groups)
         ret = inv.get_groups('default_user')
-        expected = Set(default_groups)
+        expected = set(default_groups)
         assert ret == expected
 
     def testSearchUser(self):
@@ -91,7 +93,7 @@ class TestError(object):
         inv.add_user(default_user2)
         ret = inv.search('default')
         expected = ['default_user', 'default_user2']
-        assert Set(ret.keys()) == Set(expected)
+        assert set(ret.keys()) == set(expected)
 
     def testAddUser(self):
         try:

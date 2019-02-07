@@ -6,16 +6,17 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
-from sets import Set
 from ldapcherry.roles import Roles
 from ldapcherry.exceptions import DumplicateRoleKey, MissingKey, DumplicateRoleContent, MissingRolesFile, MissingRole
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
+if sys.version < '3':
+    from sets import Set as set
 
 class TestError(object):
 
     def testNominal(self):
         inv = Roles('./tests/cfg/roles.yml')
-        print inv.roles
+        print(inv.roles)
         return True
 
     def testMissingDisplayName(self):
@@ -64,7 +65,7 @@ class TestError(object):
                 ['admin-lv2', 'admin-lv3', 'users'],
                 ['admin-lv2']
         )
-        expected = {'ad': Set(['Administrators', 'Domain Controllers']), 'ldap': Set(['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com'])}
+        expected = {'ad': set(['Administrators', 'Domain Controllers']), 'ldap': set(['cn=nagios admins,ou=group,dc=example,dc=com', 'cn=puppet admins,ou=group,dc=example,dc=com', 'cn=dns admins,ou=group,dc=example,dc=com'])}
         assert groups == expected
 
     def testGetGroup(self):
@@ -114,7 +115,7 @@ class TestError(object):
     def testGetAllRoles(self):
         inv = Roles('./tests/cfg/roles.yml')
         res = inv.get_backends()
-        expected = Set(['ad', 'ldap'])
+        expected = set(['ad', 'ldap'])
         assert res == expected
 
     def testDumpNested(self):
@@ -147,5 +148,5 @@ class TestError(object):
             ],
         'toto': ['not a group'],
         }
-        expected = {'unusedgroups': {'toto': Set(['not a group']), 'ad': Set(['Domain Users 2'])}, 'roles': Set(['developpers', 'admin-lv2', 'users'])}
+        expected = {'unusedgroups': {'toto': set(['not a group']), 'ad': set(['Domain Users 2'])}, 'roles': set(['developpers', 'admin-lv2', 'users'])}
         assert inv.get_roles(groups) == expected

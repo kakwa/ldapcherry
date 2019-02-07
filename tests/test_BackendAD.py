@@ -6,12 +6,14 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
-from sets import Set
 from ldapcherry.backend.backendAD import Backend
 from ldapcherry.exceptions import *
 from disable import travis_disabled
 import cherrypy
 import logging
+if sys.version < '3':
+    from sets import Set as set
+
 
 cfg = {
     'display_name': u'test☭',
@@ -74,14 +76,14 @@ class TestError(object):
         assert res == False
 
     @travis_disabled
-    def testSetPassword(self):
+    def testsetPassword(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
             inv.add_user(default_user.copy())
             inv.add_to_groups(u'☭default_user', default_groups)
         except:
             pass
-	inv.set_attrs(u'☭default_user', {'unicodePwd': u'test☭P66642$'})
+        inv.set_attrs(u'☭default_user', {'unicodePwd': u'test☭P66642$'})
         ret = inv.auth(u'☭default_user', u'test☭P66642$')
         inv.del_user(u'☭default_user')
         assert ret == True
@@ -126,7 +128,7 @@ class TestError(object):
         expected = [u'☭default_user', u'☭default_user2']
         inv.del_user(u'☭default_user')
         inv.del_user(u'☭default_user2')
-        assert Set(ret.keys()) == Set(expected)
+        assert set(ret.keys()) == set(expected)
 
     @travis_disabled
     def testAddUser(self):

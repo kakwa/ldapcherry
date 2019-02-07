@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 
 import pytest
 import sys
-from sets import Set
 from ldapcherry.attributes import Attributes
 from ldapcherry.exceptions import *
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
+if sys.version < '3':
+    from sets import Set as set
+
 
 class TestError(object):
 
@@ -27,7 +29,7 @@ class TestError(object):
     def testGetSelfAttributes(self):
         inv = Attributes('./tests/cfg/attributes.yml')
         ret = inv.get_backends()
-        expected = Set(['ldap', 'ad'])
+        expected = set(['ldap', 'ad'])
         assert ret == expected
 
     def testGetSearchAttributes(self):

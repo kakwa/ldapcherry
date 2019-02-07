@@ -9,7 +9,6 @@ import subprocess
 from tempfile import NamedTemporaryFile as tempfile
 import re
 
-from sets import Set
 from ldapcherry import LdapCherry
 from ldapcherry.exceptions import *
 from ldapcherry.pyyamlwrapper import DumplicatedKey, RelationError
@@ -21,6 +20,8 @@ import logging
 from ldapcherry.lclogging import *
 from disable import *
 import json
+if sys.version < '3':
+    from sets import Set as set
 
 cherrypy.session = {}
 
@@ -337,7 +338,7 @@ class TestError(object):
         app = LdapCherry()
         loadconf('./tests/cfg/ldapcherry_adldap.cfg', app)
         inv = ldapcherry.backend.backendAD.Backend(adcfg, cherrypy.log, u'test☭', adattr, 'sAMAccountName')
-	try:
+        try:
             app._deleteuser(u'☭default_user')
         except:
             pass
