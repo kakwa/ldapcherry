@@ -70,13 +70,14 @@ cat ${smbconffile}
 
 mv /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
-sleep 5
+sleep 15
 
-systemctl start samba-ad-dc
-/etc/init.d/samba-ad-dc start
+systemctl restart samba-ad-dc
+/etc/init.d/samba-ad-dc restart
 
 cat /var/log/samba/*
 
 sleep 5
 
+systemctl status samba-ad-dc
 ss -apn | grep samba
