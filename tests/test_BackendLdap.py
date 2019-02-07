@@ -105,7 +105,8 @@ class TestError(object):
         try:
             ldapc.simple_bind_s(inv.binddn, inv.bindpassword)
         except ldap.SERVER_DOWN as e:
-            assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate'
+            assert e[0]['info'] == 'TLS: hostname does not match CN in peer certificate' or \
+                    e[0]['info'] == '(unknown error code)'
         else:
             raise AssertionError("expected an exception")
 

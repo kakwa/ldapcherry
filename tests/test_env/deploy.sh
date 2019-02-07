@@ -6,11 +6,11 @@ DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd -o Dpkg::Options
 DEBIAN_FRONTEND=noninteractive apt-get install samba -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install winbind -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 
-[ -e '/etc/default/slapd' ] && mv /etc/default/slapd.ori-prelc
+[ -e '/etc/default/slapd' ] && rm -rf /etc/default/slapd
 cp -r `dirname $0`/etc/default/slapd /etc/default/slapd
-[ -e '/etc/ldap' ] && mv /etc/ldap.ori-prelc
+[ -e '/etc/ldap' ] && rm -rf /etc/ldap
 cp -r `dirname $0`/etc/ldap /etc/ldap
-[ -e '/etc/ldapcherry' ] && mv /etc/ldapcherry.ori-prelc
+[ -e '/etc/ldapcherry' ] && rm -rf /etc/ldapcherry
 cp -r `dirname $0`/etc/ldapcherry /etc/ldapcherry
 
 cd `dirname $0`/../../
@@ -32,11 +32,6 @@ cat /etc/hosts
 
 df -h
 
-/etc/init.d/samba stop 
-/etc/init.d/smbd stop
-/etc/init.d/nmbd stop 
-/etc/init.d/samba-ad-dc stop
-
 find /var/log/samba/ -type f -exec rm -f {} \;
 
 smbconffile=/etc/samba/smb.conf
@@ -52,6 +47,7 @@ systemctl unmask samba-ad-dc
 
 hostname ad.ldapcherry.org 
 pkill -9 dnsmasq
+pkill -9 samba
 
 kill -9 `cat /var/run/samba/smbd.pid` 
 rm -f /var/run/samba/smbd.pid
