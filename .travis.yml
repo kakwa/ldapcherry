@@ -31,9 +31,6 @@ matrix:
       env: TEST_PEP8=0
     - python: "3.4"
       env: TEST_PEP8=0
-    - python: "3.7"
-      env: TEST_PEP8=0
-
 
 after_success:
   - coveralls
