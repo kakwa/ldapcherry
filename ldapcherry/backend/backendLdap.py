@@ -323,6 +323,7 @@ class Backend(ldapcherry.backend.Backend):
             if s is None:
                 return None
             return s.encode('utf-8')
+
         def _uni(self, s):
             """bytes -> unicode conversion"""
             if s is None:
