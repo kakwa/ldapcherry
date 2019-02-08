@@ -2,6 +2,8 @@ Dev
 ***
 
 * [sec ] fix XSS injection in the url redirect in the login page (thanks to jthiltges)
+* [fix ] fix configuration consistency check for attribute file (error if a given backend is not declared in main .ini file but in attributes)
+* [impr] better log error message if inconsistency between role, attribute and main .ini file for backends
 * [impr] more systematic use of html and url escaping in the html rendering to prevent against content injection (thanks to jthiltges)
 
 Version 0.5.2
