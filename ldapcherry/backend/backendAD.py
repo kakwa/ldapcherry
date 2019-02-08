@@ -144,10 +144,10 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         for a in attrslist:
             self.attrlist.append(self._str(a))
 
-        if b'cn' not in self.attrlist:
+        if self._str('cn') not in self.attrlist:
             raise MissingAttr()
 
-        if b'unicodePwd' not in self.attrlist:
+        if self._str('unicodePwd') not in self.attrlist:
             raise MissingAttr()
 
     def _search_group(self, searchfilter, groupdn):

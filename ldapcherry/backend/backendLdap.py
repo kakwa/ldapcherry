@@ -312,22 +312,35 @@ class Backend(ldapcherry.backend.Backend):
         else:
             dn_entry = r[0]
         return dn_entry
+
     # python-ldap talks in bytes,
     # as the rest of ldapcherry talks in unicode utf-8:
     # * everything passed to python-ldap must be converted to bytes
     # * everything coming from python-ldap must be converted to unicode
+    if sys.version < '3':
+        def _str(self, s):
+            """unicode -> bytes conversion"""
+            if s is None:
+                return None
+            return s.encode('utf-8')
+        def _uni(self, s):
+            """bytes -> unicode conversion"""
+            if s is None:
+                return None
+            return s.decode('utf-8', 'ignore')
+    else:
+        def _str(self, s):
+            """unicode -> bytes conversion"""
+            return s
 
-    def _str(self, s):
-        """unicode -> bytes conversion"""
-        if s is None:
-            return None
-        return s.encode('utf-8')
-
-    def _uni(self, s):
-        """bytes -> unicode conversion"""
-        if s is None:
-            return None
-        return s.decode('utf-8', 'ignore')
+        def _uni(self, s):
+            """bytes -> unicode conversion"""
+            if s is None:
+                return None
+            if type(s) is not str:
+                return s.decode('utf-8', 'ignore')
+            else:
+                return s
 
     def auth(self, username, password):
         """Authentication of a user"""
