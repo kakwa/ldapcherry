@@ -46,11 +46,12 @@ class MissingRole(Exception):
 
 
 class MissingBackend(Exception):
-    def __init__(self, backend):
+    def __init__(self, backend, type_conf):
         self.backend = backend
         self.log = \
-            "backend '%(backend)s' does not exist in main config file" % \
-            {'backend': backend}
+            "backend '%(backend)s' does not exist in main config file " \
+            "but is still declared in '%(type_conf)s' file" % \
+            {'backend': backend, 'type_conf': type_conf}
 
 
 class WrongBackend(Exception):

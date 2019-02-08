@@ -149,10 +149,10 @@ class LdapCherry(object):
         backends = self.backends_params.keys()
         for b in self.roles.get_backends():
             if b not in backends:
-                raise MissingBackend(b)
-        for b in self.roles.get_backends():
+                raise MissingBackend(b, 'role')
+        for b in self.attributes.get_backends():
             if b not in backends:
-                raise MissingBackend(b)
+                raise MissingBackend(b, 'attribute')
 
     def _init_backends(self, config):
         """ Init all backends
@@ -1003,7 +1003,7 @@ class LdapCherry(object):
     def checkppolicy(self, **params):
         """ search user page """
         self._check_auth(must_admin=False, redir_login=False)
-        keys = params.keys()
+        keys = list(params.keys())
         if len(keys) != 1:
             cherrypy.response.status = 400
             return "bad argument"
