@@ -90,7 +90,7 @@ def htmlvalidator(page):
     f.close()
     stdout.close()
     print(out)
-    if not re.search(r'Error:.*', out) is None:
+    if not re.search(r'Error:.*', str(out)) is None:
         raise HtmlValidationFailed(out)
 
 class BadModule():
