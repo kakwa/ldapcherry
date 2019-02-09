@@ -22,6 +22,7 @@ if sys.version < '3':
 
 PYTHON_LDAP_MAJOR_VERSION = ldap.__version__[0]
 
+
 class CaFileDontExist(Exception):
     def __init__(self, cafile):
         self.cafile = cafile
@@ -391,7 +392,7 @@ class Backend(ldapcherry.backend.Backend):
             self._str('=') + \
             self._str(ldap.dn.escape_dn_chars(
                           attrs[self.dn_user_attr]
-                      )
+                     )
                 ) + \
             self._str(',') + \
             self._str(self.userdn)
@@ -494,7 +495,10 @@ class Backend(ldapcherry.backend.Backend):
                             'backend': self.backend_name
                             }
                 )
-                ldif = modlist.modifyModlist({}, {attr: self._modlist(content)})
+                ldif = modlist.modifyModlist(
+                        {},
+                        {attr: self._modlist(content)}
+                       )
                 try:
                     ldap_client.modify_s(group, ldif)
                 # if already member, not a big deal, just log it and continue
