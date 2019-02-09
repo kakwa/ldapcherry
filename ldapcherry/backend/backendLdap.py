@@ -20,6 +20,7 @@ import re
 if sys.version < '3':
     from sets import Set as set
 
+PYTHON_LDAP_MAJOR_VERSION = ldap.__version__[0]
 
 class CaFileDontExist(Exception):
     def __init__(self, cafile):
@@ -362,10 +363,19 @@ class Backend(ldapcherry.backend.Backend):
         else:
             return False
 
+    if PYTHON_LDAP_MAJOR_VERSION == '2':
+        @staticmethod
+        def _modlist(in_attr):
+            return in_attr
+    else:
+        @staticmethod
+        def _modlist(in_attr):
+            return [in_attr]
+
     def attrs_pretreatment(self, attrs):
         attrs_str = {}
         for a in attrs:
-            attrs_str[self._str(a)] = self._str(attrs[a])
+            attrs_str[self._str(a)] = self._modlist(self._str(attrs[a]))
         return attrs_str
 
     def add_user(self, attrs):
@@ -374,17 +384,18 @@ class Backend(ldapcherry.backend.Backend):
         # encoding crap
         attrs_str = self.attrs_pretreatment(attrs)
 
-        attrs_str['objectClass'] = self.objectclasses
+        attrs_str[self._str('objectClass')] = self.objectclasses
         # construct is DN
         dn = \
             self._str(self.dn_user_attr) + \
-            '=' + \
-            ldap.dn.escape_dn_chars(
-                self._str(attrs[self.dn_user_attr])
+            self._str('=') + \
+            self._str(ldap.dn.escape_dn_chars(
+                          attrs[self.dn_user_attr]
+                      )
                 ) + \
-            ',' + \
+            self._str(',') + \
             self._str(self.userdn)
-        # gen the ldif fir add_s and add the user
+        # gen the ldif first add_s and add the user
         ldif = modlist.addModlist(attrs_str)
         try:
             ldap_client.add_s(dn, ldif)
@@ -419,7 +430,7 @@ class Backend(ldapcherry.backend.Backend):
         for attr in attrs:
             bcontent = self._str(attrs[attr])
             battr = self._str(attr)
-            new = {battr: bcontent}
+            new = {battr: self._modlist(bcontent)}
             # if attr is dn entry, use rename
             if attr.lower() == self.dn_user_attr.lower():
                 ldap_client.rename_s(
@@ -439,17 +450,18 @@ class Backend(ldapcherry.backend.Backend):
                             tmp.append(self._str(value))
                         bold_value = tmp
                     else:
-                        bold_value = self._str(old_attrs[attr])
+                        bold_value = self._modlist(self._str(old_attrs[attr]))
                     old = {battr: bold_value}
                 # attribute is not set, just add it
                 else:
                     old = {}
                 ldif = modlist.modifyModlist(old, new)
-                try:
-                    ldap_client.modify_s(dn, ldif)
-                except Exception as e:
-                    ldap_client.unbind_s()
-                    self._exception_handler(e)
+                if ldif:
+                    try:
+                        ldap_client.modify_s(dn, ldif)
+                    except Exception as e:
+                        ldap_client.unbind_s()
+                        self._exception_handler(e)
 
         ldap_client.unbind_s()
 
@@ -482,7 +494,7 @@ class Backend(ldapcherry.backend.Backend):
                             'backend': self.backend_name
                             }
                 )
-                ldif = modlist.modifyModlist({}, {attr: content})
+                ldif = modlist.modifyModlist({}, {attr: self._modlist(content)})
                 try:
                     ldap_client.modify_s(group, ldif)
                 # if already member, not a big deal, just log it and continue
