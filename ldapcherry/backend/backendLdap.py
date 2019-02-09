@@ -132,8 +132,8 @@ class Backend(ldapcherry.backend.Backend):
                     ".groupdn'",
                 )
         elif et is ldap.OBJECT_CLASS_VIOLATION:
-            info = e[0]['info']
-            desc = e[0]['desc']
+            info = e.args[0]['info']
+            desc = e.args[0]['desc']
             self._logger(
                 severity=logging.ERROR,
                 msg="Configuration error, " + desc + ", " + info,
@@ -147,7 +147,7 @@ class Backend(ldapcherry.backend.Backend):
                     self.backend_name,
                 )
         elif et is ldap.ALREADY_EXISTS:
-            desc = e[0]['desc']
+            desc = e.args[0]['desc']
             self._logger(
                 severity=logging.ERROR,
                 msg="adding user failed, " + desc,

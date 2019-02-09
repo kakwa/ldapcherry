@@ -185,7 +185,7 @@ class TestError(object):
             app.login(u'jwatsoné', u'passwordwatsoné')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/'
-            assert e[0][0] == expected
+            assert e.urls[0] == expected
         else:
             raise AssertionError("expected an exception")
 
@@ -197,7 +197,7 @@ class TestError(object):
             app.login(u'jwatsoné', u'wrongPasswordé')
         except cherrypy.HTTPRedirect as e:
             expected = 'http://127.0.0.1:8080/signin'
-            assert e[0][0] == expected
+            assert e.urls[0] == expected
         else:
             raise AssertionError("expected an exception")
 
