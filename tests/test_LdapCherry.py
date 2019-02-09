@@ -90,6 +90,7 @@ def _is_html_error(line):
                 r'.*Warning: <meta> lacks "content" attribute.*',
                 r'.*Warning: <link> inserting "type" attribute.*',
                 r'.*Warning: <link> proprietary attribute.*',
+                r'.*Warning: <input> proprietary attribute.*',
                 r'.*Warning: <button> proprietary attribute.*',
                 r'.*Warning: <form> proprietary attribute.*',
                 r'.*Warning: <table> lacks "summary" attribute.*',
