@@ -84,7 +84,8 @@ def _is_html_error(line):
     ret = True
     for p in [
                 r'.*Warning: trimming empty <span>.*',
-                r'.*Error: <nav> is not recognized!.*'
+                r'.*Error: <nav> is not recognized!.*',
+                r'.*Warning: discarding unexpected <nav>.*',
              ]:
         if re.match(p, line):
             ret = False
