@@ -538,8 +538,6 @@ class Backend(ldapcherry.backend.Backend):
                         {attr: self._modlist(self._byte_p3(content))}
                        )
                 try:
-                    print(ldif)
-                    print(group)
                     ldap_client.modify_s(group, ldif)
                 # if already member, not a big deal, just log it and continue
                 except (ldap.TYPE_OR_VALUE_EXISTS, ldap.ALREADY_EXISTS) as e:
