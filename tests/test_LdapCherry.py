@@ -85,6 +85,14 @@ def _is_html_error(line):
                 r'.*Warning: trimming empty <span>.*',
                 r'.*Error: <nav> is not recognized!.*',
                 r'.*Warning: discarding unexpected <nav>.*',
+                r'.*Warning: discarding unexpected </nav>.*',
+                r'.*Warning: <meta> proprietary attribute "charset".*',
+                r'.*Warning: <meta> lacks "content" attribute.*',
+                r'.*Warning: <link> inserting "type" attribute.*',
+                r'.*Warning: <link> proprietary attribute.*',
+                r'.*Warning: <button> proprietary attribute.*',
+                r'.*Warning: <form> proprietary attribute.*',
+                r'.*Warning: <table> lacks "summary" attribute.*',
                 r'.*testing: good.*',
              ]:
         if re.match(p, line):
