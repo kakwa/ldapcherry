@@ -58,6 +58,7 @@ class Roles:
                     ret[b].add(group)
         for b in ret:
             ret[b] = list(ret[b])
+            ret[b].sort()
         return ret
 
     def _flatten(self, roles=None, groups=None):
