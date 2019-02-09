@@ -79,5 +79,7 @@ cat /var/log/samba/*
 
 sleep 5
 
+samba-tool domain passwordsettings set -d 1 --complexity off
+samba-tool domain passwordsettings set -d 1 --min-pwd-length 0
 systemctl status samba-ad-dc
 ss -apn | grep samba
