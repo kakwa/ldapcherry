@@ -132,7 +132,7 @@ setup(
     description=small_description,
     long_description=description,
     install_requires=install_requires,
-    tests_require=['pytest', 'pep8'],
+    tests_require=['pytest', 'pep8', 'pytidylib'],
     cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 3 - Alpha',

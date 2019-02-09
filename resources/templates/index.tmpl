@@ -11,8 +11,8 @@
               </div>
               <div class="panel-body">
 		<table id="RecordTable" class="table table-hover table-condensed">
-		<tbody>
 		% if not searchresult is None:
+		<tbody>
                      %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
                      <tr>
                              % if attr in searchresult:
@@ -26,8 +26,8 @@
                              % endif
                      </tr>
                      % endfor
-		%endif
 		</tbody>
+		%endif
                 </table>
                 </div>
               </div>

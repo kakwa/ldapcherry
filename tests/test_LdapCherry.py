@@ -20,6 +20,7 @@ import logging
 from ldapcherry.lclogging import *
 from disable import *
 import json
+from tidylib import tidy_document
 if sys.version < '3':
     from sets import Set as set
 
@@ -79,19 +80,21 @@ class HtmlValidationFailed(Exception):
     def __init__(self, out):
         self.errors = out
 
+def _is_html_error(line):
+    ret = True
+    for p in [r'.*Warning: trimming empty <span>.*']:
+        if re.match(p, line):
+            ret = False
+    return ret
+
 def htmlvalidator(page):
+    document, errors = tidy_document(page,
+        options={'numeric-entities':1})
     f = tempfile()
-    stdout = tempfile()
-    f.write(page.encode("utf-8"))
-    f.seek(0)
-    ret = subprocess.call(['./tests/html_validator.py', '-h', f.name], stdout=stdout)
-    stdout.seek(0)
-    out = stdout.read()
-    f.close()
-    stdout.close()
-    print(out)
-    if not re.search(r'Error:.*', str(out)) is None:
-        raise HtmlValidationFailed(out)
+    for line in errors.splitlines():
+        if _is_html_error(line):
+            print(line)
+            raise HtmlValidationFailed(line)
 
 class BadModule():
     pass
@@ -361,4 +364,3 @@ class TestError(object):
         get_loglevel('alert') is logging.CRITICAL and \
         get_loglevel('emergency') is logging.CRITICAL and \
         get_loglevel('notalevel') is logging.INFO
-
