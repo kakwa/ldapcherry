@@ -135,7 +135,7 @@ setup(
     tests_require=['pytest', 'pep8', 'pytidylib'],
     cmdclass={'test': PyTest},
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: CherryPy',
         'Intended Audience :: System Administrators',
