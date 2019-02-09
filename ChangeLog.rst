@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 1.0.1
+*************
+
+* [fix ] fix error handling when adding user that already exists
+
 Version 1.0.0
 *************
 
