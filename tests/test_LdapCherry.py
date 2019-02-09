@@ -93,6 +93,7 @@ def _is_html_error(line):
                 r'.*Warning: <button> proprietary attribute.*',
                 r'.*Warning: <form> proprietary attribute.*',
                 r'.*Warning: <table> lacks "summary" attribute.*',
+                r'.*Warning: <script> inserting "type" attribute.*',
                 r'.*testing: good.*',
              ]:
         if re.match(p, line):
