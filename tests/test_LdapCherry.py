@@ -96,6 +96,7 @@ def _is_html_error(line):
                 r'.*Warning: <table> lacks "summary" attribute.*',
                 r'.*Warning: <script> inserting "type" attribute.*',
                 r'.*Warning: <input> attribute "id" has invalid value.*',
+                r'.*Warning: <a> proprietary attribute.*',
              ]:
         if re.match(p, line):
             return False
