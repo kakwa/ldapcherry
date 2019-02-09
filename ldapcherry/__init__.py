@@ -15,7 +15,6 @@ import logging
 import logging.handlers
 from operator import itemgetter
 from socket import error as socket_error
-import cgi
 
 from ldapcherry.exceptions import *
 from ldapcherry.lclogging import *
@@ -35,8 +34,10 @@ from mako import exceptions
 if sys.version < '3':
     from sets import Set as set
     from urllib import quote_plus
+    from cgi import escape as html_escape
 else:
     from urllib.parse import quote_plus
+    from html import escape as html_escape
 
 SESSION_KEY = '_cp_username'
 
@@ -64,7 +65,7 @@ class LdapCherry(object):
     def _escape_list(self, data):
         ret = []
         for i in data:
-            ret.append(cgi.escape(i, True))
+            ret.append(html_escape(i, True))
         return ret
 
     def _escape_dict(self, data):
@@ -76,7 +77,7 @@ class LdapCherry(object):
             elif isinstance(data[d], set):
                 data[d] = set(self._escape_list(data[d]))
             else:
-                data[d] = cgi.escape(data[d], True)
+                data[d] = html_escape(data[d], True)
         return data
 
     def _escape(self, data, dtype):
