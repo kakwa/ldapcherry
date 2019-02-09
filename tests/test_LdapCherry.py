@@ -98,6 +98,7 @@ def _is_html_error(line):
                 r'.*Warning: <input> attribute "id" has invalid value.*',
                 r'.*Warning: <a> proprietary attribute.*',
                 r'.*Warning: <input> attribute "type" has invalid value.*',
+                r'.*Warning: <span> proprietary attribute.*',
              ]:
         if re.match(p, line):
             return False
