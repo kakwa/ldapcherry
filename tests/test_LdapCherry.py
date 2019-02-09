@@ -81,15 +81,15 @@ class HtmlValidationFailed(Exception):
         self.errors = out
 
 def _is_html_error(line):
-    ret = True
     for p in [
                 r'.*Warning: trimming empty <span>.*',
                 r'.*Error: <nav> is not recognized!.*',
                 r'.*Warning: discarding unexpected <nav>.*',
+                r'.*testing: good.*',
              ]:
         if re.match(p, line):
-            ret = False
-    return ret
+            return False
+    return True
 
 def htmlvalidator(page):
     document, errors = tidy_document(page,
@@ -97,7 +97,11 @@ def htmlvalidator(page):
     f = tempfile()
     for line in errors.splitlines():
         if _is_html_error(line):
-            print(line)
+            print("################")
+            print("Blocking error: '%s'" % line)
+            print("all tidy_document errors:"
+            print(errors)
+            print("################")
             raise HtmlValidationFailed(line)
 
 class BadModule():
