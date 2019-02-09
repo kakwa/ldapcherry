@@ -95,7 +95,7 @@ def _is_html_error(line):
                 r'.*Warning: <form> proprietary attribute.*',
                 r'.*Warning: <table> lacks "summary" attribute.*',
                 r'.*Warning: <script> inserting "type" attribute.*',
-                r'.*Warning: <input> attribute "id" has invalid value "#password2".*',
+                r'.*Warning: <input> attribute "id" has invalid value.*',
              ]:
         if re.match(p, line):
             return False
