@@ -678,6 +678,7 @@ class LdapCherry(object):
                 self._add_notification(
                     'User already exists in backend "' + b + '"'
                     )
+                return
         if not added:
             raise e
 
