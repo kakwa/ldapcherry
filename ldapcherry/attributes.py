@@ -130,7 +130,9 @@ class Attributes:
     def get_backend_attributes(self, backend):
         if backend not in self.backends:
             raise WrongBackend(backend)
-        return self.backend_attributes[backend].keys()
+        ret = list(self.backend_attributes[backend].keys())
+        ret.sort()
+        return ret
 
     def get_backend_key(self, backend):
         if backend not in self.backends:

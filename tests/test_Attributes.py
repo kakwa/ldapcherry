@@ -42,6 +42,7 @@ class TestError(object):
         inv = Attributes('./tests/cfg/attributes.yml')
         ret = inv.get_backend_attributes('ldap')
         expected = ['shell', 'cn', 'userPassword', 'uidNumber', 'gidNumber', 'sn', 'home', 'givenName', 'email', 'uid']
+        expected.sort()
         assert ret == expected
 
     def testGetKey(self):
