@@ -99,7 +99,7 @@ def htmlvalidator(page):
         if _is_html_error(line):
             print("################")
             print("Blocking error: '%s'" % line)
-            print("all tidy_document errors:"
+            print("all tidy_document errors:")
             print(errors)
             print("################")
             raise HtmlValidationFailed(line)
