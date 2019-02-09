@@ -1,0 +1,132 @@
+cn:
+    description: "First Name and Display Name"
+    display_name: "Display Name"
+    type: string
+    weight: 30
+    autofill: 
+        function: lcDisplayName
+        args:
+            - $first-name
+            - $name
+    backends:
+        ldap: cn
+        ad: cn
+first-name:
+    description: "First name of the user"
+    display_name: "First Name"
+    search_displayed: True
+    type: string
+    weight: 20
+    backends:
+        ldap: givenName
+        ad: givenName
+name:
+    description: "Family name of the user"
+    display_name: "Name"
+    search_displayed: True
+    weight: 10
+    type: string
+    backends:
+        ldap: sn
+        ad: sn
+email:
+    description: "Email of the user"
+    display_name: "Email"
+    search_displayed: True
+    type: email
+    weight: 40
+    autofill: 
+        function: lcMail
+        args:
+            - $first-name
+            - $name
+            - '@example.com'
+    backends:
+        ldap: mail
+        ad: mail
+uid:
+    description: "UID of the user"
+    display_name: "UID"
+    search_displayed: True
+    key: True
+    type: string
+    weight: 50
+    autofill: 
+        function: lcUid
+        args:
+            - $first-name
+            - $name
+            - '10000'
+            - '40000'
+    backends:
+        ldap: uid
+        ad: sAMAccountName
+uidNumber:
+    description: "User ID Number of the user"
+    display_name: "UID Number"
+    weight: 60
+    type: int
+    autofill: 
+        function: lcUidNumber
+        args:
+            - $first-name
+            - $name
+            - '10000'
+            - '40000'
+    backends:
+        ldap: uidNumber
+        ad: uidNumber
+gidNumber:
+    description: "Group ID Number of the user"
+    display_name: "GID Number"
+    weight: 70
+    type: int
+    default: '10000'
+    backends:
+        ldap: gidNumber
+        ad: gidNumber
+shell:
+    description: "Shell of the user"
+    display_name: "Shell"
+    weight: 80
+    self: True
+    type: stringlist
+    values:
+        - /bin/bash
+        - /bin/zsh
+        - /bin/sh
+    backends:
+        ldap: loginShell
+        ad: loginShell 
+home:
+    description: "Home user path"
+    display_name: "Home"
+    weight: 90
+    type: string
+    autofill: 
+        function: lcHomeDir
+        args:
+            - $first-name
+            - $name
+            - /home/
+    backends:
+        ldap: homeDirectory
+        ad: homeDirectory
+password:
+    description: "Password of the user"
+    display_name: "Password"
+    weight: 31
+    self: True
+    type: password
+    backends:
+        ldap: userPassword
+        ad: unicodePwd
+
+#logscript:
+#    description: "Windows login script"
+#    display_name: "Login script"
+#    weight: 100
+#    type: fix
+#    value: login1.bat
+#    backends:
+#        ad: scriptPath
