@@ -1,10 +1,18 @@
 Dev
 ***
 
+Version 1.0.0
+*************
+
 * [sec ] fix XSS injection in the url redirect in the login page (thanks to jthiltges)
 * [fix ] fix configuration consistency check for attribute file (error if a given backend is not declared in main .ini file but in attributes)
+* [fix ] remove a few deprecation warnings
+* [fix ] fix potential issue with group names containing non-ascii characters
+* [feat] support for python 3
+* [feat] support for python-ldap 3.X.X
 * [impr] better log error message if inconsistency between role, attribute and main .ini file for backends
 * [impr] more systematic use of html and url escaping in the html rendering to prevent against content injection (thanks to jthiltges)
+* [impr] more testing for various versions of python and python-ldap
 
 Version 0.5.2
 *************
