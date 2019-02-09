@@ -82,7 +82,10 @@ class HtmlValidationFailed(Exception):
 
 def _is_html_error(line):
     ret = True
-    for p in [r'.*Warning: trimming empty <span>.*']:
+    for p in [
+                r'.*Warning: trimming empty <span>.*',
+                r'.*Error: <nav> is not recognized!.*'
+             ]:
         if re.match(p, line):
             ret = False
     return ret
