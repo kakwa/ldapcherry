@@ -76,7 +76,7 @@ class Backend(ldapcherry.backend.Backend):
         # objectclasses parameter is a coma separated list in configuration
         # split it to get a real list, and convert it to bytes
         for o in re.split(r'\W+', self.get_param('objectclasses')):
-            self.objectclasses.append(self._str(o))
+            self.objectclasses.append(self._byte_p23(o))
         self.group_attrs = {}
         self.group_attrs_keys = set([])
         for param in config:
@@ -89,7 +89,7 @@ class Backend(ldapcherry.backend.Backend):
 
         self.attrlist = []
         for a in attrslist:
-            self.attrlist.append(self._str(a))
+            self.attrlist.append(self._byte_p2(a))
 
     # exception handler (mainly to log something meaningful)
     def _exception_handler(self, e):
@@ -302,7 +302,7 @@ class Backend(ldapcherry.backend.Backend):
         user_filter = self.user_filter_tmpl % {
             'username': self._uni(username)
         }
-        r = self._search(self._str(user_filter), attrs, self.userdn)
+        r = self._search(self._byte_p2(user_filter), attrs, self.userdn)
 
         if len(r) == 0:
             return None
@@ -319,22 +319,55 @@ class Backend(ldapcherry.backend.Backend):
     # as the rest of ldapcherry talks in unicode utf-8:
     # * everything passed to python-ldap must be converted to bytes
     # * everything coming from python-ldap must be converted to unicode
+    #
+    # The previous statement was true for python-ldap < version 3.X.
+    # With versions > 3.0.0 and python 3, it gets tricky,
+    # some parts of python-ldap takes string, specially the filters/escaper.
+    #
+    # so we have now:
+    # *_byte_p2 (unicode -> bytes conversion for python 2)
+    # *_byte_p3 (unicode -> bytes conversion for python 3)
+    # *_byte_p23 (unicode -> bytes conversion for python AND 3)
+    def _byte_p23(self, s):
+        """unicode -> bytes conversion"""
+        if s is None:
+            return None
+        return s.encode('utf-8')
+
     if sys.version < '3':
-        def _str(self, s):
-            """unicode -> bytes conversion"""
+        def _byte_p2(self, s):
+            """unicode -> bytes conversion (python 2)"""
             if s is None:
                 return None
             return s.encode('utf-8')
+
+        def _byte_p3(self, s):
+            """pass through (does something in python 3)"""
+            return s
 
         def _uni(self, s):
             """bytes -> unicode conversion"""
             if s is None:
                 return None
             return s.decode('utf-8', 'ignore')
+
+        def attrs_pretreatment(self, attrs):
+            attrs_srt = {}
+            for a in attrs:
+                attrs_srt[self._byte_p2(a)] = self._modlist(
+                    self._byte_p2(attrs[a])
+                )
+            return attrs_srt
     else:
-        def _str(self, s):
-            """unicode -> bytes conversion"""
+        def _byte_p2(self, s):
+            """pass through (does something in python 2)"""
             return s
+
+        def _byte_p3(self, s):
+            """unicode -> bytes conversion"""
+            if s is None:
+                return None
+            return s.encode('utf-8')
 
         def _uni(self, s):
             """bytes -> unicode conversion"""
@@ -345,16 +378,24 @@ class Backend(ldapcherry.backend.Backend):
             else:
                 return s
 
+        def attrs_pretreatment(self, attrs):
+            attrs_srt = {}
+            for a in attrs:
+                attrs_srt[self._byte_p2(a)] = self._modlist(
+                    self._byte_p3(attrs[a])
+                )
+            return attrs_srt
+
     def auth(self, username, password):
         """Authentication of a user"""
 
-        binddn = self._get_user(self._str(username), NO_ATTR)
+        binddn = self._get_user(self._byte_p2(username), NO_ATTR)
         if binddn is not None:
             ldap_client = self._connect()
             try:
                 ldap_client.simple_bind_s(
-                        self._str(binddn),
-                        self._str(password)
+                        self._byte_p2(binddn),
+                        self._byte_p2(password)
                         )
             except ldap.INVALID_CREDENTIALS:
                 ldap_client.unbind_s()
@@ -368,36 +409,31 @@ class Backend(ldapcherry.backend.Backend):
         @staticmethod
         def _modlist(in_attr):
             return in_attr
+
     else:
         @staticmethod
         def _modlist(in_attr):
             return [in_attr]
 
-    def attrs_pretreatment(self, attrs):
-        attrs_str = {}
-        for a in attrs:
-            attrs_str[self._str(a)] = self._modlist(self._str(attrs[a]))
-        return attrs_str
-
     def add_user(self, attrs):
         """add a user"""
         ldap_client = self._bind()
         # encoding crap
-        attrs_str = self.attrs_pretreatment(attrs)
+        attrs_srt = self.attrs_pretreatment(attrs)
 
-        attrs_str[self._str('objectClass')] = self.objectclasses
+        attrs_srt[self._byte_p2('objectClass')] = self.objectclasses
         # construct is DN
         dn = \
-            self._str(self.dn_user_attr) + \
-            self._str('=') + \
-            self._str(ldap.dn.escape_dn_chars(
-                          attrs[self.dn_user_attr]
-                     )
+            self._byte_p2(self.dn_user_attr) + \
+            self._byte_p2('=') + \
+            self._byte_p2(ldap.dn.escape_dn_chars(
+                        attrs[self.dn_user_attr]
+                    )
                 ) + \
-            self._str(',') + \
-            self._str(self.userdn)
+            self._byte_p2(',') + \
+            self._byte_p2(self.userdn)
         # gen the ldif first add_s and add the user
-        ldif = modlist.addModlist(attrs_str)
+        ldif = modlist.addModlist(attrs_srt)
         try:
             ldap_client.add_s(dn, ldif)
         except ldap.ALREADY_EXISTS as e:
@@ -411,7 +447,7 @@ class Backend(ldapcherry.backend.Backend):
         """delete a user"""
         ldap_client = self._bind()
         # recover the user dn
-        dn = self._str(self._get_user(self._str(username), NO_ATTR))
+        dn = self._byte_p2(self._get_user(self._byte_p2(username), NO_ATTR))
         # delete
         if dn is not None:
             ldap_client.delete_s(dn)
@@ -423,15 +459,15 @@ class Backend(ldapcherry.backend.Backend):
     def set_attrs(self, username, attrs):
         """ set user attributes"""
         ldap_client = self._bind()
-        tmp = self._get_user(self._str(username), ALL_ATTRS)
+        tmp = self._get_user(self._byte_p2(username), ALL_ATTRS)
         if tmp is None:
             raise UserDoesntExist(username, self.backend_name)
-        dn = self._str(tmp[0])
+        dn = self._byte_p2(tmp[0])
         old_attrs = tmp[1]
         for attr in attrs:
-            bcontent = self._str(attrs[attr])
-            battr = self._str(attr)
-            new = {battr: self._modlist(bcontent)}
+            bcontent = self._byte_p2(attrs[attr])
+            battr = self._byte_p2(attr)
+            new = {battr: self._modlist(self._byte_p3(bcontent))}
             # if attr is dn entry, use rename
             if attr.lower() == self.dn_user_attr.lower():
                 ldap_client.rename_s(
@@ -448,10 +484,12 @@ class Backend(ldapcherry.backend.Backend):
                     if type(old_attrs[attr]) is list:
                         tmp = []
                         for value in old_attrs[attr]:
-                            tmp.append(self._str(value))
+                            tmp.append(self._byte_p2(value))
                         bold_value = tmp
                     else:
-                        bold_value = self._modlist(self._str(old_attrs[attr]))
+                        bold_value = self._modlist(
+                            self._byte_p3(old_attrs[attr])
+                        )
                     old = {battr: bold_value}
                 # attribute is not set, just add it
                 else:
@@ -469,19 +507,19 @@ class Backend(ldapcherry.backend.Backend):
     def add_to_groups(self, username, groups):
         ldap_client = self._bind()
         # recover dn of the user and his attributes
-        tmp = self._get_user(self._str(username), ALL_ATTRS)
+        tmp = self._get_user(self._byte_p2(username), ALL_ATTRS)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
         self._normalize_group_attrs(attrs)
-        dn = self._str(tmp[0])
+        dn = self._byte_p2(tmp[0])
         # add user to all groups
         for group in groups:
-            group = self._str(group)
+            group = self._byte_p2(group)
             # iterate on group membership attributes
             for attr in self.group_attrs:
                 # fill the content template
-                content = self._str(self.group_attrs[attr] % attrs)
+                content = self._byte_p2(self.group_attrs[attr] % attrs)
                 self._logger(
                     severity=logging.DEBUG,
                     msg="%(backend)s: adding user '%(user)s'"
@@ -497,12 +535,14 @@ class Backend(ldapcherry.backend.Backend):
                 )
                 ldif = modlist.modifyModlist(
                         {},
-                        {attr: self._modlist(content)}
+                        {attr: self._modlist(self._byte_p3(content))}
                        )
                 try:
+                    print(ldif)
+                    print(group)
                     ldap_client.modify_s(group, ldif)
                 # if already member, not a big deal, just log it and continue
-                except ldap.TYPE_OR_VALUE_EXISTS as e:
+                except (ldap.TYPE_OR_VALUE_EXISTS, ldap.ALREADY_EXISTS) as e:
                     self._logger(
                         severity=logging.INFO,
                         msg="%(backend)s: user '%(user)s'"
@@ -526,19 +566,19 @@ class Backend(ldapcherry.backend.Backend):
         # it follows the same logic than add_to_groups
         # but with MOD_DELETE
         ldap_client = self._bind()
-        tmp = self._get_user(self._str(username), ALL_ATTRS)
+        tmp = self._get_user(self._byte_p2(username), ALL_ATTRS)
         if tmp is None:
             raise UserDoesntExist(username, self.backend_name)
         dn = tmp[0]
         attrs = tmp[1]
         attrs['dn'] = dn
         self._normalize_group_attrs(attrs)
-        dn = self._str(tmp[0])
+        dn = self._byte_p2(tmp[0])
         for group in groups:
-            group = self._str(group)
+            group = self._byte_p2(group)
             for attr in self.group_attrs:
-                content = self._str(self.group_attrs[attr] % attrs)
-                ldif = [(ldap.MOD_DELETE, attr, content)]
+                content = self._byte_p2(self.group_attrs[attr] % attrs)
+                ldif = [(ldap.MOD_DELETE, attr, self._byte_p3(content))]
                 try:
                     ldap_client.modify_s(group, ldif)
                 except ldap.NO_SUCH_ATTRIBUTE as e:
@@ -561,7 +601,9 @@ class Backend(ldapcherry.backend.Backend):
     def search(self, searchstring):
         """Search users"""
         # escape special char to avoid injection
-        searchstring = ldap.filter.escape_filter_chars(self._str(searchstring))
+        searchstring = ldap.filter.escape_filter_chars(
+            self._byte_p2(searchstring)
+        )
         # fill the search string template
         searchfilter = self.search_filter_tmpl % {
             'searchstring': searchstring
@@ -586,7 +628,7 @@ class Backend(ldapcherry.backend.Backend):
     def get_user(self, username):
         """Gest a specific user"""
         ret = {}
-        tmp = self._get_user(self._str(username), ALL_ATTRS)
+        tmp = self._get_user(self._byte_p2(username), ALL_ATTRS)
         if tmp is None:
             raise UserDoesntExist(username, self.backend_name)
         attrs_tmp = tmp[1]
@@ -600,7 +642,7 @@ class Backend(ldapcherry.backend.Backend):
 
     def get_groups(self, username):
         """Get all groups of a user"""
-        username = ldap.filter.escape_filter_chars(self._str(username))
+        username = ldap.filter.escape_filter_chars(self._byte_p2(username))
         userdn = self._get_user(username, NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {
@@ -611,5 +653,5 @@ class Backend(ldapcherry.backend.Backend):
         groups = self._search(searchfilter, NO_ATTR, self.groupdn)
         ret = []
         for entry in groups:
-            ret.append(entry[0])
+            ret.append(self._uni(entry[0]))
         return ret

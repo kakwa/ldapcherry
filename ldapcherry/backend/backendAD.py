@@ -15,6 +15,7 @@ import ldapcherry.backend
 from ldapcherry.exceptions import UserDoesntExist, GroupDoesntExist
 import os
 import re
+import sys
 
 
 class CaFileDontExist(Exception):
@@ -129,11 +130,11 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.dn_user_attr = 'cn'
         self.key = 'sAMAccountName'
         self.objectclasses = [
-            'top',
-            'person',
-            'organizationalPerson',
-            'user',
-            'posixAccount',
+            self._byte_p23('top'),
+            self._byte_p23('person'),
+            self._byte_p23('organizationalPerson'),
+            self._byte_p23('user'),
+            self._byte_p23('posixAccount'),
             ]
         self.group_attrs = {
             'member': "%(dn)s"
@@ -142,16 +143,25 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.attrlist = []
         self.group_attrs_keys = []
         for a in attrslist:
-            self.attrlist.append(self._str(a))
+            self.attrlist.append(self._byte_p2(a))
 
-        if self._str('cn') not in self.attrlist:
+        if self._byte_p2('cn') not in self.attrlist:
             raise MissingAttr()
 
-        if self._str('unicodePwd') not in self.attrlist:
+        if self._byte_p2('unicodePwd') not in self.attrlist:
             raise MissingAttr()
+
+    if sys.version < '3':
+        @staticmethod
+        def _tobyte(in_int):
+            return str(in_int)
+    else:
+        @staticmethod
+        def _tobyte(in_int):
+            return in_int.to_bytes(4, byteorder='big')
 
     def _search_group(self, searchfilter, groupdn):
-        searchfilter = self._str(searchfilter)
+        searchfilter = self._byte_p2(searchfilter)
         ldap_client = self._bind()
         try:
             r = ldap_client.search_s(
@@ -183,22 +193,24 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         ldap_client = self._bind()
 
         if by_cn:
-            dn = self._str('CN=%(cn)s,%(user_dn)s' % {
+            dn = self._byte_p2('CN=%(cn)s,%(user_dn)s' % {
                         'cn': name,
                         'user_dn': self.userdn
                        })
         else:
-            dn = self._str(name)
+            dn = self._byte_p2(name)
 
         attrs = {}
 
-        attrs['unicodePwd'] = self._modlist(self._str(password_value))
+        attrs['unicodePwd'] = self._modlist(self._byte_p2(password_value))
 
         ldif = modlist.modifyModlist({'unicodePwd': 'tmp'}, attrs)
         ldap_client.modify_s(dn, ldif)
 
         del(attrs['unicodePwd'])
-        attrs['UserAccountControl'] = self._modlist(str(NORMAL_ACCOUNT))
+        attrs['UserAccountControl'] = self._modlist(
+            self._tobyte(NORMAL_ACCOUNT)
+        )
         ldif = modlist.modifyModlist({'UserAccountControl': 'tmp'}, attrs)
         ldap_client.modify_s(dn, ldif)
 
@@ -212,7 +224,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         if 'unicodePwd' in attrs:
             password = attrs['unicodePwd']
             del(attrs['unicodePwd'])
-            userdn = self._get_user(self._str(username), NO_ATTR)
+            userdn = self._get_user(self._byte_p2(username), NO_ATTR)
             self._set_password(userdn, password, False)
         super(Backend, self).set_attrs(username, attrs)
 
@@ -226,7 +238,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
 
     def get_groups(self, username):
         username = ldap.filter.escape_filter_chars(username)
-        userdn = self._get_user(self._str(username), NO_ATTR)
+        userdn = self._get_user(self._byte_p2(username), NO_ATTR)
 
         searchfilter = self.group_filter_tmpl % {
             'userdn': userdn,
@@ -246,7 +258,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         )
 
         for entry in groups:
-            ret.append(entry[1]['cn'][0])
+            ret.append(self._uni(entry[1]['cn'][0]))
         return ret
 
     def auth(self, username, password):
@@ -256,8 +268,8 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
             ldap_client = self._connect()
             try:
                 ldap_client.simple_bind_s(
-                    self._str(binddn),
-                    self._str(password)
+                    self._byte_p2(binddn),
+                    self._byte_p2(password)
                 )
             except ldap.INVALID_CREDENTIALS:
                 ldap_client.unbind_s()
