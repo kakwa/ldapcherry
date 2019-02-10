@@ -285,6 +285,15 @@ class LdapCherry(object):
             handler.setFormatter(syslog_formatter)
             cherrypy.log.access_log.addHandler(handler)
 
+        # if stdout, open a logger on stdout
+        elif access_handler == 'stdout':
+            cherrypy.log.access_log.handlers = []
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter(
+                'ldapcherry.access - %(levelname)s - %(message)s'
+            )
+            handler.setFormatter(formatter)
+            cherrypy.log.access_log.addHandler(handler)
         # if file, we keep the default
         elif access_handler == 'file':
             pass
@@ -330,6 +339,15 @@ class LdapCherry(object):
             handler.setFormatter(syslog_formatter)
             cherrypy.log.error_log.addHandler(handler)
 
+        # if stdout, open a logger on stdout
+        elif error_handler == 'stdout':
+            cherrypy.log.error_log.handlers = []
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter(
+                'ldapcherry.app    - %(levelname)s - %(message)s'
+            )
+            handler.setFormatter(formatter)
+            cherrypy.log.error_log.addHandler(handler)
         # if file, we keep the default
         elif error_handler == 'file':
             pass

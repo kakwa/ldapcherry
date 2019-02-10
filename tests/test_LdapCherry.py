@@ -152,7 +152,7 @@ class TestError(object):
     def testLog(self):
         app = LdapCherry()
         cfg = { 'global' : {}}
-        for t in ['none', 'file', 'syslog']:
+        for t in ['none', 'file', 'syslog', 'stdout']:
             cfg['global']['log.access_handler']=t
             cfg['global']['log.error_handler']=t
             app._set_access_log(cfg, logging.DEBUG)

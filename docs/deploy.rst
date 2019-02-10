@@ -445,16 +445,16 @@ Logging
 
 LdapCherry has two loggers, one for errors and applicative actions (login, del/add, logout...) and one for access logs.
 
-Each logger can be configured to log to syslog, file or be disabled. 
+Each logger can be configured to log to **syslog**, **file**, **stdout** or be disabled.
 
 Logging parameters:
 
 +--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
 |      Parameter     | Section |           Description           |                      Values                     |                 Comment                |
 +====================+=========+=================================+=================================================+========================================+
-| log.access_handler |  global |    Logger type for access log   |            'syslog', 'file', 'none'             |                                        |
+| log.access_handler |  global |    Logger type for access log   |      'syslog', 'file', 'stdout', 'none'         |                                        |
 +--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
-|  log.error_handler |  global | Logger type for applicative log |             'syslog', 'file', 'none'            |                                        |
+|  log.error_handler |  global | Logger type for applicative log |      'syslog', 'file', 'stdout', 'none'         |                                        |
 +--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
 |   log.access_file  |  global |     log file for access log     |                 path to log file                | only used if log.access_handler='file' |
 +--------------------+---------+---------------------------------+-------------------------------------------------+----------------------------------------+
