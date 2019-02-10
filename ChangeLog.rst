@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 1.1.0
+*************
+
+* [feat] add stdout as a valid log method (useful when running with docker)
+
 Version 1.0.1
 *************
 
