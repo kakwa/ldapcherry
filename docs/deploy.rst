@@ -477,6 +477,14 @@ Example:
     log.level = 'info'
 
 
+.. warning::
+
+   'debug' should not be used in production.
+
+   It tends to log a lot.
+   More significantly can represent a security issue,
+   as things like passwords will be logged 'clear text'.
+
 Custom javascript
 ~~~~~~~~~~~~~~~~~
 
