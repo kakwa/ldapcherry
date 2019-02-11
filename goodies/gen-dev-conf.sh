@@ -16,3 +16,5 @@ sed -i "s|ldap.admin.groups.*|ldap.admin.groups = '$GROUPS'|" $ROOT/ldapcherry-d
 sed -i "s|^min_length.*|min_length = 3|" $ROOT/ldapcherry-dev.ini
 sed -i "s|^min_upper.*|min_upper = 0|" $ROOT/ldapcherry-dev.ini
 sed -i "s|^min_digit.*|min_digit = 0|" $ROOT/ldapcherry-dev.ini
+sed -i "s|^min_punct.*|min_punct = 0|" $ROOT/ldapcherry-dev.ini
+sed -i "s|^min_point.*|min_point = 0|" $ROOT/ldapcherry-dev.ini
