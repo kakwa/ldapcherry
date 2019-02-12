@@ -267,7 +267,7 @@ class Backend(ldapcherry.backend.Backend):
                 "with filter '%(filter)s' in DN '%(dn)s'" % {
                     'backend': self.backend_name,
                     'dn': basedn,
-                    'filter': searchfilter
+                    'filter': self._uni(searchfilter)
                 }
         )
 
