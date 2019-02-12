@@ -1,6 +1,16 @@
 Dev
 ***
 
+Version 1.1.1
+*************
+
+* [fix ] fix double escaping issues introduced in 1.0.0
+* [fix ] fix missing url escaping in links with querystring parameters (delete and modify page mostly)
+* [fix ] fix log level not being honored in the backends
+* [impr] clarify the role of 'key: True' of attributes.yml in the documentation
+* [impr] add a few more comments in the .ini file to explain better the \*_filter_tmpl and group_attr parameters
+* [impr] add debug log to help debug ldap search filters
+
 Version 1.1.0
 *************
 
