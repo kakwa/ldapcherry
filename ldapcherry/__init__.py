@@ -330,6 +330,7 @@ class LdapCherry(object):
         cherrypy.log.error_log.setLevel(level)
 
         if debug:
+            cherrypy.log.error_log.handlers = []
             handler = logging.StreamHandler(sys.stderr)
             handler.setLevel(logging.DEBUG)
             cherrypy.log.error_log.addHandler(handler)
