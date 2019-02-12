@@ -120,9 +120,14 @@ class TestError(object):
     def testSearchUser(self):
         inv = Backend(cfg, cherrypy.log, u'test☭', attr, 'sAMAccountName')
         try:
+            inv.del_user(u'☭default_user')
+        except: pass
+        try:
+            inv.del_user(u'☭default_user2')
+        except: pass
+        try:
             inv.add_user(default_user.copy())
-        except:
-            pass
+        except: pass
         inv.add_user(default_user2.copy())
         ret = inv.search(u'test☭')
         expected = [u'☭default_user', u'☭default_user2']
