@@ -34,10 +34,8 @@ from mako import exceptions
 if sys.version < '3':
     from sets import Set as set
     from urllib import quote_plus
-    from cgi import escape as html_escape
 else:
     from urllib.parse import quote_plus
-    from html import escape as html_escape
 
 SESSION_KEY = '_cp_username'
 
@@ -61,36 +59,6 @@ class LdapCherry(object):
             severity=logging.DEBUG,
             traceback=True
             )
-
-    def _escape_list(self, data):
-        ret = []
-        for i in data:
-            ret.append(html_escape(i, True))
-        return ret
-
-    def _escape_dict(self, data):
-        for d in data:
-            if isinstance(data[d], list):
-                data[d] = self._escape_list(data[d])
-            elif isinstance(data[d], dict):
-                data[d] = self._escape_dict(data[d])
-            elif isinstance(data[d], set):
-                data[d] = set(self._escape_list(data[d]))
-            else:
-                data[d] = html_escape(data[d], True)
-        return data
-
-    def _escape(self, data, dtype):
-        if data is None:
-            return None
-        elif dtype == 'search_list':
-            for d in data:
-                data[d] = self._escape_dict(data[d])
-        elif dtype == 'attr_list':
-            data = self._escape_dict(data)
-        elif dtype == 'lonely_groups':
-            data = self._escape_dict(data)
-        return data
 
     def _get_param(self, section, key, config, default=None):
         """ Get configuration parameter "key" from config
@@ -995,7 +963,7 @@ class LdapCherry(object):
         return self.temp['index.tmpl'].render(
             is_admin=is_admin,
             attrs_list=attrs_list,
-            searchresult=self._escape(user_attrs, 'attr_list'),
+            searchresult=user_attrs,
             notifications=self._empty_notification(),
             )
 
@@ -1011,7 +979,7 @@ class LdapCherry(object):
             res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp['searchuser.tmpl'].render(
-            searchresult=self._escape(res, 'search_list'),
+            searchresult=res,
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
@@ -1048,7 +1016,7 @@ class LdapCherry(object):
             res = None
         attrs_list = self.attributes.get_search_attributes()
         return self.temp['searchadmin.tmpl'].render(
-            searchresult=self._escape(res, 'search_list'),
+            searchresult=res,
             attrs_list=attrs_list,
             is_admin=is_admin,
             custom_js=self.custom_js,
@@ -1169,7 +1137,7 @@ class LdapCherry(object):
         try:
             form = self.temp['form.tmpl'].render(
                 attributes=self.attributes.attributes,
-                values=self._escape(user_attrs, 'attr_list'),
+                values=user_attrs,
                 modify=True,
                 keyattr=key,
                 autofill=False
@@ -1187,10 +1155,7 @@ class LdapCherry(object):
                 form=form,
                 roles=roles,
                 is_admin=is_admin,
-                standalone_groups=self._escape(
-                    standalone_groups,
-                    'lonely_groups'
-                    ),
+                standalone_groups=standalone_groups,
                 backends_display_names=self.backends_display_names,
                 custom_js=self.custom_js,
                 notifications=self._empty_notification(),
@@ -1245,7 +1210,7 @@ class LdapCherry(object):
 
             form = self.temp['form.tmpl'].render(
                 attributes=self.attributes.get_selfattributes(),
-                values=self._escape(user_attrs, 'attr_list'),
+                values=user_attrs,
                 modify=True,
                 autofill=False
                 )
