@@ -112,7 +112,12 @@ If **type** is set to **stringlist** the parameter **values** must be filled wit
 Key attribute:
 ^^^^^^^^^^^^^^
 
-One attribute must be used as a unique key across all backends:
+One attribute must be used as a unique key across all backends.
+
+It acts as a reconciliation key.
+
+It also marks which attribute must be used within ldapcherry (ex: querysting parameter in links)
+to point to one given user.
 
 To set the key attribute, you must set **key** to **True** on this attribute.
 

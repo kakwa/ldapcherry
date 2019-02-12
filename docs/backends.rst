@@ -73,7 +73,10 @@ The ldap backend exposes the following parameters:
 | userdn                   | backends | The ldap dn where users are        | ldap dn                  |                                            |
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
 | user_filter_tmpl         | backends | The search filter template         | ldap search filter       | The user identifier is passed through      |
-|                          |          | to recover a given user            | template                 | the **username** variable (*%(username)s*).|
+|                          |          | to recover a given user            | template                 | the **username** variable (*%(username)s*) |
+|                          |          |                                    |                          |                                            |
+|                          |          |                                    |                          | **username** is the attribute marked by    |
+|                          |          |                                    |                          | **key: True** in the **attribute.yml** file|
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
 | group_filter_tmpl        | backends | The search filter template to      | ldap search filter       | The following variables are usable:        |
 |                          |          | recover the groups of a given user | template                 | * **username**: the user key attribute     |
@@ -83,7 +86,8 @@ The ldap backend exposes the following parameters:
 |                          |          |                                    |                          |   in groups dn entries                     |
 |                          |          |                                    |                          | * every user attributes are exposed        |
 |                          |          |                                    |                          |   in the template                          |
-|                          |          |                                    |                          | * multiple attributes can be set           |
+|                          |          |                                    |                          | * multiple <memver attr> attributes        |
+|                          |          |                                    |                          |   can be set                               |
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
 | objectclasses            | backends | list of object classes for users   | comma separated list     |                                            |
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
