@@ -161,7 +161,7 @@ class LdapCherry(object):
                 key = self.attributes.get_backend_key(backend)
                 self.backends[backend] = bc.Backend(
                     params,
-                    cherrypy.log,
+                    cherrypy.log.error,
                     backend,
                     attrslist,
                     key,
