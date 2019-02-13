@@ -79,8 +79,9 @@ The ldap backend exposes the following parameters:
 |                          |          |                                    |                          | **key: True** in the **attribute.yml** file|
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
 | group_filter_tmpl        | backends | The search filter template to      | ldap search filter       | The following variables are usable:        |
-|                          |          | recover the groups of a given user | template                 | * **username**: the user key attribute     |
-|                          |          |                                    |                          | * **userdn**: the user ldap dn             |
+|                          |          | recover the groups of a given user | template                 |                                            |
+|                          |          | recover the groups of a given user | template                 | * **username**: the user's key attribute   |
+|                          |          |                                    |                          | * **userdn**: the user's ldap dn           |
 +--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
 | group_attr.<member attr> | backends | Member attribute template value    | template                 | * <member attr> is the member attribute    |
 |                          |          |                                    |                          |   in groups dn entries                     |
