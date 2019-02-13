@@ -76,7 +76,7 @@ The ldap backend exposes the following parameters:
 |                          |          | to recover a given user            | template                 | the **username** variable (*%(username)s*)     |
 |                          |          |                                    |                          |                                                |
 |                          |          |                                    |                          | **username** is the content of the             |
-|                          |          |                                    |                          | the attribute marked by '**key: Truee**'       |
+|                          |          |                                    |                          | the attribute marked by '**key: True**'        |
 |                          |          |                                    |                          | in the **attributes.yml** file                 |
 +--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
 | group_filter_tmpl        | backends | The search filter template to      | ldap search filter       | The following variables are usable:            |
