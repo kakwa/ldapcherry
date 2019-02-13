@@ -47,53 +47,55 @@ Configuration
 
 The ldap backend exposes the following parameters:
 
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-|      Parameter           | Section  |            Description             |           Values         |                Comment                     |
-+==========================+==========+====================================+==========================+============================================+
-| uri                      | backends | The ldap uri to access             | ldap uri                 | * use ldap:// for clear/starttls           |
-|                          |          |                                    |                          | * use ldaps:// for ssl                     |
-|                          |          |                                    |                          | * custom port: ldap://<host>:<port>        |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| ca                       | backends | Path to the CA file                | file path                | optional                                   |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| starttls                 | backends | Use starttls                       | 'on' or 'off'            | optional                                   |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| checkcert                | backends | Check the server certificat        | 'on' or 'off'            | optional                                   |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| binddn                   | backends | The bind dn to use                 | ldap dn                  | This dn must have read/write permissions   |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| password                 | backends | The password of the bind dn        | password                 |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| timeout                  | backends | Ldap connexion timeout             | integer (second)         |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| password                 | backends | The password of the bind dn        | password                 |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| groupdn                  | backends | The ldap dn where groups are       | ldap dn                  |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| userdn                   | backends | The ldap dn where users are        | ldap dn                  |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| user_filter_tmpl         | backends | The search filter template         | ldap search filter       | The user identifier is passed through      |
-|                          |          | to recover a given user            | template                 | the **username** variable (*%(username)s*) |
-|                          |          |                                    |                          |                                            |
-|                          |          |                                    |                          | **username** is the attribute marked by    |
-|                          |          |                                    |                          | **key: True** in the **attribute.yml** file|
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| group_filter_tmpl        | backends | The search filter template to      | ldap search filter       | The following variables are usable:        |
-|                          |          | recover the groups of a given user | template                 |                                            |
-|                          |          | recover the groups of a given user | template                 | * **username**: the user's key attribute   |
-|                          |          |                                    |                          | * **userdn**: the user's ldap dn           |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| group_attr.<member attr> | backends | Member attribute template value    | template                 | * <member attr> is the member attribute    |
-|                          |          |                                    |                          |   in groups dn entries                     |
-|                          |          |                                    |                          | * every user attributes are exposed        |
-|                          |          |                                    |                          |   in the template                          |
-|                          |          |                                    |                          | * multiple <memver attr> attributes        |
-|                          |          |                                    |                          |   can be set                               |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| objectclasses            | backends | list of object classes for users   | comma separated list     |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
-| dn_user_attr             | backends | attribute used in users dn         | dn attribute             |                                            |
-+--------------------------+----------+------------------------------------+--------------------------+--------------------------------------------+
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+|      Parameter           | Section  |            Description             |           Values         |                Comment                         |
++==========================+==========+====================================+==========================+================================================+
+| uri                      | backends | The ldap uri to access             | ldap uri                 | * use ldap:// for clear/starttls               |
+|                          |          |                                    |                          | * use ldaps:// for ssl                         |
+|                          |          |                                    |                          | * custom port: ldap://<host>:<port>            |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| ca                       | backends | Path to the CA file                | file path                | optional                                       |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| starttls                 | backends | Use starttls                       | 'on' or 'off'            | optional                                       |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| checkcert                | backends | Check the server certificat        | 'on' or 'off'            | optional                                       |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| binddn                   | backends | The bind dn to use                 | ldap dn                  | This dn must have read/write permissions       |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| password                 | backends | The password of the bind dn        | password                 |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| timeout                  | backends | Ldap connexion timeout             | integer (second)         |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| password                 | backends | The password of the bind dn        | password                 |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| groupdn                  | backends | The ldap dn where groups are       | ldap dn                  |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| userdn                   | backends | The ldap dn where users are        | ldap dn                  |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| user_filter_tmpl         | backends | The search filter template         | ldap search filter       | The user identifier is passed through          |
+|                          |          | to recover a given user            | template                 | the **username** variable (*%(username)s*)     |
+|                          |          |                                    |                          |                                                |
+|                          |          |                                    |                          | **username** is the content of the             |
+|                          |          |                                    |                          | the attribute marked by '**key: Truee**'       |
+|                          |          |                                    |                          | in the **attributes.yml** file                 |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| group_filter_tmpl        | backends | The search filter template to      | ldap search filter       | The following variables are usable:            |
+|                          |          | recover the groups of a given user | template                 |                                                |
+|                          |          | recover the groups of a given user | template                 | * **username**: the user's key attribute       |
+|                          |          |                                    |                          | * **userdn**: the user's ldap dn               |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| group_attr.<member attr> | backends | Member attribute template value    | template                 | * <member attr> is the member attribute        |
+|                          |          |                                    |                          |   in groups dn entries                         |
+|                          |          |                                    |                          | * every user attributes are exposed            |
+|                          |          |                                    |                          |   in the template                              |
+|                          |          |                                    |                          | * multiple <memver attr> attributes            |
+|                          |          |                                    |                          |   can be set (ex: group_attr.member            |
+|                          |          |                                    |                          |   (ex: group_attr.member, group_attr.usermemb) |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| objectclasses            | backends | list of object classes for users   | comma separated list     |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
+| dn_user_attr             | backends | attribute used in users dn         | dn attribute             |                                                |
++--------------------------+----------+------------------------------------+--------------------------+------------------------------------------------+
 
 
 Example
@@ -101,46 +103,58 @@ Example
 
 .. sourcecode:: ini
 
-    [backends]
+   [backends]
     
-    # name of the module
-    ldap.module = 'ldapcherry.backend.backendLdap'
-    # display name of the ldap
-    ldap.display_name = 'My Ldap Directory'
-    
-    # uri of the ldap directory
-    ldap.uri = 'ldap://ldap.ldapcherry.org'
-    # ca to use for ssl/tls connexion
-    #ldap.ca = '/etc/dnscherry/TEST-cacert.pem'
-    # use start tls
-    #ldap.starttls = 'off'
-    # check server certificate (for tls)
-    #ldap.checkcert = 'off'
-    # bind dn to the ldap
-    ldap.binddn = 'cn=dnscherry,dc=example,dc=org'
-    # password of the bind dn
-    ldap.password = 'password'
-    # timeout of ldap connexion (in second)
-    ldap.timeout = 1
-    
-    # groups dn
-    ldap.groupdn = 'ou=group,dc=example,dc=org'
-    # users dn
-    ldap.userdn = 'ou=people,dc=example,dc=org'
-    # ldapsearch filter to get a user
-    ldap.user_filter_tmpl = '(uid=%(username)s)'
-    # ldapsearch filter to get groups of a user
-    ldap.group_filter_tmpl = '(member=uid=%(username)s,ou=People,dc=example,dc=org)'
-    # filter to search users
-    ldap.search_filter_tmpl = '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))'
-    
-    # ldap group attributes and how to fill them
-    ldap.group_attr.member = "%(dn)s"
-    #ldap.group_attr.memberUid = "%(uid)s"
-    # object classes of a user entry
-    ldap.objectclasses = 'top, person, posixAccount, inetOrgPerson'
-    # dn entry attribute for an ldap user
-    ldap.dn_user_attr = 'uid'
+   #####################################
+   #   configuration of ldap backend   #
+   #####################################
+   
+   # name of the module
+   ldap.module = 'ldapcherry.backend.backendLdap'
+   # display name of the ldap
+   ldap.display_name = 'My Ldap Directory'
+   
+   # uri of the ldap directory
+   ldap.uri = 'ldap://ldap.ldapcherry.org'
+   # ca to use for ssl/tls connexion
+   #ldap.ca = '/etc/dnscherry/TEST-cacert.pem'
+   # use start tls
+   #ldap.starttls = 'off'
+   # check server certificate (for tls)
+   #ldap.checkcert = 'off'
+   # bind dn to the ldap
+   ldap.binddn = 'cn=dnscherry,dc=example,dc=org'
+   # password of the bind dn
+   ldap.password = 'password'
+   # timeout of ldap connexion (in second)
+   ldap.timeout = 1
+   
+   # groups dn
+   ldap.groupdn = 'ou=group,dc=example,dc=org'
+   # users dn
+   ldap.userdn = 'ou=people,dc=example,dc=org'
+   
+   # ldapsearch filter to get one specific user
+   # %(username)s is content of the attribute marked 'key: True' in the attributes.file config file
+   ldap.user_filter_tmpl = '(uid=%(username)s)'
+   # ldapsearch filter to get groups of a user
+   # %(username)s is content of the attribute marked 'key: True' in the attributes.file config file
+   ldap.group_filter_tmpl = '(member=uid=%(username)s,ou=People,dc=example,dc=org)'
+   # filter to search users
+   # %(searchstring)s is the content passed through the search box
+   ldap.search_filter_tmpl = '(|(uid=%(searchstring)s*)(sn=%(searchstring)s*))'
+   
+   # ldap group attributes and how to fill them
+   # 'member' is the name of the attribute
+   # for the template, any of the user's ldap attributes can be user
+   ldap.group_attr.member = "%(dn)s"
+   # same with memverUid and the uid user's attribute
+   #ldap.group_attr.memberUid = "%(uid)s"
+   
+   # object classes of a user entry
+   ldap.objectclasses = 'top, person, posixAccount, inetOrgPerson'
+   # dn entry attribute for an ldap user
+   ldap.dn_user_attr = 'uid'
 
 
 Active Directory Backend
