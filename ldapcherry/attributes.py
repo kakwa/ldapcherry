@@ -71,7 +71,7 @@ class Attributes:
             raise MissingUserKey()
 
     def _is_email(self, email):
-        pattern = r'[\.\w]{1,}[@]\w+[.]\w+'
+        pattern = r'[\+\.\w]+@[-\.\w]+\.\w+'
         if re.match(pattern, email):
             return True
         else:
