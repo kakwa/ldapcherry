@@ -1,7 +1,8 @@
 FROM ubuntu:16.04
 
-ADD . .
-RUN apt update && apt install -y python3 python3-pip && pip3 install -e . -r requirements.txt && pip3 install pycodestyle passlib coveralls && /usr/bin/python3 setup.py
+ADD . /opt/
+WORKDIR "/opt"
+RUN apt update && apt install -y python-dev python-pip libldap2-dev libsasl2-dev libssl-dev && pip install -e /opt/ -r /opt/requirements.txt && pip install pycodestyle passlib coveralls && /usr/bin/python2 /opt/setup.py install
 VOLUME /etc/ldapcherry
 EXPOSE 80
 
