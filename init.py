@@ -4,10 +4,13 @@ import os
 import sys
 
 #
-# This script sets up the ldapcherry config files through environment variables that are passed at
-# startup time.
+# This script sets up the ldapcherry config files through environment variables
+# that are passed at startup time.
 #
 
+# TODO: Add the rest of the options
+# TODO: Make some of these required, and some optional. How to fail when
+# they're not provided?
 ldapcherry_ini_settings = {
     'SERVER_SOCKET_HOST': '0.0.0.0',
     'SERVER_SOCKET_PORT': '80',
@@ -57,7 +60,13 @@ for setting in ldapcherry_ini_settings:
         # Exit if there are more than one instance defined
         if len(indeces) != 1:
             sys.exit()
-        filelines[indeces[0]] = "{0} = '{1}'\n".format(setting_key, setting_val)
+        if any(not char.isdigit() for char in setting_val):
+            # Make sure none of these are digits if it's going to be quoted
+            filelines[indeces[0]] = "{0} = '{1}'\n".format(setting_key,
+                                                           setting_val)
+        else:
+            filelines[indeces[0]] = "{0} = {1}\n".format(setting_key,
+                                                         setting_val)
     elif (any(line.startswith('#' + setting_key) for line in filelines)
             and ldapcherry_ini_settings[setting] != ''):
         # We know that it is defined somewhere, but behind a comment. We will
