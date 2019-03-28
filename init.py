@@ -74,7 +74,8 @@ for setting in ldapcherry_ini_settings:
         # We also know that it isn't defined anywhere due to the earlier test.
         indeces = [idx for idx, elem in enumerate(filelines)
                    if elem.startswith("#" + setting_key)]
-        filelines[indeces[0]] = "{0} = '{1}'\n".format(setting_key, setting_val)
+        filelines[indeces[0]] = "{0} = '{1}'\n".format(setting_key,
+                                                       setting_val)
     else:
         # It is not defined anywhere
         continue
@@ -84,4 +85,4 @@ with open('/etc/ldapcherry/ldapcherry.ini', 'w') as file:
     for fileline in filelines:
         file.write("{}".format(fileline))
 
-os.system("/usr/local/bin/ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -D")
+os.system("/usr/local/bin/ldapcherryd -c /etc/ldapcherry/ldapcherry.ini")
