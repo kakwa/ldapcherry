@@ -90,7 +90,7 @@ The default backend plugins permit to manage Ldap and Active Directory.
     $ export DATAROOTDIR=/usr/share/
     
     # install ldapcherry
-    $ python setup.py
+    $ python setup.py install
 
     # edit configuration files
     $ vi /etc/ldapcherry/ldapcherry.ini
