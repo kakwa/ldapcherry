@@ -112,7 +112,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.starttls = self.get_param('starttls', 'off')
         self.uri = self.get_param('uri')
         self.timeout = self.get_param('timeout', 1)
-        self.userdn = 'CN=Users,' + basedn
+        self.userdn = 'OU=Users,OU=' + self.domain.split(".")[0] + "," + basedn
         self.groupdn = self.userdn
         self.builtin = 'CN=Builtin,' + basedn
         self.user_filter_tmpl = '(sAMAccountName=%(username)s)'
