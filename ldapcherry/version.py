@@ -5,4 +5,4 @@
 # ldapCherry
 # Copyright (c) 2014 Carpentier Pierre-Francois
 
-version = '1.1.1'
+version = '1.1.2'

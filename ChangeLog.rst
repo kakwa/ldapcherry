@@ -1,6 +1,11 @@
 Dev
 ***
 
+Version 1.1.2
+*************
+
+* [feat] read credentials from environment variables
+
 Version 1.1.1
 *************
 
@@ -72,7 +77,7 @@ Version 0.3.5
 Version 0.3.4
 *************
 
-* [impr] focus on first field for all forms 
+* [impr] focus on first field for all forms
 * [impr] add icon in navbar to return on /
 
 Version 0.3.3
@@ -117,7 +122,7 @@ Version 0.2.3
 *************
 
 * [fix ] notifications missing in case of multiple notification waiting to be displayed
-* [fix ] password handling for Active Directory backend 
+* [fix ] password handling for Active Directory backend
 * [fix ] default attribute value handling
 * [fix ] corrections on exemple configuration
 * [impr] explicite mandatory attributes for Active Directory backend
@@ -131,7 +136,7 @@ Version 0.2.2
 Version 0.2.1
 *************
 
-* [fix ] fix doc 
+* [fix ] fix doc
 
 Version 0.2.0
 *************
