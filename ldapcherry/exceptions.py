@@ -223,6 +223,21 @@ class TemplateRenderError(Exception):
         self.log = "Template Render Error: " + error
 
 
+class MissingCSRFParam(Exception):
+    def __init__(self):
+        self.log = "Missing CSRF post parameter"
+
+
+class MissingCSRFCookie(Exception):
+    def __init__(self):
+        self.log = "Missing CSRF cookie"
+
+
+class InvalidCSRFToken(Exception):
+    def __init__(self):
+        self.log = "CSRF validation failed"
+
+
 def exception_decorator(func):
     def ret(self, *args, **kwargs):
         try:
@@ -231,6 +246,10 @@ def exception_decorator(func):
             raise e
         except cherrypy.HTTPError as e:
             raise e
+        except (InvalidCSRFToken, MissingCSRFCookie, MissingCSRFParam) as e:
+            cherrypy.response.status = 403
+            self._handle_exception(e)
+            return self.temp['csrf_error.tmpl'].render()
         except Exception as e:
             cherrypy.response.status = 500
             self._handle_exception(e)

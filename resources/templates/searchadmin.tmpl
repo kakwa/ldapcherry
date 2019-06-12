@@ -1,6 +1,7 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="navbar.tmpl"/>
 <%block name="core">
+    <% from ldapcherry.csrf import get_csrf_token %>
     <div class="row clearfix">
         <div class="col-md-12 column">
             <form method='get' action='/searchadmin' role="form" class="form-inline" data-toggle="validator">
@@ -42,8 +43,8 @@
                             %for attr in sorted(attrs_list.keys(), key=lambda attr: attrs_list[attr]['weight']):
                                 <td>
                                     % if attr in searchresult[user]:
-                                        <% 
-                                        value = searchresult[user][attr] 
+                                        <%
+                                        value = searchresult[user][attr]
                                         if type(value) is list:
                                             value = ', '.join(value)
                                         %>
@@ -55,7 +56,12 @@
                                     <a href="/modify?user=${user | n,u}" class="btn btn-xs blue pad" ><span class="glyphicon glyphicon-cog"></span> Modify</a>
                                 </td>
                                 <td>
-                                    <a href="/delete?user=${user | n,u}" data-toggle='confirmation-delete' class="btn btn-xs red pad"><span class="glyphicon glyphicon-remove-sign"></span> Delete</a>
+                                    <form action="/delete?user=${user | n,u}" method='POST'>
+                                        <%include file="csrf_field.tmpl"/>
+                                        <button class="btn btn-xs red pad" type="submit" data-toggle='confirmation-delete'>
+                                            <span class="glyphicon glyphicon-remove-sign"></span> Delete
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             % endfor
