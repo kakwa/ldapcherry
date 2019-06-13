@@ -274,7 +274,6 @@ def exception_decorator(func):
                     message="User '" + user + "' already exist"
                     )
             elif et is GroupDoesntExist:
-                group = e.group
                 return self.temp['error.tmpl'].render(
                     is_admin=is_admin,
                     alert='danger',
