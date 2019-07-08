@@ -18,4 +18,4 @@ RUN apk add --no-cache libldap && \
 
 USER ldapcherry
 
-CMD [ "ldapcherryd", "-c", "/etc/ldapcherry/ldapcherry.ini", "-D" ]
+CMD ["ldapcherryd", "-c", "/etc/ldapcherry/ldapcherry.ini"]
