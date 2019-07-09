@@ -200,12 +200,6 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         else:
             dn = self._byte_p2(name)
 
-        ldap_client.modify_s(
-            dn,
-            [(ldap.MOD_REPLACE, 'unicodePwd', [password_value])]
-        )
-        return
-
         attrs = {}
 
         attrs['unicodePwd'] = self._modlist(self._byte_p2(password_value))
@@ -223,31 +217,8 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
     def add_user(self, attrs):
         password = attrs['unicodePwd']
         del(attrs['unicodePwd'])
-        attrs['userPrincipalName'] = '%(name)s@%(domain)s' % {
-            'name': attrs['sAMAccountName'], 'domain': self.domain
-        }
         super(Backend, self).add_user(attrs)
-
-        ldap_client = self._bind()
-
-        dn = self._byte_p2('CN=%(cn)s,%(user_dn)s' % {
-            'cn': attrs['cn'], 'user_dn': self.userdn
-        })
-
-        # Set password
-        encoded_password = '"{}"'.format(password).encode('utf-16-le')
-        ldap_client.modify_s(
-            dn,
-            [(ldap.MOD_REPLACE, 'unicodePwd', [encoded_password])]
-        )
-
-        # Enable user account
-        ldap_client.modify_s(
-            dn,
-            [(ldap.MOD_REPLACE, 'UserAccountControl', [b'512'])]
-        )
-
-        ldap_client.unbind_s()
+        self._set_password(attrs['cn'], password)
 
     def set_attrs(self, username, attrs):
         if 'unicodePwd' in attrs:
