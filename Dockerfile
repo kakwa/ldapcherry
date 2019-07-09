@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:2-alpine
 
 WORKDIR /usr/src/app
 ADD . /usr/src/app
