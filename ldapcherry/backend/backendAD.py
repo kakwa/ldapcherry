@@ -105,7 +105,7 @@ class Backend(ldapcherry.backend.backendLdap.Backend):
         self.domain = self.get_param('domain')
         self.login = os.getenv("AD_LOGIN", self.get_param('login'))
         basedn = 'dc=' + re.sub(r'\.', ',DC=', self.domain)
-        self.binddn = self.login + '@' + self.domain
+        self.binddn = self.get_param('login') + '@' + self.domain
         self.bindpassword = os.getenv("PASSWORD", self.get_param('password'))
         self.ca = self.get_param('ca', False)
         self.checkcert = self.get_param('checkcert', 'on')
