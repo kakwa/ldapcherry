@@ -59,7 +59,7 @@ class Backend(ldapcherry.backend.Backend):
         self.backend_name = name
         self.backend_display_name = self.get_param('display_name')
         self.binddn = self.get_param('binddn')
-        self.bindpassword = os.getenv("PASSWORD", self.get_param('password'))
+        self.bindpassword = self.get_param('password')
         self.ca = self.get_param('ca', False)
         self.checkcert = self.get_param('checkcert', 'on')
         self.starttls = self.get_param('starttls', 'off')

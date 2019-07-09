@@ -5,8 +5,6 @@ ADD . /usr/src/app
 
 ENV DATAROOTDIR /usr/share
 ENV SYSCONFDIR /etc
-ENV AD_LOGIN administrator
-ENV PASSWORD password
 
 RUN apk add --no-cache libldap && \
     apk add --no-cache --virtual build-dependencies build-base yaml-dev openldap-dev && \
