@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkakwa%2Fldapcherry.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkakwa%2Fldapcherry?ref=badge_shield)
+
 **************
   LdapCherry 
 **************
@@ -118,3 +120,6 @@ LdapCherry is published under the MIT Public License.
 
 .. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/docs/assets/python-powered.png
 .. image:: https://raw.githubusercontent.com/kakwa/ldapcherry/master/docs/assets/cherrypy.png
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkakwa%2Fldapcherry.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkakwa%2Fldapcherry?ref=badge_large)
