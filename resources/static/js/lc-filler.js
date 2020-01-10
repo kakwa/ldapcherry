@@ -30,3 +30,8 @@ function lcUidNumber(firstname, lastname, minuid, maxuid){
 function lcHomeDir(firstname, lastname, basedir){
     return basedir+lcUid(firstname, lastname);
 }
+
+function lcCopy(value){
+    return value;
+}
+
