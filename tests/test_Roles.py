@@ -107,10 +107,10 @@ class TestError(object):
                 'description': 'description',
                 'display_name': 'Administrators Level 3'
             },
-            'developpers': {
+            'developers': {
                 'backends_groups': {
                     'ad': ['Domain Users'],
-                    'ldap': ['cn=developpers,ou=group,dc=example,dc=com',
+                    'ldap': ['cn=developers,ou=group,dc=example,dc=com',
                              'cn=users,ou=group,dc=example,dc=com']},
                 'description': 'description',
                 'display_name': 'Developpers'
@@ -152,7 +152,7 @@ class TestError(object):
     def testGetAllRoles(self):
         inv = Roles('./tests/cfg/roles.yml')
         res = inv.get_allroles()
-        expected = ['developpers', 'admin-lv3', 'admin-lv2', 'users']
+        expected = ['developers', 'admin-lv3', 'admin-lv2', 'users']
         assert res == expected
 
     def testGetAllRoles(self):
@@ -187,9 +187,9 @@ class TestError(object):
         'ad' : ['Domain Users', 'Domain Users 2'],
         'ldap': ['cn=users,ou=group,dc=example,dc=com',
             'cn=nagios admins,ou=group,dc=example,dc=com',
-            'cn=developpers,ou=group,dc=example,dc=com',
+            'cn=developers,ou=group,dc=example,dc=com',
             ],
         'toto': ['not a group'],
         }
-        expected = {'unusedgroups': {'toto': set(['not a group']), 'ad': set(['Domain Users 2'])}, 'roles': set(['developpers', 'admin-lv2', 'users'])}
+        expected = {'unusedgroups': {'toto': set(['not a group']), 'ad': set(['Domain Users 2'])}, 'roles': set(['developers', 'admin-lv2', 'users'])}
         assert inv.get_roles(groups) == expected

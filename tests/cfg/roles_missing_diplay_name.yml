@@ -22,12 +22,12 @@ admin-lv2:
         ad:
             - Domain Users
 
-developpers:
+developers:
     display_name: Developpers
     description: description
     backends_groups:
         ldap:
-            - cn=developpers,ou=group,dc=example,dc=com
+            - cn=developers,ou=group,dc=example,dc=com
             - cn=users,ou=group,dc=example,dc=com
         ad:
             - Domain Users

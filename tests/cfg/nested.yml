@@ -21,10 +21,10 @@ users:
           display_name: Administrators Level 3
           description: description
           subroles: {}
-    developpers:
+    developers:
       backends_groups:
         ad: [Domain Users]
-        ldap: ['cn=developpers,ou=group,dc=example,dc=com']
+        ldap: ['cn=developers,ou=group,dc=example,dc=com']
       display_name: Developpers
       description: description
       subroles: {}

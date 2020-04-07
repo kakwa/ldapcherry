@@ -103,9 +103,9 @@ cn: users
 description: Basic Users
 member: cn=Sheri Smith,ou=people,dc=example,dc=org
 
-dn: cn=developpers,ou=group,dc=example,dc=org
+dn: cn=developers,ou=group,dc=example,dc=org
 objectclass: groupofnames
-cn: developpers
+cn: developers
 description: Developpers 
 member: cn=Sheri Smith,ou=people,dc=example,dc=org
 
