@@ -20,12 +20,12 @@ admin-lv2:
             - cn=nagios admins,ou=Group,dc=example,dc=org
             - cn=users,ou=Group,dc=example,dc=org
 
-developpers:
+developers:
     display_name: Developpers
     description: description
     backends_groups:
         ldap:
-            - cn=developpers,ou=Group,dc=example,dc=org
+            - cn=developers,ou=Group,dc=example,dc=org
             - cn=users,ou=Group,dc=example,dc=org
 
 users:

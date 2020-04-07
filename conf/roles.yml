@@ -25,12 +25,12 @@ admin-lv2:
 #        ad:
 #            - Administrators
 
-developpers:
+developers:
     display_name: Developpers
     description: Developpers of the system
     backends_groups:
         ldap:
-            - cn=developpers,ou=Group,dc=example,dc=org
+            - cn=developers,ou=Group,dc=example,dc=org
             - cn=users,ou=Group,dc=example,dc=org
 
 users:
