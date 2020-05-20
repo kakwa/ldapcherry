@@ -50,3 +50,17 @@ Basic Lighttpd Vhost
 
 .. literalinclude:: ../goodies/lighttpd.conf
     :language: yaml
+
+Demo Backend Configuration Files
+--------------------------------
+
+The files here are the ones that are used at the demo site at `ldapcherry.kakwalab.ovh <https://ldapcherry.kakwalab.ovh/>`_ and can be used for a self-hosted demo backend:
+
+.. literalinclude:: ../goodies/demo_backend_configs/attributes.yml
+    :language: yaml
+
+.. literalinclude:: ../goodies/demo_backend_configs/roles.yml
+    :language: yaml
+
+.. literalinclude:: ../goodies/demo_backend_configs/ldapcherry.ini
+    :language: ini
