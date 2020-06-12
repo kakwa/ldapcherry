@@ -460,11 +460,81 @@ class Backend(ldapcherry.backend.Backend):
         dn = self._byte_p2(self._get_user(self._byte_p2(username), NO_ATTR))
         # delete
         if dn is not None:
+            groups = self.get_groups(username)
+            self._logger(
+                severity=logging.DEBUG,
+                msg="%(backend)s: removing user '%(user)s' from '%(group)s'" % {
+                    'user': username,
+                    'group': groups,
+                    'backend': self.backend_name
+                }
+            )
+            self.del_from_groups(username, groups)
             ldap_client.delete_s(dn)
         else:
             ldap_client.unbind_s()
             raise UserDoesntExist(username, self.backend_name)
         ldap_client.unbind_s()
+
+    def __isModify(self, username, attrs, old_attrs, attr):
+        modify = True
+        # early exit
+        if old_attrs.get(attr) is None:
+            return modify
+        # various modification checks
+        if type(old_attrs[attr]) is list:
+            if type(attrs[attr]) is list:
+                if old_attrs[attr] == attrs[attr]:
+                    self._logger(
+                        severity=logging.DEBUG,
+                        msg="%(backend)s: skipping modification of equal-attribute '%(attr)s'"
+                            "/'%(oldAttr)s' for user '%(user)s'" % {
+                                'user': username,
+                                'attr': attrs[attr],
+                                'oldAttr': old_attrs[attr],
+                                'backend': self.backend_name
+                                }
+                    )
+                    modify = False
+            if attrs[attr] in old_attrs[attr]:
+                self._logger(
+                    severity=logging.DEBUG,
+                    msg="%(backend)s: skipping modification of attribute '%(attr)s'"
+                        " for user '%(user)s' as it is contained by '%(oldAttr)s'" % {
+                            'user': username,
+                            'attr': attrs[attr],
+                            'oldAttr': old_attrs[attr],
+                            'backend': self.backend_name
+                            }
+                )
+                modify = False
+        else:
+            if type(attrs[attr]) is list:
+                if old_attrs[attr] in attrs[attr]:
+                    self._logger(
+                        severity=logging.DEBUG,
+                        msg="%(backend)s: skipping modification of contained-attribute '%(attr)s' "
+                            "for user '%(user)s'" % {
+                                'user': username,
+                                'attr': attrs[attr],
+                                'backend': self.backend_name
+                                }
+                    )
+                    modify = False
+            else:
+                if attrs[attr] == old_attrs[attr]:
+                    self._logger(
+                        severity=logging.DEBUG,
+                        msg="%(backend)s: skipping modification of equal-attribute '%(attr)s'"
+                            "/'%(oldAttr)s' for user '%(user)s'" % {
+                                'user': username,
+                                'attr': attrs[attr],
+                                'oldAttr': old_attrs[attr],
+                                'backend': self.backend_name
+                                }
+                    )
+                    modify = False
+        return modify
 
     def set_attrs(self, username, attrs):
         """ set user attributes"""
@@ -475,6 +545,20 @@ class Backend(ldapcherry.backend.Backend):
         dn = self._byte_p2(tmp[0])
         old_attrs = tmp[1]
         for attr in attrs:
+            # skip equal attributes
+            if not self.__isModify(username, attrs, old_attrs, attr):
+                continue
+            else:
+                self._logger(
+                    severity=logging.DEBUG,
+                    msg="%(backend)s: modifying user '%(user)s':"
+                        " '%(attr)s' vs. '%(oldAttr)s'" % {
+                            'user': username,
+                            'attr': attrs[attr],
+                            'oldAttr': old_attrs.get(attr),
+                            'backend': self.backend_name
+                            }
+                )
             bcontent = self._byte_p2(attrs[attr])
             battr = self._byte_p2(attr)
             new = {battr: self._modlist(self._byte_p3(bcontent))}
