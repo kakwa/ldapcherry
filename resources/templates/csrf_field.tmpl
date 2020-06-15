@@ -1,0 +1,3 @@
+## -*- coding: utf-8 -*-
+<%! from ldapcherry.csrf import get_csrf_token, CSRF_INPUT_NAME %>
+<input type="hidden" name="${CSRF_INPUT_NAME}" value="${get_csrf_token()}"/>
