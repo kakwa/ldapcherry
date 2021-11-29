@@ -1,4 +1,4 @@
 CherryPy>=3.0.0
 PyYAML
 Mako
-python-ldap==2.4.15
+python-ldap==3.4.0
