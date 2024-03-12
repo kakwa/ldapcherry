@@ -1,0 +1,19 @@
+name: Coverage 
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install packages and setup ldap/AD
+      run: ./tests/test_env/deploy.sh
+
+    - name: Test
+      run: python3 setup.py test 
