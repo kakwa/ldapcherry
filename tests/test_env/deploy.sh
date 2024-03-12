@@ -5,7 +5,7 @@ apt update
 DEBIAN_FRONTEND=noninteractive apt-get install ldap-utils slapd -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install samba-dsdb-modules samba-vfs-modules samba -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install winbind -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
-DEBIAN_FRONTEND=noninteractive apt-get install libtidy-dev libldap-dev python3-cherrypy python3-ldap python3-mako -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
+DEBIAN_FRONTEND=noninteractive apt-get install build-essential python3-dev libsasl2-dev slapd ldap-utils tox lcov valgrind libtidy-dev libldap-dev python3-cherrypy python3-ldap python3-mako -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  -f -q -y
 
 [ -e '/etc/default/slapd' ] && rm -rf /etc/default/slapd
 cp -r `dirname $0`/etc/default/slapd /etc/default/slapd
