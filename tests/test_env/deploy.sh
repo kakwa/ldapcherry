@@ -18,7 +18,6 @@ sudo sed -i "s%template_dir.*%template_dir = '`pwd`/resources/templates/'%" /etc
 sudo sed -i "s%tools.staticdir.dir.*%tools.staticdir.dir = '`pwd`/resources/static/'%" /etc/ldapcherry/ldapcherry.ini
 
 chown -R openldap:openldap /etc/ldap/
-rm /etc/ldap/slapd.d/cn\=config/*mdb*
 /etc/init.d/slapd restart
 ldapadd -c -H ldap://localhost:390  -x -D "cn=admin,dc=example,dc=org" -f /etc/ldap/content.ldif -w password
 if grep -q '127.0.0.1' /etc/hosts && ! grep -q 'ldap.ldapcherry.org' /etc/hosts

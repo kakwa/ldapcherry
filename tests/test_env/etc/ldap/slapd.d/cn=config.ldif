@@ -1,4 +1,5 @@
 # AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 7a6099db
 dn: cn=config
 objectClass: olcGlobal
 cn: config
@@ -7,12 +8,9 @@ olcLogLevel: none
 olcPidFile: /var/run/slapd/slapd.pid
 olcToolThreads: 1
 structuralObjectClass: olcGlobal
-entryUUID: 2964261c-6754-1033-8d48-1703270f04bd
+entryUUID: 38579c70-750a-103e-8489-9578878139e2
 creatorsName: cn=config
-createTimestamp: 20140503211805Z
-entryCSN: 20140503211805.658522Z#000000#000#000000
+createTimestamp: 20240312221838Z
+entryCSN: 20240312221838.644900Z#000000#000#000000
 modifiersName: cn=config
-modifyTimestamp: 20140503211805Z
-olcTLSCACertificateFile: /etc/ldap/ssl/TEST-cacert.pem
-olcTLSCertificateFile: /etc/ldap/ssl/ldap@dnscherry.org-cert.pem
-olcTLSCertificateKeyFile: /etc/ldap/ssl/ldap@dnscherry.org-key.pem
+modifyTimestamp: 20240312221838Z
