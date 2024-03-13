@@ -94,7 +94,7 @@ LdapCherry is published under the MIT Public License.
   Discussion / Help / Updates
 *******************************
 
-* IRC: `Freenode <http://freenode.net/>`_ ``#ldapcherry`` channel
+* IRC: `Libera <https://libera.chat/>`_ ``#ldapcherry`` channel
 * Bugtracker: `Github <https://github.com/kakwa/ldapcherry/issues>`_
 
 ----
