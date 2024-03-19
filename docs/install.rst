@@ -1,8 +1,34 @@
 Install
 =======
 
+Using pip
+---------
+
+Install the dependencies from the operating system's repos, and then install ldapcherry using `pip`:
+
+.. sourcecode:: bash
+
+    # RHEL/CentOS
+    $ sudo yum install epel-release && sudo yum install python-pip python-devel gcc openldap-devel
+
+    # Debian/Ubuntu
+    $ sudo apt install python-dev python-pip libldap2-dev libsasl2-dev libssl-dev
+
+    $ pip install ldapcherry
+
 From the sources
 ----------------
+
+Install the dependencies from the operating system's repos:
+
+.. sourcecode:: bash
+
+    # RHEL/CentOS
+    $ sudo yum install epel-release && sudo yum install python36-pip python36-devel python36-PyYAML gcc openldap-devel
+
+    # Debian/Ubuntu
+    $ sudo apt install python-dev python-pip libldap2-dev libsasl2-dev libssl-dev
+
 
 Download the latest release from `GitHub <https://github.com/kakwa/ldapcherry/releases>`_.
 
