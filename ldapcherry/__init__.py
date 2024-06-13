@@ -486,7 +486,11 @@ class LdapCherry(object):
         """
         for attr in attrs_backend:
             if attr in self.attributes.backend_attributes[backend_name]:
-                attrid = self.attributes.backend_attributes[backend_name][attr]
+                attr_desc = self.attributes.backend_attributes[backend_name][attr]
+                if type(attr_desc) is list:
+                    attrid = attr_desc[0]['id']
+                else:
+                    attrid = attr_desc['id']
                 if attrid not in attrs_out:
                     attrs_out[attrid] = attrs_backend[attr]
 
