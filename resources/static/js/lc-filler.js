@@ -7,14 +7,24 @@
  *
 */
 
+function normalizeName(name) {
+    return removeDiacritics(name).toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function lcUidExt(firstname, lastname, firstnameEnd, lastnameEnd){
+    return normalizeName(firstname).substring(0, parseInt(firstnameEnd))+normalizeName(lastname).substring(0,parseInt(lastnameEnd));
+}
+
 function lcUid(firstname, lastname){
-    var ascii_firstname = removeDiacritics(firstname).toLowerCase().replace(/[^a-z]/g, '');
-    var ascii_lastname = removeDiacritics(lastname).toLowerCase().replace(/[^a-z]/g, '');
-    return ascii_firstname.charAt(0)+ascii_lastname.substring(0,7);
+    return lcUidExt(firstname, lastname, 0, 7);
 }
 
 function lcDisplayName(firstname, lastname){
     return firstname+' '+lastname;
+}
+
+function lcMailExt(firstname, lastname, domain, firstnameEnd, lastnameEnd){
+    return lcUidExt(firstname, lastname, firstnameEnd, lastnameEnd)+domain;
 }
 
 function lcMail(firstname, lastname, domain){
