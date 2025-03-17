@@ -84,6 +84,8 @@ The default backend plugins permit to manage Ldap and Active Directory.
     $ ldapcherryd -c /etc/ldapcherry/ldapcherry.ini -D
 
 
+Debian and RPM packages are also available here: `https://github.com/kakwa/kakwalab-pkg` (package name ``ldapcherry``).
+
 ***********
   License
 ***********
