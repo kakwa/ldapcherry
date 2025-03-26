@@ -1,5 +1,6 @@
 ## -*- coding: utf-8 -*-
-<% 
+<%
+from ldapcherry.csrf import get_csrf_field
 from markupsafe import Markup
 len_attr = len(attributes)
 switch = len_attr / 2
@@ -16,11 +17,11 @@ for a in sorted(attributes.keys(), key=lambda attr: attributes[attr]['weight']):
     counter = counter + 1
 %>
 <%def name="form_col(l)">
-% for a in l: 
+% for a in l:
 <% attr = attributes[a] %>
 <div class="form-group">
 <div class="input-group">
-  <% 
+  <%
     if modify:
         required = ''
     else:
@@ -84,6 +85,8 @@ ${form_col(lc1)}
 ${form_col(lc2)}
 </div>
 </div>
+<%include file="csrf_field.tmpl"/>
+
 % if autofill:
 <%
 attr_set = []

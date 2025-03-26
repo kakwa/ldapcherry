@@ -20,6 +20,7 @@ from ldapcherry.exceptions import *
 from ldapcherry.lclogging import *
 from ldapcherry.roles import Roles
 from ldapcherry.attributes import Attributes
+from ldapcherry.csrf import validate_csrf
 
 # Cherrypy http framework imports
 import cherrypy
@@ -38,7 +39,6 @@ else:
     from urllib.parse import quote_plus
 
 SESSION_KEY = '_cp_username'
-
 
 class LdapCherry(object):
 
@@ -388,7 +388,8 @@ class LdapCherry(object):
         for t in ('index.tmpl', 'error.tmpl', 'login.tmpl', '404.tmpl',
                   'searchadmin.tmpl', 'searchuser.tmpl', 'adduser.tmpl',
                   'roles.tmpl', 'groups.tmpl', 'form.tmpl', 'selfmodify.tmpl',
-                  'modify.tmpl', 'service_unavailable.tmpl'
+                  'modify.tmpl', 'service_unavailable.tmpl', 'csrf_error.tmpl',
+                  'csrf_field.tmpl'
                   ):
             self.temp[t] = self.temp_lookup.get_template(t)
 
@@ -882,15 +883,14 @@ class LdapCherry(object):
     @cherrypy.expose
     @exception_decorator
     def signin(self, url=None):
-        """simple signin page
-        """
+        """simple signin page"""
         return self.temp['login.tmpl'].render(url=url)
 
     @cherrypy.expose
     @exception_decorator
+    @validate_csrf
     def login(self, login, password, url=None):
-        """login page
-        """
+        """login page"""
         auth = self._auth(login, password)
         cherrypy.session['isadmin'] = auth['isadmin']
         cherrypy.session['connected'] = auth['connected']
@@ -950,8 +950,7 @@ class LdapCherry(object):
     @cherrypy.expose
     @exception_decorator
     def index(self):
-        """main page rendering
-        """
+        """ main page rendering """
         self._check_auth(must_admin=False)
         is_admin = self._check_admin()
         sess = cherrypy.session
@@ -1026,6 +1025,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     @exception_decorator
+    @validate_csrf
     def adduser(self, **params):
         """ add user page """
         self._check_auth(must_admin=True)
@@ -1074,6 +1074,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     @exception_decorator
+    @validate_csrf
     def delete(self, user):
         """ remove user page """
         self._check_auth(must_admin=True)
@@ -1088,6 +1089,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     @exception_decorator
+    @validate_csrf
     def modify(self, user=None, **params):
         """ modify user page """
         self._check_auth(must_admin=True)
@@ -1181,6 +1183,7 @@ class LdapCherry(object):
 
     @cherrypy.expose
     @exception_decorator
+    @validate_csrf
     def selfmodify(self, **params):
         """ self modify user page """
         self._check_auth(must_admin=False)
