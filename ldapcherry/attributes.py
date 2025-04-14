@@ -61,9 +61,27 @@ class Attributes:
                 self.key = attrid
             for b in attr['backends']:
                 self.backends.add(b)
+                backend_attr = attr['backends'][b]
                 if b not in self.backend_attributes:
                     self.backend_attributes[b] = {}
-                self.backend_attributes[b][attr['backends'][b]] = attrid
+                if backend_attr in self.backend_attributes[b]:
+                    if type(self.backend_attributes[b][backend_attr]) \
+                        is not list:
+                            self.backend_attributes[b][backend_attr] = [
+                                self.backend_attributes[b][backend_attr],
+                            ]
+
+                    self.backend_attributes[b][backend_attr].append(
+                        {
+                            'id':attrid,
+                            'type': attr['type']
+                        }
+                    )
+                else:
+                    self.backend_attributes[b][backend_attr] = {
+                        'id':attrid,
+                        'type': attr['type']
+                    }
             if 'search_displayed' in attr and attr['search_displayed']:
                 self.displayed_attributes[attrid] = attr
 
